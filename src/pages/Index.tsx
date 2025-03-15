@@ -1,12 +1,12 @@
 
 import React, { useState, useEffect } from 'react';
-import { getMockData, Content } from '@/lib/content-utils';
+import { getMockData, Content, parseYamlToContent, parseYaml } from '@/lib/content-utils';
 import { toast } from 'sonner';
 import ContentItem from '@/components/ContentItem';
 import ContentCreator from '@/components/ContentCreator';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
-import { Plus, Check, ArrowRight } from 'lucide-react';
+import { Plus, Check, ArrowRight, FileText, Calendar, Mail, CheckCircle } from 'lucide-react';
 
 const Index = () => {
   const [items, setItems] = useState<Content[]>([]);
@@ -34,7 +34,21 @@ const Index = () => {
     
     // Apply type filter
     if (filter !== 'all') {
-      result = result.filter(item => item.type === filter);
+      // For attribute-based filtering, check if the item has that attribute
+      switch (filter) {
+        case 'task':
+          result = result.filter(item => item.hasTaskAttributes);
+          break;
+        case 'event':
+          result = result.filter(item => item.hasEventAttributes);
+          break;
+        case 'note':
+          result = result.filter(item => item.hasNoteAttributes);
+          break;
+        case 'mail':
+          result = result.filter(item => item.hasMailAttributes);
+          break;
+      }
     }
     
     // Apply search filter
@@ -72,6 +86,47 @@ const Index = () => {
     toast.success('Item created successfully');
   };
   
+  // Import content from YAML
+  const handleImport = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = '.md,.txt';
+    input.onchange = async (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (file) {
+        try {
+          const content = await file.text();
+          const { yamlData, content: textContent } = parseYaml(content);
+          
+          // Create a basic content object
+          const newContent: Content = {
+            id: Math.random().toString(36).substring(2, 9),
+            title: file.name.replace(/\.(md|txt)$/, ''),
+            content: textContent,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            hasTaskAttributes: false,
+            hasEventAttributes: false,
+            hasMailAttributes: false,
+            hasNoteAttributes: true,
+            yaml: ''
+          };
+          
+          // Parse YAML data into content
+          const parsedContent = parseYamlToContent(yamlData, newContent);
+          
+          // Add to items list
+          setItems(prevItems => [parsedContent, ...prevItems]);
+          toast.success('Content imported successfully');
+        } catch (error) {
+          console.error('Import error:', error);
+          toast.error('Failed to import content');
+        }
+      }
+    };
+    input.click();
+  };
+  
   // Get appropriate empty state message based on filters
   const getEmptyStateMessage = () => {
     if (search) {
@@ -79,10 +134,26 @@ const Index = () => {
     }
     
     if (filter !== 'all') {
-      return `No ${filter}s yet`;
+      return `No items with ${filter} attributes yet`;
     }
     
     return 'No items yet';
+  };
+  
+  // Get icon for the filter
+  const getFilterIcon = () => {
+    switch (filter) {
+      case 'task':
+        return <CheckCircle className="size-5 text-task mr-1.5" />;
+      case 'event':
+        return <Calendar className="size-5 text-event mr-1.5" />;
+      case 'note':
+        return <FileText className="size-5 text-note mr-1.5" />;
+      case 'mail':
+        return <Mail className="size-5 text-mail mr-1.5" />;
+      default:
+        return null;
+    }
   };
   
   return (
@@ -106,8 +177,26 @@ const Index = () => {
           />
         ) : filteredItems.length > 0 ? (
           <>
+            <div className="flex justify-between items-center mb-4">
+              <div className="flex items-center">
+                {getFilterIcon()}
+                <h2 className="text-lg font-medium">
+                  {filter === 'all' ? 'All Items' : `${filter.charAt(0).toUpperCase() + filter.slice(1)}s`}
+                  <span className="text-muted-foreground ml-2 text-sm">({filteredItems.length})</span>
+                </h2>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={handleImport}
+                className="text-xs"
+              >
+                Import
+              </Button>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 animate-fade-in">
-              {filteredItems.map((item, index) => (
+              {filteredItems.map((item) => (
                 <ContentItem 
                   key={item.id} 
                   item={item} 
@@ -152,7 +241,7 @@ const Index = () => {
               Welcome to Transform!
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Try converting content between different types using the menu on each card.
+              Content can now have multiple attributes. Try toggling attributes using the menu on each card.
             </p>
             <div className="mt-3 flex justify-end">
               <Button 

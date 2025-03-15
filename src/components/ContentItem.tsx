@@ -2,9 +2,31 @@
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { convertContent, Content, formatContentWithYaml } from '@/lib/content-utils';
-import { CheckCircle, Calendar, FileText, Mail, MoreHorizontal, Edit, RefreshCw, Copy, Trash } from 'lucide-react';
+import { 
+  Content, 
+  formatContentWithYaml, 
+  getPrimaryContentType,
+  toggleContentAttribute,
+  ContentAttributeType
+} from '@/lib/content-utils';
+import { 
+  CheckCircle, 
+  Calendar, 
+  FileText, 
+  Mail, 
+  MoreHorizontal, 
+  Edit, 
+  RefreshCw, 
+  Copy, 
+  Trash, 
+  Plus,
+  X
+} from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Button } from '@/components/ui/button';
+import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -23,10 +45,38 @@ interface ContentItemProps {
 
 const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) => {
   const [isHovered, setIsHovered] = useState(false);
+  const [date, setDate] = useState<Date | undefined>(item.eventDate);
   
-  // Determine icon based on content type
+  // Handle task checkbox change
+  const handleTaskChange = (checked: boolean) => {
+    const updatedItem = { ...item, taskDone: checked };
+    updatedItem.yaml = formatContentWithYaml(updatedItem);
+    onUpdate(updatedItem);
+  };
+  
+  // Handle date change
+  const handleDateChange = (newDate: Date | undefined) => {
+    if (newDate) {
+      const updatedItem = { ...item, eventDate: newDate };
+      updatedItem.yaml = formatContentWithYaml(updatedItem);
+      onUpdate(updatedItem);
+      setDate(newDate);
+    }
+  };
+
+  // Toggle attribute type
+  const handleToggleAttribute = (attributeType: ContentAttributeType) => {
+    const updatedItem = toggleContentAttribute(item, attributeType);
+    onUpdate(updatedItem);
+    toast.success(`${attributeType.charAt(0).toUpperCase() + attributeType.slice(1)} attributes ${updatedItem[`has${attributeType.charAt(0).toUpperCase() + attributeType.slice(1)}Attributes`] ? 'added' : 'removed'}`);
+  };
+  
+  // Get primary type for styling
+  const primaryType = getPrimaryContentType(item);
+  
+  // Determine icon based on primary content type
   const getIcon = () => {
-    switch (item.type) {
+    switch (primaryType) {
       case 'task':
         return <CheckCircle className="size-5 text-task" />;
       case 'event':
@@ -40,9 +90,9 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
     }
   };
   
-  // Get the appropriate style class based on content type
+  // Get the appropriate style class based on primary content type
   const getTypeClass = () => {
-    switch (item.type) {
+    switch (primaryType) {
       case 'task':
         return 'content-task';
       case 'event':
@@ -57,8 +107,8 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
   };
   
   // Get tag color based on content type
-  const getTagClass = () => {
-    switch (item.type) {
+  const getTagClass = (type: ContentAttributeType) => {
+    switch (type) {
       case 'task':
         return 'bg-task-light text-task';
       case 'event':
@@ -72,76 +122,150 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
     }
   };
   
-  // Format date based on content type
-  const getFormattedDate = () => {
-    if (item.type === 'event' && 'date' in item) {
-      return format(item.date, 'MMM d, yyyy');
+  // Get content type tag elements
+  const getTypeTags = () => {
+    const tags = [];
+    
+    if (item.hasTaskAttributes) {
+      tags.push(
+        <span key="task" className={cn("content-item-tag", getTagClass('task'))}>
+          Task
+        </span>
+      );
     }
-    return format(item.updatedAt, 'MMM d, yyyy');
+    
+    if (item.hasEventAttributes) {
+      tags.push(
+        <span key="event" className={cn("content-item-tag", getTagClass('event'))}>
+          Event
+        </span>
+      );
+    }
+    
+    if (item.hasMailAttributes) {
+      tags.push(
+        <span key="mail" className={cn("content-item-tag", getTagClass('mail'))}>
+          Mail
+        </span>
+      );
+    }
+    
+    if (item.hasNoteAttributes) {
+      tags.push(
+        <span key="note" className={cn("content-item-tag", getTagClass('note'))}>
+          Note
+        </span>
+      );
+    }
+    
+    return tags;
   };
   
-  // Get specific details based on content type
-  const getTypeSpecificDetails = () => {
-    switch (item.type) {
-      case 'task':
-        return (
-          <div className="flex items-center mt-1 text-sm">
-            <span className={cn(
-              "inline-flex items-center", 
-              (item as any).done ? "text-muted-foreground line-through" : "text-foreground"
-            )}>
-              Status: {(item as any).done ? 'Completed' : 'Pending'}
-            </span>
-          </div>
-        );
-      case 'event':
-        return (
-          <div className="flex items-center mt-1 text-sm">
-            <Calendar className="size-4 mr-1 text-event" />
-            <span>{getFormattedDate()}</span>
-            {(item as any).location && (
-              <span className="ml-2">at {(item as any).location}</span>
-            )}
-          </div>
-        );
-      case 'mail':
-        return (
-          <div className="flex flex-col gap-1 mt-1 text-sm">
-            <div>From: {(item as any).from}</div>
-            <div>To: {Array.isArray((item as any).to) ? (item as any).to.join(', ') : (item as any).to}</div>
-          </div>
-        );
-      case 'note':
-        if ((item as any).tags && (item as any).tags.length > 0) {
-          return (
-            <div className="flex flex-wrap gap-1 mt-1">
-              {(item as any).tags.map((tag: string, idx: number) => (
-                <span key={idx} className="px-2 py-0.5 bg-note-light text-note text-xs rounded-full">
-                  {tag}
-                </span>
-              ))}
-            </div>
-          );
-        }
-        return null;
-      default:
-        return null;
-    }
-  };
-
-  // Handle content conversion
-  const handleConvert = (targetType: 'note' | 'task' | 'event' | 'mail') => {
-    if (item.type !== targetType) {
-      const convertedItem = convertContent(item, targetType);
-      onUpdate(convertedItem);
-      toast.success(`Converted to ${targetType} successfully`);
-    }
-  };
-
   // Handle copy to clipboard
   const handleCopy = () => {
     navigator.clipboard.writeText(formatContentWithYaml(item));
     toast.success('Copied to clipboard');
+  };
+  
+  // Render the specific attribute sections
+  const renderAttributeSections = () => {
+    return (
+      <div className="space-y-3">
+        {/* Task attributes */}
+        {item.hasTaskAttributes && (
+          <div className="flex items-center gap-2 p-2 bg-task-light/20 rounded-md">
+            <Checkbox 
+              id={`task-${item.id}`} 
+              checked={item.taskDone} 
+              onCheckedChange={handleTaskChange}
+              className="text-task data-[state=checked]:bg-task data-[state=checked]:text-white border-task"
+            />
+            <label 
+              htmlFor={`task-${item.id}`}
+              className={cn(
+                "text-sm cursor-pointer flex-grow", 
+                item.taskDone && "line-through text-muted-foreground"
+              )}
+            >
+              {item.title}
+            </label>
+          </div>
+        )}
+        
+        {/* Event attributes */}
+        {item.hasEventAttributes && (
+          <div className="p-2 bg-event-light/20 rounded-md space-y-1">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-sm text-event">
+                <Calendar className="size-4" />
+                <span>Date</span>
+              </div>
+              
+              {item.eventLocation && (
+                <div className="text-xs text-muted-foreground">
+                  {item.eventLocation}
+                </div>
+              )}
+            </div>
+            
+            <Popover>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="outline"
+                  className="w-full justify-start text-left font-normal border-event/40 text-sm"
+                >
+                  {item.eventDate ? format(item.eventDate, 'PPP') : <span>Select a date</span>}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="start">
+                <CalendarComponent
+                  mode="single"
+                  selected={item.eventDate}
+                  onSelect={handleDateChange}
+                  initialFocus
+                  className="p-3 pointer-events-auto"
+                />
+              </PopoverContent>
+            </Popover>
+          </div>
+        )}
+        
+        {/* Mail attributes */}
+        {item.hasMailAttributes && (
+          <div className="p-2 bg-mail-light/20 rounded-md space-y-1">
+            <div className="flex items-center gap-1.5 text-sm text-mail">
+              <Mail className="size-4" />
+              <span>Email</span>
+            </div>
+            <div className="grid text-xs space-y-0.5">
+              {item.mailFrom && (
+                <div className="flex">
+                  <span className="w-12 text-muted-foreground">From:</span>
+                  <span className="font-medium">{item.mailFrom}</span>
+                </div>
+              )}
+              {item.mailTo && item.mailTo.length > 0 && (
+                <div className="flex">
+                  <span className="w-12 text-muted-foreground">To:</span>
+                  <span className="font-medium">{item.mailTo.join(', ')}</span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+        
+        {/* Note attributes */}
+        {item.hasNoteAttributes && item.noteTags && item.noteTags.length > 0 && (
+          <div className="flex flex-wrap gap-1">
+            {item.noteTags.map((tag, idx) => (
+              <span key={idx} className="px-2 py-0.5 bg-note-light text-note text-xs rounded-full">
+                {tag}
+              </span>
+            ))}
+          </div>
+        )}
+      </div>
+    );
   };
 
   // Render the component
@@ -158,9 +282,9 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
       <div className="content-item-header">
         <div className="flex items-center gap-2">
           {getIcon()}
-          <span className={cn("content-item-tag", getTagClass())}>
-            {item.type.charAt(0).toUpperCase() + item.type.slice(1)}
-          </span>
+          <div className="flex flex-wrap gap-1">
+            {getTypeTags()}
+          </div>
         </div>
         
         <DropdownMenu>
@@ -181,34 +305,22 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
               <span>Copy</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuLabel>Convert to</DropdownMenuLabel>
-            <DropdownMenuItem 
-              onClick={() => handleConvert('note')}
-              disabled={item.type === 'note'}
-            >
-              <FileText className="mr-2 size-4 text-note" />
-              <span>Note</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => handleConvert('task')}
-              disabled={item.type === 'task'}
-            >
+            <DropdownMenuLabel>Toggle Attributes</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => handleToggleAttribute('task')}>
               <CheckCircle className="mr-2 size-4 text-task" />
-              <span>Task</span>
+              <span>{item.hasTaskAttributes ? 'Remove' : 'Add'} Task</span>
             </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => handleConvert('event')}
-              disabled={item.type === 'event'}
-            >
+            <DropdownMenuItem onClick={() => handleToggleAttribute('event')}>
               <Calendar className="mr-2 size-4 text-event" />
-              <span>Event</span>
+              <span>{item.hasEventAttributes ? 'Remove' : 'Add'} Event</span>
             </DropdownMenuItem>
-            <DropdownMenuItem 
-              onClick={() => handleConvert('mail')}
-              disabled={item.type === 'mail'}
-            >
+            <DropdownMenuItem onClick={() => handleToggleAttribute('mail')}>
               <Mail className="mr-2 size-4 text-mail" />
-              <span>Email</span>
+              <span>{item.hasMailAttributes ? 'Remove' : 'Add'} Email</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleToggleAttribute('note')}>
+              <FileText className="mr-2 size-4 text-note" />
+              <span>{item.hasNoteAttributes ? 'Remove' : 'Add'} Note</span>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => onDelete(item.id)} className="text-destructive">
@@ -220,9 +332,18 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
       </div>
       
       <div className="content-item-body">
-        <h3 className="text-lg font-medium mb-1">{item.title}</h3>
-        <p className="text-sm text-muted-foreground whitespace-pre-line">{item.content}</p>
-        {getTypeSpecificDetails()}
+        {/* Only show title if not showing task checkbox (to avoid duplication) */}
+        {!item.hasTaskAttributes && (
+          <h3 className="text-lg font-medium mb-1">{item.title}</h3>
+        )}
+        
+        {/* Render all attribute-specific UI */}
+        {renderAttributeSections()}
+        
+        {/* Content text */}
+        <p className="text-sm text-muted-foreground whitespace-pre-line mt-2">
+          {item.content}
+        </p>
       </div>
       
       <div className="content-item-footer">
@@ -245,9 +366,16 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
           </button>
           <button 
             className="p-1 rounded hover:bg-muted transition-colors"
-            onClick={() => toast.info('Convert functionality in dropdown menu')}
+            onClick={() => {
+              const attributesToAdd = ['task', 'event', 'mail', 'note'].filter(
+                type => !item[`has${type.charAt(0).toUpperCase() + type.slice(1)}Attributes`]
+              );
+              if (attributesToAdd.length > 0) {
+                handleToggleAttribute(attributesToAdd[0] as ContentAttributeType);
+              }
+            }}
           >
-            <RefreshCw className="size-3 text-muted-foreground" />
+            <Plus className="size-3 text-muted-foreground" />
           </button>
         </div>
       </div>
