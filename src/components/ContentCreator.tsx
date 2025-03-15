@@ -43,7 +43,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
   const [mailTo, setMailTo] = useState('');
   
   // Note specific state
-  const [noteTags, setNoteTags] = useState('');
+  const [noteTags, setNoteTags] = useState<string[]>([]);
   
   // Toggle attribute sections
   const toggleAttribute = (type: ContentAttributeType) => {
@@ -119,7 +119,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
       mailTo: hasMailAttributes ? [mailTo] : undefined,
       
       // Note attributes
-      noteTags: hasNoteAttributes && noteTags ? noteTags.split(',').map(tag => tag.trim()) : undefined,
+      noteTags: hasNoteAttributes ? noteTags : undefined,
       
       // Generate YAML
       yaml: ''
@@ -143,7 +143,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
     setEventLocation('');
     setMailFrom('');
     setMailTo('');
-    setNoteTags('');
+    setNoteTags([]);
   };
   
   return (

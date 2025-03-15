@@ -30,11 +30,12 @@ const YamlPreview: React.FC<YamlPreviewProps> = ({ content }) => {
       
       // Mail attributes
       mailFrom: content.hasMailAttributes ? content.mailFrom : undefined,
-      mailTo: content.hasMailAttributes ? [content.mailTo as string] : undefined,
+      mailTo: content.hasMailAttributes && content.mailTo ? 
+        (Array.isArray(content.mailTo) ? content.mailTo : [content.mailTo as string]) : undefined,
       
       // Note attributes
       noteTags: content.hasNoteAttributes && content.noteTags ? 
-        (content.noteTags as string).split(',').map(tag => tag.trim()) : undefined,
+        (Array.isArray(content.noteTags) ? content.noteTags : []) : undefined,
       
       yaml: ''
     };
