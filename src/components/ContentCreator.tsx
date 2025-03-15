@@ -40,7 +40,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
   
   // Mail specific state
   const [mailFrom, setMailFrom] = useState('');
-  const [mailTo, setMailTo] = useState('');
+  const [mailTo, setMailTo] = useState<string[]>([]); // Changed to string[] to match expected type
   
   // Note specific state
   const [noteTags, setNoteTags] = useState<string[]>([]);
@@ -85,7 +85,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
       return;
     }
     
-    if (hasMailAttributes && (!mailFrom || !mailTo)) {
+    if (hasMailAttributes && (!mailFrom || mailTo.length === 0)) {
       toast.error('From and To fields are required for emails');
       return;
     }
@@ -116,7 +116,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
       
       // Mail attributes
       mailFrom: hasMailAttributes ? mailFrom : undefined,
-      mailTo: hasMailAttributes ? [mailTo] : undefined,
+      mailTo: hasMailAttributes ? mailTo : undefined, // Now passing the string[] directly
       
       // Note attributes
       noteTags: hasNoteAttributes ? noteTags : undefined,
@@ -142,7 +142,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
     setEventDate(new Date());
     setEventLocation('');
     setMailFrom('');
-    setMailTo('');
+    setMailTo([]);
     setNoteTags([]);
   };
   
