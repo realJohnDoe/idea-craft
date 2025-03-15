@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+
+import React, { useState, useEffect } from 'react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { 
@@ -6,7 +7,8 @@ import {
   formatContentWithYaml, 
   getPrimaryContentType,
   toggleContentAttribute,
-  ContentAttributeType
+  ContentAttributeType,
+  processContentLinks
 } from '@/lib/content-utils';
 import { 
   CheckCircle, 
@@ -41,11 +43,49 @@ interface ContentItemProps {
   item: Content;
   onUpdate: (updatedItem: Content) => void;
   onDelete: (id: string) => void;
+  allItems?: Content[]; // Added to support link processing
 }
 
-const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) => {
+const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete, allItems = [] }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [date, setDate] = useState<Date | undefined>(item.eventDate);
+  const [processedContent, setProcessedContent] = useState(item.content);
+  
+  // Process content links when content changes or allItems changes
+  useEffect(() => {
+    // Only process links if we have allItems
+    if (allItems.length > 0) {
+      setProcessedContent(processContentLinks(item.content, allItems));
+    }
+  }, [item.content, allItems]);
+
+  // Handle click on content link
+  const handleLinkClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    // Check if the clicked element is a content link
+    const target = e.target as HTMLElement;
+    if (target.classList.contains('content-link')) {
+      e.preventDefault();
+      const itemId = target.getAttribute('data-item-id');
+      if (itemId) {
+        // Find the linked item
+        const linkedItem = allItems.find(item => item.id === itemId);
+        if (linkedItem) {
+          // Show a toast with the linked item title
+          toast.info(`Linked to: ${linkedItem.title}`);
+          
+          // Scroll the linked item into view if it's in the DOM
+          const linkedElement = document.getElementById(`content-item-${itemId}`);
+          if (linkedElement) {
+            linkedElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            linkedElement.classList.add('highlight-pulse');
+            setTimeout(() => {
+              linkedElement.classList.remove('highlight-pulse');
+            }, 2000);
+          }
+        }
+      }
+    }
+  };
   
   // Handle task checkbox change
   const handleTaskChange = (checked: boolean) => {
@@ -167,33 +207,13 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
     toast.success('Copied to clipboard');
   };
   
-  // Render all tags from any attribute type
-  const renderAllTags = () => {
-    const allTags: string[] = [];
-    
-    if (item.hasTaskAttributes && item.taskTags && item.taskTags.length > 0) {
-      allTags.push(...item.taskTags);
-    }
-    
-    if (item.hasEventAttributes && item.eventTags && item.eventTags.length > 0) {
-      allTags.push(...item.eventTags);
-    }
-    
-    if (item.hasMailAttributes && item.mailTags && item.mailTags.length > 0) {
-      allTags.push(...item.mailTags);
-    }
-    
-    if (item.hasNoteAttributes && item.noteTags && item.noteTags.length > 0) {
-      allTags.push(...item.noteTags);
-    }
-    
-    const uniqueTags = Array.from(new Set(allTags));
-    
-    if (uniqueTags.length === 0) return null;
+  // Render content tags
+  const renderContentTags = () => {
+    if (!item.tags || item.tags.length === 0) return null;
     
     return (
       <div className="flex flex-wrap gap-1 mt-2">
-        {uniqueTags.map((tag, idx) => (
+        {item.tags.map((tag, idx) => (
           <span key={idx} className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded-full flex items-center gap-1">
             <Tag className="size-3" />
             {tag}
@@ -296,6 +316,7 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
   // Render the component
   return (
     <Card 
+      id={`content-item-${item.id}`}
       className={cn(
         "content-item group",
         getTypeClass(),
@@ -305,12 +326,7 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
       onMouseLeave={() => setIsHovered(false)}
     >
       <div className="content-item-header">
-        <div className="flex items-center gap-2">
-          {getIcon()}
-          <div className="flex flex-wrap gap-1">
-            {getTypeTags()}
-          </div>
-        </div>
+        <h3 className="text-lg font-medium">{item.title}</h3>
         
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -353,15 +369,22 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
       </div>
       
       <div className="content-item-body">
-        <h3 className="text-lg font-medium mb-1">{item.title}</h3>
+        <div className="flex items-center gap-2 mb-2">
+          {getIcon()}
+          <div className="flex flex-wrap gap-1">
+            {getTypeTags()}
+          </div>
+        </div>
         
         {renderAttributeSections()}
         
-        <p className="text-sm text-muted-foreground whitespace-pre-line mt-2">
-          {item.content}
-        </p>
+        <div 
+          className="text-sm text-muted-foreground whitespace-pre-line mt-2 content-text"
+          onClick={handleLinkClick}
+          dangerouslySetInnerHTML={{ __html: processedContent }}
+        />
         
-        {renderAllTags()}
+        {renderContentTags()}
       </div>
       
       <div className="content-item-footer">

@@ -202,6 +202,7 @@ const Index = () => {
                   item={item} 
                   onUpdate={handleUpdateItem}
                   onDelete={handleDeleteItem}
+                  allItems={items} // Pass all items for link processing
                 />
               ))}
             </div>
@@ -241,7 +242,7 @@ const Index = () => {
               Welcome to Transform!
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              Content can now have multiple attributes. Try toggling attributes using the menu on each card.
+              Content can now have multiple attributes and you can link between items using [[title]] syntax!
             </p>
             <div className="mt-3 flex justify-end">
               <Button 
@@ -255,6 +256,24 @@ const Index = () => {
           </div>
         </div>
       )}
+      
+      {/* Add CSS for link highlights */}
+      <style jsx global>{`
+        .content-link {
+          color: #3b82f6;
+          text-decoration: underline;
+          cursor: pointer;
+        }
+        
+        .highlight-pulse {
+          animation: pulse 1.5s ease-in-out;
+        }
+        
+        @keyframes pulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+          50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2); }
+        }
+      `}</style>
     </div>
   );
 };

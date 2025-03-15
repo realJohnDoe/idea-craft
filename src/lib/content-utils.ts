@@ -17,25 +17,22 @@ export interface Content {
   hasMailAttributes: boolean;
   hasNoteAttributes: boolean;
   
+  // Centralized tags
+  tags: string[];
+  
   // Task attributes
   taskDone?: boolean;
-  taskTags?: string[];
   
   // Event attributes
   eventDate?: Date;
   eventEndDate?: Date;
   eventLocation?: string;
-  eventTags?: string[];
   
   // Mail attributes
   mailFrom?: string;
   mailTo?: string[];
   mailSubject?: string;
   mailAttachments?: string[];
-  mailTags?: string[];
-  
-  // Note attributes
-  noteTags?: string[];
   
   // YAML representation
   yaml: string;
@@ -88,10 +85,6 @@ export function generateYaml(content: Content): string {
     yamlObj.task = {
       done: content.taskDone
     };
-    
-    if (content.taskTags && content.taskTags.length > 0) {
-      yamlObj.task.tags = content.taskTags;
-    }
   }
   
   // Add event attributes if present
@@ -108,10 +101,6 @@ export function generateYaml(content: Content): string {
     
     if (content.eventLocation) {
       yamlObj.event.location = content.eventLocation;
-    }
-    
-    if (content.eventTags && content.eventTags.length > 0) {
-      yamlObj.event.tags = content.eventTags;
     }
     
     // If event object is empty, remove it
@@ -140,21 +129,15 @@ export function generateYaml(content: Content): string {
       yamlObj.mail.attachments = content.mailAttachments;
     }
     
-    if (content.mailTags && content.mailTags.length > 0) {
-      yamlObj.mail.tags = content.mailTags;
-    }
-    
     // If mail object is empty, remove it
     if (Object.keys(yamlObj.mail).length === 0) {
       delete yamlObj.mail;
     }
   }
   
-  // Add note attributes if present
-  if (content.hasNoteAttributes && content.noteTags && content.noteTags.length > 0) {
-    yamlObj.note = {
-      tags: content.noteTags
-    };
+  // Add tags if present
+  if (content.tags && content.tags.length > 0) {
+    yamlObj.tags = content.tags;
   }
   
   // If the YAML object is empty, return empty string
@@ -175,15 +158,13 @@ export function parseYamlToContent(yamlData: any, content: Content): Content {
   updatedContent.hasMailAttributes = false;
   updatedContent.hasNoteAttributes = false;
   
+  // Initialize tags
+  updatedContent.tags = [];
+  
   // Process task attributes
   if (yamlData.task) {
     updatedContent.hasTaskAttributes = true;
     updatedContent.taskDone = yamlData.task.done === true;
-    
-    if (yamlData.task.tags) {
-      updatedContent.taskTags = Array.isArray(yamlData.task.tags) ? 
-        yamlData.task.tags : [yamlData.task.tags];
-    }
   }
   
   // Process event attributes
@@ -200,11 +181,6 @@ export function parseYamlToContent(yamlData: any, content: Content): Content {
     
     if (yamlData.event.location) {
       updatedContent.eventLocation = yamlData.event.location;
-    }
-    
-    if (yamlData.event.tags) {
-      updatedContent.eventTags = Array.isArray(yamlData.event.tags) ?
-        yamlData.event.tags : [yamlData.event.tags];
     }
   }
   
@@ -228,21 +204,12 @@ export function parseYamlToContent(yamlData: any, content: Content): Content {
     if (yamlData.mail.attachments) {
       updatedContent.mailAttachments = yamlData.mail.attachments;
     }
-    
-    if (yamlData.mail.tags) {
-      updatedContent.mailTags = Array.isArray(yamlData.mail.tags) ?
-        yamlData.mail.tags : [yamlData.mail.tags];
-    }
   }
   
-  // Process note attributes
-  if (yamlData.note) {
-    updatedContent.hasNoteAttributes = true;
-    
-    if (yamlData.note.tags) {
-      updatedContent.noteTags = Array.isArray(yamlData.note.tags) ? 
-        yamlData.note.tags : [yamlData.note.tags];
-    }
+  // Process tags
+  if (yamlData.tags) {
+    updatedContent.tags = Array.isArray(yamlData.tags) ? 
+      yamlData.tags : [yamlData.tags];
   }
   
   // If no specific attributes, default to note
@@ -267,14 +234,12 @@ export function toggleContentAttribute(content: Content, attributeType: ContentA
       updatedContent.hasTaskAttributes = !updatedContent.hasTaskAttributes;
       if (updatedContent.hasTaskAttributes && updatedContent.taskDone === undefined) {
         updatedContent.taskDone = false;
-        if (!updatedContent.taskTags) updatedContent.taskTags = [];
       }
       break;
     case 'event':
       updatedContent.hasEventAttributes = !updatedContent.hasEventAttributes;
-      if (updatedContent.hasEventAttributes) {
-        if (!updatedContent.eventDate) updatedContent.eventDate = new Date();
-        if (!updatedContent.eventTags) updatedContent.eventTags = [];
+      if (updatedContent.hasEventAttributes && !updatedContent.eventDate) {
+        updatedContent.eventDate = new Date();
       }
       break;
     case 'mail':
@@ -282,14 +247,10 @@ export function toggleContentAttribute(content: Content, attributeType: ContentA
       if (updatedContent.hasMailAttributes) {
         if (!updatedContent.mailFrom) updatedContent.mailFrom = '';
         if (!updatedContent.mailTo) updatedContent.mailTo = [];
-        if (!updatedContent.mailTags) updatedContent.mailTags = [];
       }
       break;
     case 'note':
       updatedContent.hasNoteAttributes = !updatedContent.hasNoteAttributes;
-      if (updatedContent.hasNoteAttributes && !updatedContent.noteTags) {
-        updatedContent.noteTags = [];
-      }
       break;
   }
   
@@ -298,7 +259,6 @@ export function toggleContentAttribute(content: Content, attributeType: ContentA
       !updatedContent.hasEventAttributes && 
       !updatedContent.hasMailAttributes) {
     updatedContent.hasNoteAttributes = true;
-    if (!updatedContent.noteTags) updatedContent.noteTags = [];
   }
   
   // Regenerate YAML
@@ -316,6 +276,26 @@ export function formatContentWithYaml(content: Content): string {
   }
   
   return content.content;
+}
+
+// Function to process content text and transform links
+export function processContentLinks(content: string, allItems: Content[]): string {
+  // Match [[title]] pattern
+  const linkRegex = /\[\[(.*?)\]\]/g;
+  
+  return content.replace(linkRegex, (match, linkTitle) => {
+    // Look for an item with this title
+    const linkedItem = allItems.find(item => 
+      item.title.toLowerCase() === linkTitle.toLowerCase());
+    
+    if (linkedItem) {
+      // Return a span with a special class for styling
+      return `<span class="content-link" data-item-id="${linkedItem.id}">${linkTitle}</span>`;
+    }
+    
+    // If no match, return the original link format
+    return match;
+  });
 }
 
 // Get primary type for display purposes
@@ -340,9 +320,9 @@ export function getMockData(): Content[] {
       hasMailAttributes: false,
       hasNoteAttributes: false,
       taskDone: false,
-      taskTags: ['proposal'],
+      tags: ['proposal', 'client'],
       eventDate: new Date('2023-06-05'),
-      yaml: 'task:\n  done: false\nevent:\n  date: 2023-06-05'
+      yaml: 'task:\n  done: false\nevent:\n  date: 2023-06-05\ntags:\n  - proposal\n  - client'
     },
     {
       id: '2',
@@ -354,9 +334,10 @@ export function getMockData(): Content[] {
       hasEventAttributes: true,
       hasMailAttributes: false,
       hasNoteAttributes: false,
+      tags: ['meeting', 'weekly'],
       eventDate: new Date('2023-06-05'),
       eventLocation: 'Conference Room A',
-      yaml: 'event:\n  date: 2023-06-05\n  location: Conference Room A'
+      yaml: 'event:\n  date: 2023-06-05\n  location: Conference Room A\ntags:\n  - meeting\n  - weekly'
     },
     {
       id: '3',
@@ -368,13 +349,13 @@ export function getMockData(): Content[] {
       hasEventAttributes: false,
       hasMailAttributes: false,
       hasNoteAttributes: true,
-      noteTags: ['feature', 'dashboard'],
-      yaml: 'note:\n  tags:\n    - feature\n    - dashboard'
+      tags: ['feature', 'dashboard'],
+      yaml: 'tags:\n  - feature\n  - dashboard'
     },
     {
       id: '4',
       title: 'Meeting follow-up',
-      content: 'Thank you for joining our meeting yesterday. As discussed, I\'m sharing the resources we talked about.',
+      content: 'Thank you for joining our meeting yesterday. As discussed, I\'m sharing the resources we talked about. Check the [[Ideas for new feature]] for details.',
       createdAt: new Date('2023-06-04'),
       updatedAt: new Date('2023-06-04'),
       hasTaskAttributes: true,
@@ -382,9 +363,10 @@ export function getMockData(): Content[] {
       hasMailAttributes: true,
       hasNoteAttributes: false,
       taskDone: true,
+      tags: ['follow-up', 'resources'],
       mailFrom: 'john.doe@example.com',
       mailTo: ['jane.smith@example.com'],
-      yaml: 'task:\n  done: true\nmail:\n  from: john.doe@example.com\n  to:\n    - jane.smith@example.com'
+      yaml: 'task:\n  done: true\nmail:\n  from: john.doe@example.com\n  to:\n    - jane.smith@example.com\ntags:\n  - follow-up\n  - resources'
     }
   ];
 }

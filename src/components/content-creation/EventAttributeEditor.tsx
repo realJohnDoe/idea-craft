@@ -12,8 +12,6 @@ interface EventAttributeEditorProps {
   setEventDate: (date: Date | undefined) => void;
   eventLocation: string;
   setEventLocation: (location: string) => void;
-  eventTags: string[];
-  setEventTags: (tags: string[]) => void;
 }
 
 const EventAttributeEditor: React.FC<EventAttributeEditorProps> = ({
@@ -21,20 +19,7 @@ const EventAttributeEditor: React.FC<EventAttributeEditorProps> = ({
   setEventDate,
   eventLocation,
   setEventLocation,
-  eventTags,
-  setEventTags
 }) => {
-  // Convert array to comma-separated string for display in input
-  const tagsString = eventTags.join(', ');
-  
-  // Handle tags input change
-  const handleTagsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const tagsInput = e.target.value;
-    // Convert comma-separated string to array
-    const tagsArray = tagsInput.split(',').map(tag => tag.trim()).filter(tag => tag);
-    setEventTags(tagsArray);
-  };
-
   return (
     <div className="p-3 border border-event/30 rounded-md bg-event-light/10 space-y-3">
       <div className="space-y-2">
@@ -68,16 +53,6 @@ const EventAttributeEditor: React.FC<EventAttributeEditorProps> = ({
           placeholder="Enter a location"
           value={eventLocation}
           onChange={(e) => setEventLocation(e.target.value)}
-        />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="event-tags" className="text-sm">Tags (comma separated)</Label>
-        <Input
-          id="event-tags"
-          placeholder="meeting, important, recurring"
-          value={tagsString}
-          onChange={handleTagsChange}
         />
       </div>
     </div>
