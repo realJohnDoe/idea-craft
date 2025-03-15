@@ -2,7 +2,7 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, Calendar, FileText, Mail, X } from 'lucide-react';
+import { CheckCircle, Calendar, Mail, X } from 'lucide-react';
 import { ContentAttributeType } from '@/lib/content-utils';
 
 interface AttributeTypeSelectorProps {
@@ -17,7 +17,6 @@ const AttributeTypeSelector: React.FC<AttributeTypeSelectorProps> = ({
   hasTaskAttributes,
   hasEventAttributes,
   hasMailAttributes,
-  hasNoteAttributes,
   toggleAttribute
 }) => {
   return (
@@ -79,24 +78,7 @@ const AttributeTypeSelector: React.FC<AttributeTypeSelectorProps> = ({
         )}
       </Button>
       
-      <Button
-        variant={hasNoteAttributes ? "default" : "outline"}
-        size="sm"
-        onClick={() => toggleAttribute('note')}
-        className={cn(
-          "gap-1.5",
-          hasNoteAttributes && "bg-note hover:bg-note/90"
-        )}
-      >
-        <FileText className="size-4" />
-        <span>Note</span>
-        {hasNoteAttributes && (
-          <X className="size-3 ml-1 opacity-70" onClick={(e) => {
-            e.stopPropagation();
-            toggleAttribute('note');
-          }} />
-        )}
-      </Button>
+      {/* Note type has been removed since everything is automatically a note if it has no other attributes */}
     </div>
   );
 };

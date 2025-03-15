@@ -23,15 +23,21 @@ const YamlPreview: React.FC<YamlPreviewProps> = ({ content }) => {
       
       // Task attributes
       taskDone: content.hasTaskAttributes ? content.taskDone : undefined,
+      taskTags: content.hasTaskAttributes && content.taskTags ? 
+        (Array.isArray(content.taskTags) ? content.taskTags : []) : undefined,
       
       // Event attributes
       eventDate: content.hasEventAttributes ? content.eventDate : undefined,
       eventLocation: content.hasEventAttributes ? content.eventLocation || undefined : undefined,
+      eventTags: content.hasEventAttributes && content.eventTags ? 
+        (Array.isArray(content.eventTags) ? content.eventTags : []) : undefined,
       
       // Mail attributes
       mailFrom: content.hasMailAttributes ? content.mailFrom : undefined,
       mailTo: content.hasMailAttributes && content.mailTo ? 
-        (Array.isArray(content.mailTo) ? content.mailTo : [content.mailTo as string]) : undefined,
+        (Array.isArray(content.mailTo) ? content.mailTo : []) : undefined,
+      mailTags: content.hasMailAttributes && content.mailTags ? 
+        (Array.isArray(content.mailTags) ? content.mailTags : []) : undefined,
       
       // Note attributes
       noteTags: content.hasNoteAttributes && content.noteTags ? 

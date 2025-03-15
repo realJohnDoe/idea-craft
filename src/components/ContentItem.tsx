@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -20,7 +19,8 @@ import {
   Copy, 
   Trash, 
   Plus,
-  X
+  X,
+  Tag
 } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -149,8 +149,8 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
         </span>
       );
     }
-    
-    if (item.hasNoteAttributes) {
+  
+    if (item.hasNoteAttributes && !item.hasTaskAttributes && !item.hasEventAttributes && !item.hasMailAttributes) {
       tags.push(
         <span key="note" className={cn("content-item-tag", getTagClass('note'))}>
           Note
@@ -165,6 +165,42 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
   const handleCopy = () => {
     navigator.clipboard.writeText(formatContentWithYaml(item));
     toast.success('Copied to clipboard');
+  };
+  
+  // Render all tags from any attribute type
+  const renderAllTags = () => {
+    const allTags: string[] = [];
+    
+    if (item.hasTaskAttributes && item.taskTags && item.taskTags.length > 0) {
+      allTags.push(...item.taskTags);
+    }
+    
+    if (item.hasEventAttributes && item.eventTags && item.eventTags.length > 0) {
+      allTags.push(...item.eventTags);
+    }
+    
+    if (item.hasMailAttributes && item.mailTags && item.mailTags.length > 0) {
+      allTags.push(...item.mailTags);
+    }
+    
+    if (item.hasNoteAttributes && item.noteTags && item.noteTags.length > 0) {
+      allTags.push(...item.noteTags);
+    }
+    
+    const uniqueTags = Array.from(new Set(allTags));
+    
+    if (uniqueTags.length === 0) return null;
+    
+    return (
+      <div className="flex flex-wrap gap-1 mt-2">
+        {uniqueTags.map((tag, idx) => (
+          <span key={idx} className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded-full flex items-center gap-1">
+            <Tag className="size-3" />
+            {tag}
+          </span>
+        ))}
+      </div>
+    );
   };
   
   // Render the specific attribute sections
@@ -187,7 +223,7 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
                 item.taskDone && "line-through text-muted-foreground"
               )}
             >
-              {item.title}
+              Complete this task
             </label>
           </div>
         )}
@@ -253,17 +289,6 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
             </div>
           </div>
         )}
-        
-        {/* Note attributes */}
-        {item.hasNoteAttributes && item.noteTags && item.noteTags.length > 0 && (
-          <div className="flex flex-wrap gap-1">
-            {item.noteTags.map((tag, idx) => (
-              <span key={idx} className="px-2 py-0.5 bg-note-light text-note text-xs rounded-full">
-                {tag}
-              </span>
-            ))}
-          </div>
-        )}
       </div>
     );
   };
@@ -318,10 +343,6 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
               <Mail className="mr-2 size-4 text-mail" />
               <span>{item.hasMailAttributes ? 'Remove' : 'Add'} Email</span>
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleToggleAttribute('note')}>
-              <FileText className="mr-2 size-4 text-note" />
-              <span>{item.hasNoteAttributes ? 'Remove' : 'Add'} Note</span>
-            </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={() => onDelete(item.id)} className="text-destructive">
               <Trash className="mr-2 size-4" />
@@ -332,18 +353,15 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
       </div>
       
       <div className="content-item-body">
-        {/* Only show title if not showing task checkbox (to avoid duplication) */}
-        {!item.hasTaskAttributes && (
-          <h3 className="text-lg font-medium mb-1">{item.title}</h3>
-        )}
+        <h3 className="text-lg font-medium mb-1">{item.title}</h3>
         
-        {/* Render all attribute-specific UI */}
         {renderAttributeSections()}
         
-        {/* Content text */}
         <p className="text-sm text-muted-foreground whitespace-pre-line mt-2">
           {item.content}
         </p>
+        
+        {renderAllTags()}
       </div>
       
       <div className="content-item-footer">
@@ -367,7 +385,7 @@ const ContentItem: React.FC<ContentItemProps> = ({ item, onUpdate, onDelete }) =
           <button 
             className="p-1 rounded hover:bg-muted transition-colors"
             onClick={() => {
-              const attributesToAdd = ['task', 'event', 'mail', 'note'].filter(
+              const attributesToAdd = ['task', 'event', 'mail'].filter(
                 type => !item[`has${type.charAt(0).toUpperCase() + type.slice(1)}Attributes`]
               );
               if (attributesToAdd.length > 0) {

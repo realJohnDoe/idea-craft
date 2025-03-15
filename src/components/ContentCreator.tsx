@@ -8,7 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { toast } from 'sonner';
 
-// Import the new components
+// Import the components
 import AttributeTypeSelector from './content-creation/AttributeTypeSelector';
 import TaskAttributeEditor from './content-creation/TaskAttributeEditor';
 import EventAttributeEditor from './content-creation/EventAttributeEditor';
@@ -25,22 +25,25 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   
-  // Attribute toggles
+  // Attribute toggles - note is now automatic based on other attributes
   const [hasTaskAttributes, setHasTaskAttributes] = useState(false);
   const [hasEventAttributes, setHasEventAttributes] = useState(false);
   const [hasMailAttributes, setHasMailAttributes] = useState(false);
-  const [hasNoteAttributes, setHasNoteAttributes] = useState(true);
+  const [hasNoteAttributes, setHasNoteAttributes] = useState(true); // Always true if no others are active
   
   // Task specific state
   const [taskDone, setTaskDone] = useState(false);
+  const [taskTags, setTaskTags] = useState<string[]>([]);
   
   // Event specific state
   const [eventDate, setEventDate] = useState<Date | undefined>(new Date());
   const [eventLocation, setEventLocation] = useState('');
+  const [eventTags, setEventTags] = useState<string[]>([]);
   
   // Mail specific state
   const [mailFrom, setMailFrom] = useState('');
-  const [mailTo, setMailTo] = useState<string[]>([]); // Changed to string[] to match expected type
+  const [mailTo, setMailTo] = useState<string[]>([]); 
+  const [mailTags, setMailTags] = useState<string[]>([]);
   
   // Note specific state
   const [noteTags, setNoteTags] = useState<string[]>([]);
@@ -58,7 +61,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
         setHasMailAttributes(!hasMailAttributes);
         break;
       case 'note':
-        setHasNoteAttributes(!hasNoteAttributes);
+        // Note is now automatic - it's active if no other attributes are active
         break;
     }
   };
@@ -69,8 +72,12 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
     if (hasTaskAttributes) count++;
     if (hasEventAttributes) count++;
     if (hasMailAttributes) count++;
-    if (hasNoteAttributes) count++;
     return count;
+  };
+  
+  // Calculate if notes should be the default
+  const calculateHasNoteAttributes = () => {
+    return getActiveAttributesCount() === 0;
   };
   
   const handleCreate = () => {
@@ -94,6 +101,9 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
     const id = Math.random().toString(36).substring(2, 9);
     const now = new Date();
     
+    // Calculate if we should be a note - always true if no other attributes
+    const isNote = calculateHasNoteAttributes();
+    
     const newContent: Content = {
       id,
       title,
@@ -105,21 +115,24 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
       hasTaskAttributes,
       hasEventAttributes,
       hasMailAttributes,
-      hasNoteAttributes: hasNoteAttributes || getActiveAttributesCount() === 0, // Default to note if nothing else
+      hasNoteAttributes: isNote, // Automatic based on other attributes
       
       // Task attributes
       taskDone: hasTaskAttributes ? taskDone : undefined,
+      taskTags: hasTaskAttributes ? taskTags : undefined,
       
       // Event attributes
       eventDate: hasEventAttributes ? eventDate : undefined,
       eventLocation: hasEventAttributes ? eventLocation || undefined : undefined,
+      eventTags: hasEventAttributes ? eventTags : undefined,
       
       // Mail attributes
       mailFrom: hasMailAttributes ? mailFrom : undefined,
-      mailTo: hasMailAttributes ? mailTo : undefined, // Now passing the string[] directly
+      mailTo: hasMailAttributes ? mailTo : undefined,
+      mailTags: hasMailAttributes ? mailTags : undefined,
       
       // Note attributes
-      noteTags: hasNoteAttributes ? noteTags : undefined,
+      noteTags: isNote ? noteTags : undefined,
       
       // Generate YAML
       yaml: ''
@@ -137,14 +150,19 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
     setHasTaskAttributes(false);
     setHasEventAttributes(false);
     setHasMailAttributes(false);
-    setHasNoteAttributes(true);
     setTaskDone(false);
+    setTaskTags([]);
     setEventDate(new Date());
     setEventLocation('');
+    setEventTags([]);
     setMailFrom('');
     setMailTo([]);
+    setMailTags([]);
     setNoteTags([]);
   };
+  
+  // Calculate if we should be showing note attributes
+  const showNoteAttributes = calculateHasNoteAttributes();
   
   return (
     <div className="border rounded-xl p-6 shadow-sm bg-card animate-fade-in space-y-4">
@@ -172,7 +190,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
           hasTaskAttributes={hasTaskAttributes}
           hasEventAttributes={hasEventAttributes}
           hasMailAttributes={hasMailAttributes}
-          hasNoteAttributes={hasNoteAttributes}
+          hasNoteAttributes={showNoteAttributes}
           toggleAttribute={toggleAttribute}
         />
         
@@ -181,6 +199,8 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
           <TaskAttributeEditor 
             taskDone={taskDone}
             setTaskDone={setTaskDone}
+            taskTags={taskTags}
+            setTaskTags={setTaskTags}
           />
         )}
         
@@ -191,6 +211,8 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
             setEventDate={setEventDate}
             eventLocation={eventLocation}
             setEventLocation={setEventLocation}
+            eventTags={eventTags}
+            setEventTags={setEventTags}
           />
         )}
         
@@ -201,11 +223,13 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
             setMailFrom={setMailFrom}
             mailTo={mailTo}
             setMailTo={setMailTo}
+            mailTags={mailTags}
+            setMailTags={setMailTags}
           />
         )}
         
-        {/* Note specific fields */}
-        {hasNoteAttributes && (
+        {/* Note specific fields - shown only if it's a pure note */}
+        {showNoteAttributes && (
           <NoteAttributeEditor
             noteTags={noteTags}
             setNoteTags={setNoteTags}
@@ -231,12 +255,15 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
             hasTaskAttributes,
             hasEventAttributes,
             hasMailAttributes,
-            hasNoteAttributes,
+            hasNoteAttributes: showNoteAttributes,
             taskDone,
+            taskTags,
             eventDate,
             eventLocation,
+            eventTags,
             mailFrom,
             mailTo,
+            mailTags,
             noteTags
           }}
         />

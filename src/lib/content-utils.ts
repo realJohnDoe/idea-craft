@@ -1,4 +1,3 @@
-
 import yaml from 'yaml';
 
 // Content types become attributes that can be combined
@@ -20,17 +19,20 @@ export interface Content {
   
   // Task attributes
   taskDone?: boolean;
+  taskTags?: string[];
   
   // Event attributes
   eventDate?: Date;
   eventEndDate?: Date;
   eventLocation?: string;
+  eventTags?: string[];
   
   // Mail attributes
   mailFrom?: string;
   mailTo?: string[];
   mailSubject?: string;
   mailAttachments?: string[];
+  mailTags?: string[];
   
   // Note attributes
   noteTags?: string[];
@@ -82,10 +84,14 @@ export function generateYaml(content: Content): string {
   let yamlObj: any = {};
   
   // Add task attributes if present
-  if (content.hasTaskAttributes && content.taskDone !== undefined) {
+  if (content.hasTaskAttributes) {
     yamlObj.task = {
       done: content.taskDone
     };
+    
+    if (content.taskTags && content.taskTags.length > 0) {
+      yamlObj.task.tags = content.taskTags;
+    }
   }
   
   // Add event attributes if present
@@ -102,6 +108,10 @@ export function generateYaml(content: Content): string {
     
     if (content.eventLocation) {
       yamlObj.event.location = content.eventLocation;
+    }
+    
+    if (content.eventTags && content.eventTags.length > 0) {
+      yamlObj.event.tags = content.eventTags;
     }
     
     // If event object is empty, remove it
@@ -128,6 +138,10 @@ export function generateYaml(content: Content): string {
     
     if (content.mailAttachments && content.mailAttachments.length > 0) {
       yamlObj.mail.attachments = content.mailAttachments;
+    }
+    
+    if (content.mailTags && content.mailTags.length > 0) {
+      yamlObj.mail.tags = content.mailTags;
     }
     
     // If mail object is empty, remove it
@@ -165,6 +179,11 @@ export function parseYamlToContent(yamlData: any, content: Content): Content {
   if (yamlData.task) {
     updatedContent.hasTaskAttributes = true;
     updatedContent.taskDone = yamlData.task.done === true;
+    
+    if (yamlData.task.tags) {
+      updatedContent.taskTags = Array.isArray(yamlData.task.tags) ? 
+        yamlData.task.tags : [yamlData.task.tags];
+    }
   }
   
   // Process event attributes
@@ -181,6 +200,11 @@ export function parseYamlToContent(yamlData: any, content: Content): Content {
     
     if (yamlData.event.location) {
       updatedContent.eventLocation = yamlData.event.location;
+    }
+    
+    if (yamlData.event.tags) {
+      updatedContent.eventTags = Array.isArray(yamlData.event.tags) ?
+        yamlData.event.tags : [yamlData.event.tags];
     }
   }
   
@@ -203,6 +227,11 @@ export function parseYamlToContent(yamlData: any, content: Content): Content {
     
     if (yamlData.mail.attachments) {
       updatedContent.mailAttachments = yamlData.mail.attachments;
+    }
+    
+    if (yamlData.mail.tags) {
+      updatedContent.mailTags = Array.isArray(yamlData.mail.tags) ?
+        yamlData.mail.tags : [yamlData.mail.tags];
     }
   }
   
@@ -238,24 +267,38 @@ export function toggleContentAttribute(content: Content, attributeType: ContentA
       updatedContent.hasTaskAttributes = !updatedContent.hasTaskAttributes;
       if (updatedContent.hasTaskAttributes && updatedContent.taskDone === undefined) {
         updatedContent.taskDone = false;
+        if (!updatedContent.taskTags) updatedContent.taskTags = [];
       }
       break;
     case 'event':
       updatedContent.hasEventAttributes = !updatedContent.hasEventAttributes;
-      if (updatedContent.hasEventAttributes && !updatedContent.eventDate) {
-        updatedContent.eventDate = new Date();
+      if (updatedContent.hasEventAttributes) {
+        if (!updatedContent.eventDate) updatedContent.eventDate = new Date();
+        if (!updatedContent.eventTags) updatedContent.eventTags = [];
       }
       break;
     case 'mail':
       updatedContent.hasMailAttributes = !updatedContent.hasMailAttributes;
       if (updatedContent.hasMailAttributes) {
         if (!updatedContent.mailFrom) updatedContent.mailFrom = '';
-        if (!updatedContent.mailTo) updatedContent.mailTo = [''];
+        if (!updatedContent.mailTo) updatedContent.mailTo = [];
+        if (!updatedContent.mailTags) updatedContent.mailTags = [];
       }
       break;
     case 'note':
       updatedContent.hasNoteAttributes = !updatedContent.hasNoteAttributes;
+      if (updatedContent.hasNoteAttributes && !updatedContent.noteTags) {
+        updatedContent.noteTags = [];
+      }
       break;
+  }
+  
+  // Make sure note attributes are always present if no other attributes are
+  if (!updatedContent.hasTaskAttributes && 
+      !updatedContent.hasEventAttributes && 
+      !updatedContent.hasMailAttributes) {
+    updatedContent.hasNoteAttributes = true;
+    if (!updatedContent.noteTags) updatedContent.noteTags = [];
   }
   
   // Regenerate YAML
@@ -297,6 +340,7 @@ export function getMockData(): Content[] {
       hasMailAttributes: false,
       hasNoteAttributes: false,
       taskDone: false,
+      taskTags: ['proposal'],
       eventDate: new Date('2023-06-05'),
       yaml: 'task:\n  done: false\nevent:\n  date: 2023-06-05'
     },
