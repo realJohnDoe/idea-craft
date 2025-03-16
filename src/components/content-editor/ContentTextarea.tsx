@@ -1,5 +1,5 @@
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
 import { 
@@ -23,9 +23,10 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
+  const [selectedIndex, setSelectedIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-  const [triggerPosition, setTriggerPosition] = useState({ top: 0, left: 0 });
+  const [suggestionPosition, setSuggestionPosition] = useState<{ top: number, left: number, lineHeight: number }>({ top: 0, left: 0, lineHeight: 0 });
 
   // Get all content items for suggestions
   const { data: allItems = [], isLoading } = useQuery({
@@ -38,6 +39,47 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
     }
   });
 
+  // Calculate suggestion position
+  const calculateSuggestionPosition = () => {
+    if (!textareaRef.current || !cursorPosition) return;
+    
+    const textarea = textareaRef.current;
+    const textBeforeCursor = value.substring(0, cursorPosition);
+    const lines = textBeforeCursor.split('\n');
+    const currentLine = lines.length;
+    
+    // Get line height from textarea
+    const computedStyle = window.getComputedStyle(textarea);
+    let lineHeight = parseInt(computedStyle.lineHeight);
+    if (isNaN(lineHeight)) {
+      lineHeight = parseInt(computedStyle.fontSize) * 1.5;
+    }
+    
+    const rect = textarea.getBoundingClientRect();
+    const scrollTop = textarea.scrollTop;
+    
+    // Calculate position based on current line
+    const topPosition = rect.top + (currentLine * lineHeight) - scrollTop;
+    
+    // Decide if we should show above or below based on available space
+    const viewportHeight = window.innerHeight;
+    const spaceBelow = viewportHeight - topPosition;
+    const popoverHeight = 200; // Approximate popover height
+    
+    // If not enough space below, show above
+    const showAbove = spaceBelow < popoverHeight;
+    
+    const finalTopPosition = showAbove 
+      ? topPosition - lineHeight - 10 // Show above current line
+      : topPosition + 5; // Show below current line
+      
+    setSuggestionPosition({
+      top: finalTopPosition,
+      left: rect.left + 20,
+      lineHeight
+    });
+  };
+
   // Check if we should show suggestions
   useEffect(() => {
     if (!cursorPosition || !value) return;
@@ -49,37 +91,8 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
       const searchText = match[1];
       setSearchTerm(searchText);
       setShowSuggestions(true);
-      
-      // Calculate position for the suggestion popover
-      if (textareaRef.current) {
-        const textarea = textareaRef.current;
-        const textBeforeCursor = value.substring(0, cursorPosition);
-        const dummyDiv = document.createElement('div');
-        dummyDiv.style.position = 'absolute';
-        dummyDiv.style.width = `${textarea.clientWidth}px`;
-        dummyDiv.style.fontSize = getComputedStyle(textarea).fontSize;
-        dummyDiv.style.fontFamily = getComputedStyle(textarea).fontFamily;
-        dummyDiv.style.lineHeight = getComputedStyle(textarea).lineHeight;
-        dummyDiv.style.whiteSpace = 'pre-wrap';
-        dummyDiv.style.wordBreak = 'break-word';
-        dummyDiv.style.visibility = 'hidden';
-        dummyDiv.textContent = textBeforeCursor;
-        
-        document.body.appendChild(dummyDiv);
-        const rect = textarea.getBoundingClientRect();
-        const textRect = dummyDiv.getBoundingClientRect();
-        document.body.removeChild(dummyDiv);
-        
-        // Get the line height and compute the approximate position
-        let lineHeight = parseInt(getComputedStyle(textarea).lineHeight);
-        if (isNaN(lineHeight)) lineHeight = parseInt(getComputedStyle(textarea).fontSize) * 1.2;
-        
-        const lines = textBeforeCursor.split('\n').length;
-        const top = rect.top + lines * lineHeight;
-        const left = rect.left + 20; // Adjust as needed
-
-        setTriggerPosition({ top, left });
-      }
+      setSelectedIndex(0);
+      calculateSuggestionPosition();
     } else {
       setShowSuggestions(false);
     }
@@ -87,8 +100,45 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
 
   // Handle cursor position change
   const handleKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown') {
+    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown' && e.key !== 'Tab' && e.key !== 'Enter') {
       setCursorPosition(e.currentTarget.selectionStart);
+    }
+  };
+
+  // Handle keyboard navigation
+  const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (!showSuggestions) return;
+    
+    // Filter suggestions for keyboard navigation
+    const filteredSuggestions = allItems
+      .filter(item => 
+        !searchTerm || 
+        item.title.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+      .slice(0, 5);
+    
+    switch (e.key) {
+      case 'ArrowDown':
+        e.preventDefault();
+        setSelectedIndex(prev => 
+          prev < filteredSuggestions.length - 1 ? prev + 1 : prev
+        );
+        break;
+      case 'ArrowUp':
+        e.preventDefault();
+        setSelectedIndex(prev => (prev > 0 ? prev - 1 : 0));
+        break;
+      case 'Tab':
+      case 'Enter':
+        if (filteredSuggestions.length > 0) {
+          e.preventDefault();
+          handleSelectSuggestion(filteredSuggestions[selectedIndex]);
+        }
+        break;
+      case 'Escape':
+        e.preventDefault();
+        setShowSuggestions(false);
+        break;
     }
   };
 
@@ -147,40 +197,35 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
         value={value}
         onChange={handleChange}
         onKeyUp={handleKeyUp}
+        onKeyDown={handleKeyDown}
         onClick={() => setCursorPosition(textareaRef.current?.selectionStart || null)}
         rows={5}
         className="resize-none"
       />
 
       {showSuggestions && (
-        <Popover open={showSuggestions} onOpenChange={setShowSuggestions}>
-          <PopoverTrigger asChild>
-            <button 
-              ref={buttonRef} 
-              style={{ 
-                position: 'absolute',
-                opacity: 0,
-                top: 0,
-                left: 0
-              }}
-            />
-          </PopoverTrigger>
-          <PopoverContent 
-            className="w-64 p-0" 
-            align="start"
-            sideOffset={5}
-          >
+        <div 
+          className="absolute z-10 w-64 bg-popover border rounded-md shadow-md animate-in fade-in-0 zoom-in-95"
+          style={{ 
+            top: `${suggestionPosition.top}px`,
+            left: `${suggestionPosition.left}px`,
+          }}
+        >
+          <div className="py-1 max-h-[200px] overflow-y-auto">
             {isLoading ? (
               <div className="flex items-center justify-center p-4">
                 <Loader2 className="size-4 animate-spin mr-2" />
                 <span>Loading suggestions...</span>
               </div>
             ) : filteredSuggestions.length > 0 ? (
-              <div className="py-1">
-                {filteredSuggestions.map(item => (
+              <div>
+                {filteredSuggestions.map((item, index) => (
                   <button
                     key={item.id}
-                    className="w-full text-left px-3 py-2 hover:bg-muted/50 focus:bg-muted/50 outline-none"
+                    className={cn(
+                      "w-full text-left px-3 py-2 hover:bg-muted/50 outline-none",
+                      index === selectedIndex && "bg-muted"
+                    )}
                     onClick={() => handleSelectSuggestion(item)}
                   >
                     <div className="font-medium truncate">{item.title}</div>
@@ -196,8 +241,8 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
                 No matches found for "{searchTerm}"
               </div>
             )}
-          </PopoverContent>
-        </Popover>
+          </div>
+        </div>
       )}
     </div>
   );

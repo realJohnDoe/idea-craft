@@ -1,11 +1,13 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Content, getPrimaryContentType } from '@/lib/content-utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from '@/components/ui/collapsible';
 import { format } from 'date-fns';
-import { CheckCircle, Calendar, FileText, Mail } from 'lucide-react';
+import { CheckCircle, Calendar, FileText, Mail, ChevronDown, ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ContentTypeTags from './ContentTypeTags';
 
@@ -14,14 +16,18 @@ interface ContentBodyProps {
   onUpdate: (updatedItem: Content) => void;
   processedContent: string;
   handleLinkClick: (e: React.MouseEvent<HTMLDivElement>) => void;
+  allItems?: Content[];
 }
 
 const ContentBody: React.FC<ContentBodyProps> = ({ 
   item,
   onUpdate,
   processedContent,
-  handleLinkClick
+  handleLinkClick,
+  allItems = []
 }) => {
+  const [expandedItems, setExpandedItems] = useState<Record<string, boolean>>({});
+
   // Handle task checkbox change
   const handleTaskChange = (checked: boolean) => {
     const { formatContentWithYaml } = require('@/lib/content-utils');
@@ -57,6 +63,95 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     }
   };
 
+  // Toggle embedded item expansion
+  const toggleItemExpansion = (id: string) => {
+    setExpandedItems(prev => ({
+      ...prev,
+      [id]: !prev[id]
+    }));
+  };
+
+  // Process content to include embedded items
+  const renderProcessedContent = () => {
+    // If no linked items or no allItems, just render the processed content
+    if (!processedContent.includes('content-link') || !allItems.length) {
+      return (
+        <div 
+          className="text-sm text-muted-foreground whitespace-pre-line mt-2 content-text"
+          onClick={handleLinkClick}
+          dangerouslySetInnerHTML={{ __html: processedContent }}
+        />
+      );
+    }
+
+    // Split the content by links to handle embedded items
+    const parts = processedContent.split(/<span class="content-link" data-item-id="(.*?)">(.*?)<\/span>/g);
+    const result = [];
+
+    for (let i = 0; i < parts.length; i += 3) {
+      // Add the text before the link
+      if (parts[i]) {
+        result.push(
+          <span key={`text-${i}`} className="whitespace-pre-line">{parts[i]}</span>
+        );
+      }
+
+      // Add the embedded item if we have a link
+      if (i + 2 < parts.length) {
+        const itemId = parts[i + 1];
+        const itemTitle = parts[i + 2];
+        const linkedItem = allItems.find(item => item.id === itemId);
+
+        if (linkedItem) {
+          result.push(
+            <Collapsible 
+              key={`embed-${itemId}-${i}`} 
+              open={expandedItems[itemId]} 
+              onOpenChange={() => toggleItemExpansion(itemId)}
+              className="my-2 border rounded-md overflow-hidden bg-muted/30"
+            >
+              <CollapsibleTrigger asChild>
+                <Button 
+                  variant="ghost" 
+                  className="w-full flex items-center justify-between p-2 text-sm hover:bg-muted"
+                >
+                  <div className="flex items-center gap-2">
+                    <EmbeddedItemIcon item={linkedItem} />
+                    <span className="font-medium text-primary">{itemTitle}</span>
+                  </div>
+                  {expandedItems[itemId] ? 
+                    <ChevronDown className="size-4 text-muted-foreground" /> : 
+                    <ChevronRight className="size-4 text-muted-foreground" />
+                  }
+                </Button>
+              </CollapsibleTrigger>
+              <CollapsibleContent className="p-3 bg-background border-t">
+                <EmbeddedItem 
+                  item={linkedItem} 
+                  onUpdate={onUpdate} 
+                />
+              </CollapsibleContent>
+            </Collapsible>
+          );
+        } else {
+          // If linked item not found, just display as a regular link
+          result.push(
+            <span 
+              key={`link-${i}`} 
+              className="content-link" 
+              data-item-id={itemId}
+              onClick={handleLinkClick}
+            >
+              {itemTitle}
+            </span>
+          );
+        }
+      }
+    }
+
+    return <div className="text-sm text-muted-foreground mt-2 content-text">{result}</div>;
+  };
+
   return (
     <div className="content-item-body">
       <div className="flex items-center gap-2 mb-2">
@@ -66,11 +161,115 @@ const ContentBody: React.FC<ContentBodyProps> = ({
       
       <AttributeSections item={item} onUpdate={onUpdate} handleTaskChange={handleTaskChange} handleDateChange={handleDateChange} />
       
-      <div 
-        className="text-sm text-muted-foreground whitespace-pre-line mt-2 content-text"
-        onClick={handleLinkClick}
-        dangerouslySetInnerHTML={{ __html: processedContent }}
-      />
+      {renderProcessedContent()}
+    </div>
+  );
+};
+
+// Icon component for embedded items
+const EmbeddedItemIcon: React.FC<{ item: Content }> = ({ item }) => {
+  const primaryType = getPrimaryContentType(item);
+  
+  switch (primaryType) {
+    case 'task':
+      return <CheckCircle className="size-4 text-task" />;
+    case 'event':
+      return <Calendar className="size-4 text-event" />;
+    case 'note':
+      return <FileText className="size-4 text-note" />;
+    case 'mail':
+      return <Mail className="size-4 text-mail" />;
+    default:
+      return <FileText className="size-4" />;
+  }
+};
+
+// Embedded item component
+const EmbeddedItem: React.FC<{ 
+  item: Content; 
+  onUpdate: (updatedItem: Content) => void;
+}> = ({ item, onUpdate }) => {
+  // Task checkbox change handler for embedded tasks
+  const handleTaskChange = (checked: boolean) => {
+    const { formatContentWithYaml } = require('@/lib/content-utils');
+    const updatedItem = { ...item, taskDone: checked };
+    updatedItem.yaml = formatContentWithYaml(updatedItem);
+    onUpdate(updatedItem);
+  };
+
+  return (
+    <div className="embedded-item">
+      {item.hasTaskAttributes && (
+        <div className="flex items-center gap-2 mb-2">
+          <Checkbox 
+            id={`embedded-task-${item.id}`} 
+            checked={item.taskDone} 
+            onCheckedChange={handleTaskChange}
+            className="text-task data-[state=checked]:bg-task data-[state=checked]:text-white border-task"
+          />
+          <label 
+            htmlFor={`embedded-task-${item.id}`}
+            className={cn(
+              "text-sm cursor-pointer flex-grow", 
+              item.taskDone && "line-through text-muted-foreground"
+            )}
+          >
+            {item.title}
+          </label>
+        </div>
+      )}
+      
+      {item.hasEventAttributes && (
+        <div className="p-2 bg-event-light/20 rounded-md mb-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-1.5 text-sm text-event">
+              <Calendar className="size-4" />
+              <span>{item.title}</span>
+            </div>
+            {item.eventDate && (
+              <div className="text-xs font-medium">
+                {format(item.eventDate, 'PPP')}
+              </div>
+            )}
+          </div>
+          {item.eventLocation && (
+            <div className="text-xs text-muted-foreground mt-1">
+              {item.eventLocation}
+            </div>
+          )}
+        </div>
+      )}
+      
+      {item.hasMailAttributes && (
+        <div className="p-2 bg-mail-light/20 rounded-md mb-2">
+          <div className="flex items-center gap-1.5 text-sm text-mail mb-1">
+            <Mail className="size-4" />
+            <span>{item.title}</span>
+          </div>
+          <div className="grid text-xs space-y-0.5">
+            {item.mailFrom && (
+              <div className="flex">
+                <span className="w-12 text-muted-foreground">From:</span>
+                <span className="font-medium">{item.mailFrom}</span>
+              </div>
+            )}
+            {item.mailTo && item.mailTo.length > 0 && (
+              <div className="flex">
+                <span className="w-12 text-muted-foreground">To:</span>
+                <span className="font-medium">{item.mailTo.join(', ')}</span>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+      
+      {(!item.hasTaskAttributes && !item.hasEventAttributes && !item.hasMailAttributes) && (
+        <div className="text-sm text-muted-foreground">
+          {item.content.length > 150 
+            ? `${item.content.substring(0, 150)}...` 
+            : item.content}
+        </div>
+      )}
     </div>
   );
 };

@@ -91,6 +91,13 @@ const ContentItem: React.FC<ContentItemProps> = ({
     setIsEditing(false);
   };
 
+  // Handle copy to clipboard
+  const handleCopy = () => {
+    const { formatContentWithYaml } = require('@/lib/content-utils');
+    navigator.clipboard.writeText(formatContentWithYaml(item));
+    toast.success('Copied to clipboard');
+  };
+
   if (isEditing) {
     return (
       <ContentEditor 
@@ -124,16 +131,14 @@ const ContentItem: React.FC<ContentItemProps> = ({
         onUpdate={onUpdate} 
         processedContent={processedContent}
         handleLinkClick={handleLinkClick}
+        allItems={allItems}
       />
       
       <ContentFooter 
         item={item} 
         onUpdate={onUpdate}
-        handleCopy={() => {
-          const { formatContentWithYaml } = require('@/lib/content-utils');
-          navigator.clipboard.writeText(formatContentWithYaml(item));
-          toast.success('Copied to clipboard');
-        }} 
+        handleCopy={handleCopy}
+        onEdit={handleEditClick}
       />
     </Card>
   );
