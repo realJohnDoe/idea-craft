@@ -10,7 +10,7 @@ import {
   Plus, Check, ArrowRight, FileText, Calendar, 
   Mail, CheckCircle, X, Tag
 } from 'lucide-react';
-import { useMediaQuery } from '@/hooks/use-mobile';
+import { useMediaQuery, useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const [items, setItems] = useState<Content[]>([]);
@@ -21,8 +21,9 @@ const Index = () => {
   const [showCreator, setShowCreator] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Content | null>(null);
+  const [showWelcomeNote, setShowWelcomeNote] = useState(true);
   
-  const isMobile = useMediaQuery('(max-width: 768px)');
+  const isMobile = useIsMobile();
   
   useEffect(() => {
     const data = getMockData();
@@ -52,6 +53,15 @@ const Index = () => {
         ? prevTags.filter(t => t !== tag)
         : [...prevTags, tag]
     );
+  };
+
+  // Toggle type filter tags
+  const toggleTypeTag = (type: string) => {
+    if (type === filter) {
+      setFilter('all');
+    } else {
+      setFilter(type);
+    }
   };
   
   useEffect(() => {
@@ -196,12 +206,19 @@ const Index = () => {
         return null;
     }
   };
+
+  // Type filter tags that will replace the nav buttons
+  const typeFilterTags = [
+    { type: 'note', label: 'Notes', icon: <FileText className="size-3" />, className: 'bg-note-light text-note' },
+    { type: 'task', label: 'Tasks', icon: <CheckCircle className="size-3" />, className: 'bg-task-light text-task' },
+    { type: 'event', label: 'Events', icon: <Calendar className="size-3" />, className: 'bg-event-light text-event' },
+    { type: 'mail', label: 'Emails', icon: <Mail className="size-3" />, className: 'bg-mail-light text-mail' }
+  ];
   
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar 
         activeFilter={filter}
-        onFilterChange={setFilter}
         onSearch={setSearch}
         onCreateNew={() => setShowCreator(true)}
       />
@@ -238,6 +255,28 @@ const Index = () => {
                 </Button>
               </div>
               
+              {/* Type filter tags */}
+              <div className="mb-4">
+                <div className="text-sm text-muted-foreground mb-2">Filter by type:</div>
+                <div className="flex flex-wrap gap-1">
+                  {typeFilterTags.map(({ type, label, icon, className }) => (
+                    <button
+                      key={type}
+                      className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
+                        filter === type
+                          ? 'bg-primary text-primary-foreground'
+                          : className + ' hover:opacity-90'
+                      }`}
+                      onClick={() => toggleTypeTag(type)}
+                    >
+                      {icon}
+                      {label}
+                      {filter === type && <X className="size-3" />}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {/* Tags filter */}
               {getAllTags().length > 0 && (
                 <div className="mb-4">
@@ -274,7 +313,7 @@ const Index = () => {
                       onDelete={handleDeleteItem}
                       allItems={items}
                       isListView={true}
-                      onSelect={handleSelectItem}
+                      onSelect={handleItemSelect}
                     />
                   ))}
                 </div>
@@ -294,8 +333,8 @@ const Index = () => {
             </div>
             
             {/* Detail view panel */}
-            {selectedItem && !isMobile && (
-              <div className="md:w-1/2 lg:w-3/5 sticky top-4 self-start">
+            {selectedItem && (
+              <div className={isMobile ? "fixed inset-0 z-20 bg-background p-4" : "md:w-1/2 lg:w-3/5 sticky top-4 self-start"}>
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-lg font-medium">Selected Item</h2>
                   <Button
@@ -331,26 +370,28 @@ const Index = () => {
         </div>
       </main>
       
-      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 max-w-md w-full px-4">
-        <div className="glass-panel p-4 animate-float">
-          <h3 className="text-lg font-medium flex items-center">
-            <Check className="size-5 text-green-500 mr-2" />
-            Welcome to Transform!
-          </h3>
-          <p className="text-sm text-muted-foreground mt-1">
-            Content can now have multiple attributes and you can link between items using [[title]] syntax!
-          </p>
-          <div className="mt-3 flex justify-end">
-            <Button 
-              variant="link" 
-              className="text-muted-foreground hover:text-foreground"
-              onClick={() => document.querySelector('.glass-panel')?.classList.add('animate-fade-out')}
-            >
-              Got it <ArrowRight className="ml-1 size-3" />
-            </Button>
+      {showWelcomeNote && (
+        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 max-w-md w-full px-4">
+          <div className="glass-panel p-4 animate-float">
+            <h3 className="text-lg font-medium flex items-center">
+              <Check className="size-5 text-green-500 mr-2" />
+              Welcome to Transform!
+            </h3>
+            <p className="text-sm text-muted-foreground mt-1">
+              Content can now have multiple attributes and you can link between items using [[title]] syntax!
+            </p>
+            <div className="mt-3 flex justify-end">
+              <Button 
+                variant="link" 
+                className="text-muted-foreground hover:text-foreground"
+                onClick={() => setShowWelcomeNote(false)}
+              >
+                Got it <ArrowRight className="ml-1 size-3" />
+              </Button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       
       <style>
         {`

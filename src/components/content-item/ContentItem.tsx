@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Content, processContentLinks } from '@/lib/content-utils';
 import { toast } from 'sonner';
@@ -6,7 +7,6 @@ import ContentBody from './ContentBody';
 import ContentFooter from './ContentFooter';
 import ContentEditor from '../content-editor/ContentEditor';
 import { cn } from '@/lib/utils';
-import { getPrimaryContentType } from '@/lib/content-utils';
 import ContentTypeTags from './ContentTypeTags';
 import { Calendar } from 'lucide-react';
 import { format } from 'date-fns';

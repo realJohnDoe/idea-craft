@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Content, getPrimaryContentType } from '@/lib/content-utils';
+import { Content, getPrimaryContentType, formatContentWithYaml } from '@/lib/content-utils';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
@@ -29,7 +30,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 
   // Handle task checkbox change
   const handleTaskChange = (checked: boolean) => {
-    const { formatContentWithYaml } = require('@/lib/content-utils');
     const updatedItem = { ...item, taskDone: checked };
     updatedItem.yaml = formatContentWithYaml(updatedItem);
     onUpdate(updatedItem);
@@ -38,7 +38,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   // Handle date change
   const handleDateChange = (newDate: Date | undefined) => {
     if (newDate) {
-      const { formatContentWithYaml } = require('@/lib/content-utils');
       const updatedItem = { ...item, eventDate: newDate };
       updatedItem.yaml = formatContentWithYaml(updatedItem);
       onUpdate(updatedItem);
@@ -153,7 +152,6 @@ const EmbeddedItem: React.FC<{
 }> = ({ item, onUpdate, isExpanded, toggleExpansion }) => {
   // Task checkbox change handler for embedded tasks
   const handleTaskChange = (checked: boolean) => {
-    const { formatContentWithYaml } = require('@/lib/content-utils');
     const updatedItem = { ...item, taskDone: checked };
     updatedItem.yaml = formatContentWithYaml(updatedItem);
     onUpdate(updatedItem);
@@ -165,30 +163,30 @@ const EmbeddedItem: React.FC<{
       onOpenChange={toggleExpansion}
       className="my-2 border rounded-md overflow-hidden bg-muted/30"
     >
-      <div className="flex items-center">
+      <div className="flex items-center gap-2 px-2 py-1">
         {item.hasTaskAttributes && (
           <Checkbox 
             id={`embedded-task-${item.id}`} 
             checked={item.taskDone} 
             onCheckedChange={handleTaskChange}
-            className="ml-2 text-task data-[state=checked]:bg-task data-[state=checked]:text-white border-task"
+            onClick={(e) => e.stopPropagation()}
+            className="text-task data-[state=checked]:bg-task data-[state=checked]:text-white border-task"
           />
         )}
+        
+        <ContentTypeTags item={item} onUpdate={onUpdate} />
         
         <CollapsibleTrigger asChild className="flex-grow">
           <Button 
             variant="ghost" 
-            className="w-full flex items-center justify-between p-2 text-sm hover:bg-muted"
+            className="px-2 h-8 w-full flex items-center justify-between text-sm hover:bg-muted"
           >
-            <div className="flex items-center gap-2">
-              <ContentTypeTags item={item} onUpdate={onUpdate} />
-              <span className={cn(
-                "font-medium text-primary",
-                item.hasTaskAttributes && item.taskDone && "line-through text-muted-foreground"
-              )}>
-                {item.title}
-              </span>
-            </div>
+            <span className={cn(
+              "font-medium text-primary",
+              item.hasTaskAttributes && item.taskDone && "line-through text-muted-foreground"
+            )}>
+              {item.title}
+            </span>
             {isExpanded ? 
               <ChevronDown className="size-4 text-muted-foreground" /> : 
               <ChevronRight className="size-4 text-muted-foreground" />

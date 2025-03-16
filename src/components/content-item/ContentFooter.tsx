@@ -1,9 +1,8 @@
 
 import React from 'react';
-import { Content, toggleContentAttribute, ContentAttributeType } from '@/lib/content-utils';
-import { Edit, Trash2, Plus } from 'lucide-react';
+import { Content } from '@/lib/content-utils';
+import { Edit, Trash2 } from 'lucide-react';
 import { format } from 'date-fns';
-import { toast } from 'sonner';
 
 interface ContentFooterProps {
   item: Content;
@@ -12,21 +11,7 @@ interface ContentFooterProps {
   onEdit: () => void;
 }
 
-const ContentFooter: React.FC<ContentFooterProps> = ({ item, onUpdate, onDelete, onEdit }) => {
-  // Handle adding a new attribute type
-  const handleAddAttribute = () => {
-    const attributesToAdd = ['task', 'event', 'mail'].filter(
-      type => !item[`has${type.charAt(0).toUpperCase() + type.slice(1)}Attributes`]
-    );
-    
-    if (attributesToAdd.length > 0) {
-      onUpdate(toggleContentAttribute(item, attributesToAdd[0] as ContentAttributeType));
-      toast.success(`Added ${attributesToAdd[0]} attributes`);
-    } else {
-      toast.info('All attribute types are already added');
-    }
-  };
-
+const ContentFooter: React.FC<ContentFooterProps> = ({ item, onDelete, onEdit }) => {
   return (
     <div className="content-item-footer">
       <span className="text-xs text-muted-foreground">
@@ -40,13 +25,6 @@ const ContentFooter: React.FC<ContentFooterProps> = ({ item, onUpdate, onDelete,
           aria-label="Edit item"
         >
           <Edit className="size-3 text-muted-foreground" />
-        </button>
-        <button 
-          className="p-1 rounded hover:bg-muted transition-colors"
-          onClick={handleAddAttribute}
-          aria-label="Add attribute"
-        >
-          <Plus className="size-3 text-muted-foreground" />
         </button>
         <button 
           className="p-1 rounded hover:bg-destructive/10 transition-colors"
