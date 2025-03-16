@@ -313,7 +313,7 @@ const Index = () => {
                       onDelete={handleDeleteItem}
                       allItems={items}
                       isListView={true}
-                      onSelect={handleItemSelect}
+                      onSelect={handleSelectItem}
                     />
                   ))}
                 </div>

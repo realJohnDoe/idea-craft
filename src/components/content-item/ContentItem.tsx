@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Content, processContentLinks } from '@/lib/content-utils';
+import { Content, getPrimaryContentType, processContentLinks } from '@/lib/content-utils';
 import { toast } from 'sonner';
 import ContentHeader from './ContentHeader';
 import ContentBody from './ContentBody';
