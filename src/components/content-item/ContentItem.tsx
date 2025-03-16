@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Content, processContentLinks } from '@/lib/content-utils';
 import { toast } from 'sonner';
@@ -8,6 +7,9 @@ import ContentFooter from './ContentFooter';
 import ContentEditor from '../content-editor/ContentEditor';
 import { cn } from '@/lib/utils';
 import { getPrimaryContentType } from '@/lib/content-utils';
+import ContentTypeTags from './ContentTypeTags';
+import { Calendar } from 'lucide-react';
+import { format } from 'date-fns';
 
 interface ContentItemProps {
   item: Content;
@@ -30,14 +32,12 @@ const ContentItem: React.FC<ContentItemProps> = ({
   const [processedContent, setProcessedContent] = useState(item.content);
   const [isEditing, setIsEditing] = useState(false);
   
-  // Process content links when content changes or allItems changes
   useEffect(() => {
     if (allItems.length > 0) {
       setProcessedContent(processContentLinks(item.content, allItems));
     }
   }, [item.content, allItems]);
 
-  // Handle link click event
   const handleLinkClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const target = e.target as HTMLElement;
     if (target.classList.contains('content-link')) {
@@ -60,8 +60,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
       }
     }
   };
-  
-  // Get the appropriate style class based on primary content type
+
   const getTypeClass = () => {
     const primaryType = getPrimaryContentType(item);
     switch (primaryType) {
@@ -78,23 +77,19 @@ const ContentItem: React.FC<ContentItemProps> = ({
     }
   };
 
-  // Handle edit button click
   const handleEditClick = () => {
     setIsEditing(true);
   };
 
-  // Handle update from editor
   const handleEditorUpdate = (updatedItem: Content) => {
     onUpdate(updatedItem);
     setIsEditing(false);
   };
 
-  // Handle cancel from editor
   const handleEditorCancel = () => {
     setIsEditing(false);
   };
 
-  // Handle select item for sidebar
   const handleItemSelect = () => {
     if (onSelect && isListView) {
       onSelect(item);
@@ -112,7 +107,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
   }
 
   if (isListView) {
-    // List view item
     return (
       <div 
         id={`content-item-${item.id}`}
@@ -199,7 +193,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
     );
   }
 
-  // Card view (for sidebar)
   return (
     <div 
       id={`content-item-${item.id}`}
