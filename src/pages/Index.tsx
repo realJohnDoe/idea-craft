@@ -1,7 +1,8 @@
+
 import React, { useState, useEffect } from 'react';
 import { getMockData, Content, parseYamlToContent, parseYaml } from '@/lib/content-utils';
 import { toast } from 'sonner';
-import ContentItem from '@/components/ContentItem';
+import ContentItem from '@/components/content-item';
 import ContentCreator from '@/components/ContentCreator';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
