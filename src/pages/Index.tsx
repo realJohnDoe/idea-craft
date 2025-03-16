@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { getMockData, Content, parseYamlToContent, parseYaml } from '@/lib/content-utils';
 import { toast } from 'sonner';
@@ -16,25 +15,20 @@ const Index = () => {
   const [showCreator, setShowCreator] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
   
-  // Initialize with mock data
   useEffect(() => {
     const data = getMockData();
     setItems(data);
     setFilteredItems(data);
     
-    // Simulate loading for animation
     setTimeout(() => {
       setIsLoaded(true);
     }, 300);
   }, []);
   
-  // Apply filters when filter or search changes
   useEffect(() => {
     let result = items;
     
-    // Apply type filter
     if (filter !== 'all') {
-      // For attribute-based filtering, check if the item has that attribute
       switch (filter) {
         case 'task':
           result = result.filter(item => item.hasTaskAttributes);
@@ -51,7 +45,6 @@ const Index = () => {
       }
     }
     
-    // Apply search filter
     if (search) {
       const searchLower = search.toLowerCase();
       result = result.filter(
@@ -64,7 +57,6 @@ const Index = () => {
     setFilteredItems(result);
   }, [items, filter, search]);
   
-  // Handle item update
   const handleUpdateItem = (updatedItem: Content) => {
     setItems(prevItems => 
       prevItems.map(item => 
@@ -73,20 +65,17 @@ const Index = () => {
     );
   };
   
-  // Handle item deletion
   const handleDeleteItem = (id: string) => {
     setItems(prevItems => prevItems.filter(item => item.id !== id));
     toast.success('Item deleted successfully');
   };
   
-  // Handle create new item
   const handleCreateItem = (newItem: Content) => {
     setItems(prevItems => [newItem, ...prevItems]);
     setShowCreator(false);
     toast.success('Item created successfully');
   };
   
-  // Import content from YAML
   const handleImport = () => {
     const input = document.createElement('input');
     input.type = 'file';
@@ -98,7 +87,6 @@ const Index = () => {
           const content = await file.text();
           const { yamlData, content: textContent } = parseYaml(content);
           
-          // Create a basic content object
           const newContent: Content = {
             id: Math.random().toString(36).substring(2, 9),
             title: file.name.replace(/\.(md|txt)$/, ''),
@@ -109,14 +97,12 @@ const Index = () => {
             hasEventAttributes: false,
             hasMailAttributes: false,
             hasNoteAttributes: true,
-            tags: [], // Add the missing tags property with an empty array
+            tags: [],
             yaml: ''
           };
           
-          // Parse YAML data into content
           const parsedContent = parseYamlToContent(yamlData, newContent);
           
-          // Add to items list
           setItems(prevItems => [parsedContent, ...prevItems]);
           toast.success('Content imported successfully');
         } catch (error) {
@@ -128,7 +114,6 @@ const Index = () => {
     input.click();
   };
   
-  // Get appropriate empty state message based on filters
   const getEmptyStateMessage = () => {
     if (search) {
       return `No ${filter !== 'all' ? filter : 'items'} found matching "${search}"`;
@@ -141,7 +126,6 @@ const Index = () => {
     return 'No items yet';
   };
   
-  // Get icon for the filter
   const getFilterIcon = () => {
     switch (filter) {
       case 'task':
@@ -203,12 +187,11 @@ const Index = () => {
                   item={item} 
                   onUpdate={handleUpdateItem}
                   onDelete={handleDeleteItem}
-                  allItems={items} // Pass all items for link processing
+                  allItems={items}
                 />
               ))}
             </div>
             
-            {/* Floating action button for mobile */}
             <div className="md:hidden fixed bottom-6 right-6">
               <Button
                 onClick={() => setShowCreator(true)}
@@ -234,31 +217,27 @@ const Index = () => {
         )}
       </main>
       
-      {/* First-time user welcome */}
-      {isLoaded && items.length > 0 && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 max-w-md w-full px-4">
-          <div className="glass-panel p-4 animate-float">
-            <h3 className="text-lg font-medium flex items-center">
-              <Check className="size-5 text-green-500 mr-2" />
-              Welcome to Transform!
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Content can now have multiple attributes and you can link between items using [[title]] syntax!
-            </p>
-            <div className="mt-3 flex justify-end">
-              <Button 
-                variant="link" 
-                className="text-muted-foreground hover:text-foreground"
-                onClick={() => document.querySelector('.glass-panel')?.classList.add('animate-fade-out')}
-              >
-                Got it <ArrowRight className="ml-1 size-3" />
-              </Button>
-            </div>
+      <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 max-w-md w-full px-4">
+        <div className="glass-panel p-4 animate-float">
+          <h3 className="text-lg font-medium flex items-center">
+            <Check className="size-5 text-green-500 mr-2" />
+            Welcome to Transform!
+          </h3>
+          <p className="text-sm text-muted-foreground mt-1">
+            Content can now have multiple attributes and you can link between items using [[title]] syntax!
+          </p>
+          <div className="mt-3 flex justify-end">
+            <Button 
+              variant="link" 
+              className="text-muted-foreground hover:text-foreground"
+              onClick={() => document.querySelector('.glass-panel')?.classList.add('animate-fade-out')}
+            >
+              Got it <ArrowRight className="ml-1 size-3" />
+            </Button>
           </div>
         </div>
-      )}
+      </div>
       
-      {/* Fix the style tag by removing jsx and global properties */}
       <style>
         {`
         .content-link {
