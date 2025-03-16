@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { Content, generateYaml, ContentAttributeType } from '@/lib/content-utils';
 import { X } from 'lucide-react';
@@ -16,6 +15,7 @@ import EventAttributeEditor from '../content-creation/EventAttributeEditor';
 import MailAttributeEditor from '../content-creation/MailAttributeEditor';
 import TagsEditor from '../content-creation/TagsEditor';
 import YamlPreview from '../content-creation/YamlPreview';
+import ContentTextarea from './ContentTextarea';
 
 interface ContentEditorProps {
   item: Content;
