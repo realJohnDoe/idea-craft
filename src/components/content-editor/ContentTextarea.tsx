@@ -1,4 +1,3 @@
-
 import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
@@ -10,6 +9,7 @@ import {
 import { useQuery } from '@tanstack/react-query';
 import { Content } from '@/lib/content-utils';
 import { Loader2 } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 interface ContentTextareaProps {
   value: string;
@@ -28,18 +28,14 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [suggestionPosition, setSuggestionPosition] = useState<{ top: number, left: number, lineHeight: number }>({ top: 0, left: 0, lineHeight: 0 });
 
-  // Get all content items for suggestions
   const { data: allItems = [], isLoading } = useQuery({
     queryKey: ['content-items'],
     queryFn: async () => {
-      // In a real app, this would be a fetch to your API
-      // For now, use the mock data function
       const { getMockData } = await import('@/lib/content-utils');
       return getMockData();
     }
   });
 
-  // Calculate suggestion position
   const calculateSuggestionPosition = () => {
     if (!textareaRef.current || !cursorPosition) return;
     
@@ -48,7 +44,6 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
     const lines = textBeforeCursor.split('\n');
     const currentLine = lines.length;
     
-    // Get line height from textarea
     const computedStyle = window.getComputedStyle(textarea);
     let lineHeight = parseInt(computedStyle.lineHeight);
     if (isNaN(lineHeight)) {
@@ -58,21 +53,18 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
     const rect = textarea.getBoundingClientRect();
     const scrollTop = textarea.scrollTop;
     
-    // Calculate position based on current line
     const topPosition = rect.top + (currentLine * lineHeight) - scrollTop;
     
-    // Decide if we should show above or below based on available space
     const viewportHeight = window.innerHeight;
     const spaceBelow = viewportHeight - topPosition;
-    const popoverHeight = 200; // Approximate popover height
+    const popoverHeight = 200;
     
-    // If not enough space below, show above
     const showAbove = spaceBelow < popoverHeight;
     
     const finalTopPosition = showAbove 
-      ? topPosition - lineHeight - 10 // Show above current line
-      : topPosition + 5; // Show below current line
-      
+      ? topPosition - lineHeight - 10
+      : topPosition + 5;
+    
     setSuggestionPosition({
       top: finalTopPosition,
       left: rect.left + 20,
@@ -80,7 +72,6 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
     });
   };
 
-  // Check if we should show suggestions
   useEffect(() => {
     if (!cursorPosition || !value) return;
 
@@ -98,18 +89,15 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
     }
   }, [value, cursorPosition]);
 
-  // Handle cursor position change
   const handleKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown' && e.key !== 'Tab' && e.key !== 'Enter') {
       setCursorPosition(e.currentTarget.selectionStart);
     }
   };
 
-  // Handle keyboard navigation
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (!showSuggestions) return;
     
-    // Filter suggestions for keyboard navigation
     const filteredSuggestions = allItems
       .filter(item => 
         !searchTerm || 
@@ -142,24 +130,20 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
     }
   };
 
-  // Handle textarea change
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     onChange(e.target.value);
     setCursorPosition(e.target.selectionStart);
   };
 
-  // Handle selection of a suggestion
   const handleSelectSuggestion = (item: Content) => {
     if (!cursorPosition) return;
 
     const textBeforeCursor = value.substring(0, cursorPosition);
     const textAfterCursor = value.substring(cursorPosition);
     
-    // Find the start of the '[[' sequence
     const lastOpenBracketIndex = textBeforeCursor.lastIndexOf('[[');
     
     if (lastOpenBracketIndex !== -1) {
-      // Replace everything from '[[' to cursor with the suggestion
       const newText = 
         textBeforeCursor.substring(0, lastOpenBracketIndex) + 
         `[[${item.title}]]` + 
@@ -170,10 +154,9 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
       
       toast.success(`Linked to "${item.title}"`);
       
-      // Set focus back to textarea
       setTimeout(() => {
         if (textareaRef.current) {
-          const newCursorPos = lastOpenBracketIndex + item.title.length + 4; // +4 for [[ and ]]
+          const newCursorPos = lastOpenBracketIndex + item.title.length + 4;
           textareaRef.current.focus();
           textareaRef.current.setSelectionRange(newCursorPos, newCursorPos);
         }
@@ -181,13 +164,12 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
     }
   };
 
-  // Filter suggestions based on search term
   const filteredSuggestions = allItems
     .filter(item => 
       !searchTerm || 
       item.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
-    .slice(0, 5); // Limit to 5 suggestions
+    .slice(0, 5);
 
   return (
     <div className="relative">
