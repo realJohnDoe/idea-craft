@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Content, getPrimaryContentType } from '@/lib/content-utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -6,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { format } from 'date-fns';
-import { CheckCircle, Calendar, FileText, Mail, Tag } from 'lucide-react';
+import { CheckCircle, Calendar, FileText, Mail } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import ContentTypeTags from './ContentTypeTags';
 
@@ -58,22 +57,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     }
   };
 
-  // Render content tags
-  const renderContentTags = () => {
-    if (!item.tags || item.tags.length === 0) return null;
-    
-    return (
-      <div className="flex flex-wrap gap-1 mt-2">
-        {item.tags.map((tag, idx) => (
-          <span key={idx} className="px-2 py-0.5 bg-muted text-muted-foreground text-xs rounded-full flex items-center gap-1">
-            <Tag className="size-3" />
-            {tag}
-          </span>
-        ))}
-      </div>
-    );
-  };
-
   return (
     <div className="content-item-body">
       <div className="flex items-center gap-2 mb-2">
@@ -88,8 +71,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         onClick={handleLinkClick}
         dangerouslySetInnerHTML={{ __html: processedContent }}
       />
-      
-      {renderContentTags()}
     </div>
   );
 };

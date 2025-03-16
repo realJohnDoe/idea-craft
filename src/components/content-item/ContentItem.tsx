@@ -5,6 +5,7 @@ import { toast } from 'sonner';
 import ContentHeader from './ContentHeader';
 import ContentBody from './ContentBody';
 import ContentFooter from './ContentFooter';
+import ContentEditor from '../content-editor/ContentEditor';
 import { Card } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import { getPrimaryContentType } from '@/lib/content-utils';
@@ -24,6 +25,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [processedContent, setProcessedContent] = useState(item.content);
+  const [isEditing, setIsEditing] = useState(false);
   
   // Process content links when content changes or allItems changes
   useEffect(() => {
@@ -73,6 +75,32 @@ const ContentItem: React.FC<ContentItemProps> = ({
     }
   };
 
+  // Handle edit button click
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  // Handle update from editor
+  const handleEditorUpdate = (updatedItem: Content) => {
+    onUpdate(updatedItem);
+    setIsEditing(false);
+  };
+
+  // Handle cancel from editor
+  const handleEditorCancel = () => {
+    setIsEditing(false);
+  };
+
+  if (isEditing) {
+    return (
+      <ContentEditor 
+        item={item} 
+        onUpdate={handleEditorUpdate} 
+        onCancel={handleEditorCancel}
+      />
+    );
+  }
+
   return (
     <Card 
       id={`content-item-${item.id}`}
@@ -87,7 +115,8 @@ const ContentItem: React.FC<ContentItemProps> = ({
       <ContentHeader 
         item={item} 
         onUpdate={onUpdate} 
-        onDelete={onDelete} 
+        onDelete={onDelete}
+        onEdit={handleEditClick}
       />
       
       <ContentBody 

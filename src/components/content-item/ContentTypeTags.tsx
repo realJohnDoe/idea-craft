@@ -2,6 +2,7 @@
 import React from 'react';
 import { Content, ContentAttributeType } from '@/lib/content-utils';
 import { cn } from '@/lib/utils';
+import { Tag } from 'lucide-react';
 
 interface ContentTypeTagsProps {
   item: Content;
@@ -58,6 +59,18 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
           Note
         </span>
       );
+    }
+    
+    // Add user tags if present
+    if (item.tags && item.tags.length > 0) {
+      item.tags.forEach((tag, idx) => {
+        tags.push(
+          <span key={`tag-${idx}`} className="content-item-tag bg-muted text-muted-foreground flex items-center gap-1">
+            <Tag className="size-3" />
+            {tag}
+          </span>
+        );
+      });
     }
     
     return tags;
