@@ -109,6 +109,7 @@ const Index = () => {
             hasEventAttributes: false,
             hasMailAttributes: false,
             hasNoteAttributes: true,
+            tags: [], // Add the missing tags property with an empty array
             yaml: ''
           };
           
@@ -257,8 +258,9 @@ const Index = () => {
         </div>
       )}
       
-      {/* Add CSS for link highlights */}
-      <style jsx global>{`
+      {/* Fix the style tag by removing jsx and global properties */}
+      <style>
+        {`
         .content-link {
           color: #3b82f6;
           text-decoration: underline;
@@ -273,7 +275,8 @@ const Index = () => {
           0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
           50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2); }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
