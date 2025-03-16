@@ -1,14 +1,10 @@
+
 import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
 import { Textarea } from '@/components/ui/textarea';
 import { toast } from 'sonner';
-import { 
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
+import { Loader2 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { Content } from '@/lib/content-utils';
-import { Loader2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface ContentTextareaProps {
@@ -25,8 +21,8 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedIndex, setSelectedIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-  const buttonRef = useRef<HTMLButtonElement>(null);
-  const [suggestionPosition, setSuggestionPosition] = useState<{ top: number, left: number, lineHeight: number }>({ top: 0, left: 0, lineHeight: 0 });
+  const suggestionBoxRef = useRef<HTMLDivElement>(null);
+  const [suggestionPosition, setSuggestionPosition] = useState<{ top: number, left: number }>({ top: 0, left: 0 });
 
   const { data: allItems = [], isLoading } = useQuery({
     queryKey: ['content-items'],
@@ -37,43 +33,47 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
   });
 
   const calculateSuggestionPosition = () => {
-    if (!textareaRef.current || !cursorPosition) return;
+    if (!textareaRef.current || cursorPosition === null) return;
     
     const textarea = textareaRef.current;
     const textBeforeCursor = value.substring(0, cursorPosition);
     const lines = textBeforeCursor.split('\n');
-    const currentLine = lines.length;
+    const currentLineText = lines[lines.length - 1];
+    const currentLineLength = currentLineText.length;
+    
+    // Create a temporary span to measure text width
+    const span = document.createElement('span');
+    span.style.visibility = 'hidden';
+    span.style.position = 'absolute';
+    span.style.whiteSpace = 'pre';
+    span.style.font = window.getComputedStyle(textarea).font;
+    span.textContent = currentLineText;
+    document.body.appendChild(span);
     
     const computedStyle = window.getComputedStyle(textarea);
-    let lineHeight = parseInt(computedStyle.lineHeight);
-    if (isNaN(lineHeight)) {
-      lineHeight = parseInt(computedStyle.fontSize) * 1.5;
-    }
-    
+    const paddingLeft = parseFloat(computedStyle.paddingLeft);
+    const lineHeight = parseFloat(computedStyle.lineHeight) || parseFloat(computedStyle.fontSize) * 1.2;
     const rect = textarea.getBoundingClientRect();
+    
+    // Position horizontally based on cursor position in current line
+    const textWidth = Math.min(span.getBoundingClientRect().width, textarea.clientWidth - paddingLeft * 2);
+    
+    // Position vertically based on current line
     const scrollTop = textarea.scrollTop;
+    const currentLineTop = (lines.length - 1) * lineHeight;
+    const visibleTop = currentLineTop - scrollTop;
     
-    const topPosition = rect.top + (currentLine * lineHeight) - scrollTop;
+    document.body.removeChild(span);
     
-    const viewportHeight = window.innerHeight;
-    const spaceBelow = viewportHeight - topPosition;
-    const popoverHeight = 200;
+    // Position the suggestion box
+    const top = rect.top + visibleTop + lineHeight + window.scrollY;
+    const left = rect.left + paddingLeft + textWidth + window.scrollX;
     
-    const showAbove = spaceBelow < popoverHeight;
-    
-    const finalTopPosition = showAbove 
-      ? topPosition - lineHeight - 10
-      : topPosition + 5;
-    
-    setSuggestionPosition({
-      top: finalTopPosition,
-      left: rect.left + 20,
-      lineHeight
-    });
+    setSuggestionPosition({ top, left });
   };
 
   useEffect(() => {
-    if (!cursorPosition || !value) return;
+    if (cursorPosition === null) return;
 
     const textBeforeCursor = value.substring(0, cursorPosition);
     const match = textBeforeCursor.match(/\[\[([^\]]*?)$/);
@@ -136,7 +136,7 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
   };
 
   const handleSelectSuggestion = (item: Content) => {
-    if (!cursorPosition) return;
+    if (cursorPosition === null) return;
 
     const textBeforeCursor = value.substring(0, cursorPosition);
     const textAfterCursor = value.substring(cursorPosition);
@@ -187,7 +187,8 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
 
       {showSuggestions && (
         <div 
-          className="absolute z-10 w-64 bg-popover border rounded-md shadow-md animate-in fade-in-0 zoom-in-95"
+          ref={suggestionBoxRef}
+          className="fixed z-50 w-64 bg-popover border rounded-md shadow-md animate-in fade-in-0 zoom-in-95"
           style={{ 
             top: `${suggestionPosition.top}px`,
             left: `${suggestionPosition.left}px`,

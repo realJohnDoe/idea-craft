@@ -6,15 +6,23 @@ import ContentItem from '@/components/content-item';
 import ContentCreator from '@/components/ContentCreator';
 import Navbar from '@/components/Navbar';
 import { Button } from '@/components/ui/button';
-import { Plus, Check, ArrowRight, FileText, Calendar, Mail, CheckCircle } from 'lucide-react';
+import { 
+  Plus, Check, ArrowRight, FileText, Calendar, 
+  Mail, CheckCircle, X, Tag
+} from 'lucide-react';
+import { useMediaQuery } from '@/hooks/use-mobile';
 
 const Index = () => {
   const [items, setItems] = useState<Content[]>([]);
   const [filteredItems, setFilteredItems] = useState<Content[]>([]);
   const [filter, setFilter] = useState('all');
+  const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [search, setSearch] = useState('');
   const [showCreator, setShowCreator] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<Content | null>(null);
+  
+  const isMobile = useMediaQuery('(max-width: 768px)');
   
   useEffect(() => {
     const data = getMockData();
@@ -25,6 +33,26 @@ const Index = () => {
       setIsLoaded(true);
     }, 300);
   }, []);
+  
+  // Get all unique tags from items
+  const getAllTags = () => {
+    const tags = new Set<string>();
+    items.forEach(item => {
+      if (item.tags && item.tags.length > 0) {
+        item.tags.forEach(tag => tags.add(tag));
+      }
+    });
+    return Array.from(tags).sort();
+  };
+  
+  // Toggle tag selection
+  const toggleTag = (tag: string) => {
+    setSelectedTags(prevTags => 
+      prevTags.includes(tag) 
+        ? prevTags.filter(t => t !== tag)
+        : [...prevTags, tag]
+    );
+  };
   
   useEffect(() => {
     let result = items;
@@ -46,6 +74,14 @@ const Index = () => {
       }
     }
     
+    // Filter by selected tags
+    if (selectedTags.length > 0) {
+      result = result.filter(item => 
+        item.tags && 
+        selectedTags.every(tag => item.tags.includes(tag))
+      );
+    }
+    
     if (search) {
       const searchLower = search.toLowerCase();
       result = result.filter(
@@ -56,7 +92,7 @@ const Index = () => {
     }
     
     setFilteredItems(result);
-  }, [items, filter, search]);
+  }, [items, filter, search, selectedTags]);
   
   const handleUpdateItem = (updatedItem: Content) => {
     setItems(prevItems => 
@@ -64,10 +100,21 @@ const Index = () => {
         item.id === updatedItem.id ? updatedItem : item
       )
     );
+    
+    // Update selected item if it was updated
+    if (selectedItem && selectedItem.id === updatedItem.id) {
+      setSelectedItem(updatedItem);
+    }
   };
   
   const handleDeleteItem = (id: string) => {
     setItems(prevItems => prevItems.filter(item => item.id !== id));
+    
+    // Clear selected item if it was deleted
+    if (selectedItem && selectedItem.id === id) {
+      setSelectedItem(null);
+    }
+    
     toast.success('Item deleted successfully');
   };
   
@@ -115,9 +162,17 @@ const Index = () => {
     input.click();
   };
   
+  const handleSelectItem = (item: Content) => {
+    setSelectedItem(item);
+  };
+  
   const getEmptyStateMessage = () => {
     if (search) {
       return `No ${filter !== 'all' ? filter : 'items'} found matching "${search}"`;
+    }
+    
+    if (selectedTags.length > 0) {
+      return `No items with selected tags found`;
     }
     
     if (filter !== 'all') {
@@ -151,7 +206,7 @@ const Index = () => {
         onCreateNew={() => setShowCreator(true)}
       />
       
-      <main className="flex-1 container px-4 py-8 max-w-7xl mx-auto">
+      <main className="flex-1 container px-4 py-4 max-w-7xl mx-auto">
         {!isLoaded ? (
           <div className="flex items-center justify-center h-64">
             <div className="animate-pulse-subtle">Loading your content...</div>
@@ -161,61 +216,119 @@ const Index = () => {
             onCreate={handleCreateItem}
             onCancel={() => setShowCreator(false)}
           />
-        ) : filteredItems.length > 0 ? (
-          <>
-            <div className="flex justify-between items-center mb-4">
-              <div className="flex items-center">
-                {getFilterIcon()}
-                <h2 className="text-lg font-medium">
-                  {filter === 'all' ? 'All Items' : `${filter.charAt(0).toUpperCase() + filter.slice(1)}s`}
-                  <span className="text-muted-foreground ml-2 text-sm">({filteredItems.length})</span>
-                </h2>
-              </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleImport}
-                className="text-xs"
-              >
-                Import
-              </Button>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 animate-fade-in">
-              {filteredItems.map((item) => (
-                <ContentItem 
-                  key={item.id} 
-                  item={item} 
-                  onUpdate={handleUpdateItem}
-                  onDelete={handleDeleteItem}
-                  allItems={items}
-                />
-              ))}
-            </div>
-            
-            <div className="md:hidden fixed bottom-6 right-6">
-              <Button
-                onClick={() => setShowCreator(true)}
-                size="lg"
-                className="rounded-full size-14 shadow-lg bg-gradient-to-r from-event to-task hover:opacity-90"
-              >
-                <Plus className="size-6" />
-              </Button>
-            </div>
-          </>
         ) : (
-          <div className="flex flex-col items-center justify-center h-64 animate-fade-in">
-            <p className="text-lg text-muted-foreground mb-4">{getEmptyStateMessage()}</p>
-            <Button 
-              onClick={() => setShowCreator(true)}
-              size="lg"
-              className="rounded-full px-6 bg-gradient-to-r from-event to-task hover:opacity-90"
-            >
-              <Plus className="mr-2 size-4" />
-              Create your first item
-            </Button>
+          <div className="flex flex-col md:flex-row gap-6">
+            {/* List view panel */}
+            <div className={`flex-1 ${selectedItem && !isMobile ? 'md:w-1/2 lg:w-2/5' : 'w-full'}`}>
+              <div className="flex justify-between items-center mb-4">
+                <div className="flex items-center">
+                  {getFilterIcon()}
+                  <h2 className="text-lg font-medium">
+                    {filter === 'all' ? 'All Items' : `${filter.charAt(0).toUpperCase() + filter.slice(1)}s`}
+                    <span className="text-muted-foreground ml-2 text-sm">({filteredItems.length})</span>
+                  </h2>
+                </div>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleImport}
+                  className="text-xs"
+                >
+                  Import
+                </Button>
+              </div>
+              
+              {/* Tags filter */}
+              {getAllTags().length > 0 && (
+                <div className="mb-4">
+                  <div className="text-sm text-muted-foreground mb-2 flex items-center">
+                    <Tag className="size-3 mr-1" />
+                    Tags filter:
+                  </div>
+                  <div className="flex flex-wrap gap-1">
+                    {getAllTags().map(tag => (
+                      <button
+                        key={tag}
+                        className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
+                          selectedTags.includes(tag)
+                            ? 'bg-primary text-primary-foreground'
+                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                        }`}
+                        onClick={() => toggleTag(tag)}
+                      >
+                        {tag}
+                        {selectedTags.includes(tag) && <X className="size-3" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              
+              {filteredItems.length > 0 ? (
+                <div className="border rounded-lg overflow-hidden shadow-sm">
+                  {filteredItems.map((item) => (
+                    <ContentItem 
+                      key={item.id} 
+                      item={item} 
+                      onUpdate={handleUpdateItem}
+                      onDelete={handleDeleteItem}
+                      allItems={items}
+                      isListView={true}
+                      onSelect={handleSelectItem}
+                    />
+                  ))}
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-64 animate-fade-in border rounded-lg p-8">
+                  <p className="text-lg text-muted-foreground mb-4">{getEmptyStateMessage()}</p>
+                  <Button 
+                    onClick={() => setShowCreator(true)}
+                    size="lg"
+                    className="rounded-full px-6 bg-gradient-to-r from-event to-task hover:opacity-90"
+                  >
+                    <Plus className="mr-2 size-4" />
+                    Create your first item
+                  </Button>
+                </div>
+              )}
+            </div>
+            
+            {/* Detail view panel */}
+            {selectedItem && !isMobile && (
+              <div className="md:w-1/2 lg:w-3/5 sticky top-4 self-start">
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-lg font-medium">Selected Item</h2>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setSelectedItem(null)}
+                  >
+                    <X className="size-4" />
+                  </Button>
+                </div>
+                
+                <div className="border rounded-lg p-4 shadow-sm">
+                  <ContentItem 
+                    item={selectedItem} 
+                    onUpdate={handleUpdateItem}
+                    onDelete={handleDeleteItem}
+                    allItems={items}
+                  />
+                </div>
+              </div>
+            )}
           </div>
         )}
+        
+        <div className="md:hidden fixed bottom-6 right-6">
+          <Button
+            onClick={() => setShowCreator(true)}
+            size="lg"
+            className="rounded-full size-14 shadow-lg bg-gradient-to-r from-event to-task hover:opacity-90"
+          >
+            <Plus className="size-6" />
+          </Button>
+        </div>
       </main>
       
       <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 max-w-md w-full px-4">
@@ -254,6 +367,21 @@ const Index = () => {
         @keyframes pulse {
           0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
           50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2); }
+        }
+        
+        .list-content-item:not(:last-child) {
+          border-bottom: 1px solid var(--border);
+        }
+        
+        .list-content-item:hover {
+          background-color: var(--muted);
+        }
+        
+        .content-item-tag {
+          padding: 0.125rem 0.5rem;
+          border-radius: 0.25rem;
+          font-size: 0.75rem;
+          font-weight: 500;
         }
         `}
       </style>

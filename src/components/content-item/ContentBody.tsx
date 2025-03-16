@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Content, getPrimaryContentType } from '@/lib/content-utils';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -104,34 +103,13 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 
         if (linkedItem) {
           result.push(
-            <Collapsible 
-              key={`embed-${itemId}-${i}`} 
-              open={expandedItems[itemId]} 
-              onOpenChange={() => toggleItemExpansion(itemId)}
-              className="my-2 border rounded-md overflow-hidden bg-muted/30"
-            >
-              <CollapsibleTrigger asChild>
-                <Button 
-                  variant="ghost" 
-                  className="w-full flex items-center justify-between p-2 text-sm hover:bg-muted"
-                >
-                  <div className="flex items-center gap-2">
-                    <EmbeddedItemIcon item={linkedItem} />
-                    <span className="font-medium text-primary">{itemTitle}</span>
-                  </div>
-                  {expandedItems[itemId] ? 
-                    <ChevronDown className="size-4 text-muted-foreground" /> : 
-                    <ChevronRight className="size-4 text-muted-foreground" />
-                  }
-                </Button>
-              </CollapsibleTrigger>
-              <CollapsibleContent className="p-3 bg-background border-t">
-                <EmbeddedItem 
-                  item={linkedItem} 
-                  onUpdate={onUpdate} 
-                />
-              </CollapsibleContent>
-            </Collapsible>
+            <EmbeddedItem 
+              key={`embed-${itemId}-${i}`}
+              item={linkedItem}
+              onUpdate={onUpdate}
+              isExpanded={expandedItems[itemId]}
+              toggleExpansion={() => toggleItemExpansion(itemId)}
+            />
           );
         } else {
           // If linked item not found, just display as a regular link
@@ -156,7 +134,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     <div className="content-item-body">
       <div className="flex items-center gap-2 mb-2">
         {getIcon()}
-        <ContentTypeTags item={item} />
+        <ContentTypeTags item={item} onUpdate={onUpdate} />
       </div>
       
       <AttributeSections item={item} onUpdate={onUpdate} handleTaskChange={handleTaskChange} handleDateChange={handleDateChange} />
@@ -166,29 +144,13 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   );
 };
 
-// Icon component for embedded items
-const EmbeddedItemIcon: React.FC<{ item: Content }> = ({ item }) => {
-  const primaryType = getPrimaryContentType(item);
-  
-  switch (primaryType) {
-    case 'task':
-      return <CheckCircle className="size-4 text-task" />;
-    case 'event':
-      return <Calendar className="size-4 text-event" />;
-    case 'note':
-      return <FileText className="size-4 text-note" />;
-    case 'mail':
-      return <Mail className="size-4 text-mail" />;
-    default:
-      return <FileText className="size-4" />;
-  }
-};
-
 // Embedded item component
 const EmbeddedItem: React.FC<{ 
   item: Content; 
   onUpdate: (updatedItem: Content) => void;
-}> = ({ item, onUpdate }) => {
+  isExpanded: boolean;
+  toggleExpansion: () => void;
+}> = ({ item, onUpdate, isExpanded, toggleExpansion }) => {
   // Task checkbox change handler for embedded tasks
   const handleTaskChange = (checked: boolean) => {
     const { formatContentWithYaml } = require('@/lib/content-utils');
@@ -198,79 +160,86 @@ const EmbeddedItem: React.FC<{
   };
 
   return (
-    <div className="embedded-item">
-      {item.hasTaskAttributes && (
-        <div className="flex items-center gap-2 mb-2">
+    <Collapsible 
+      open={isExpanded} 
+      onOpenChange={toggleExpansion}
+      className="my-2 border rounded-md overflow-hidden bg-muted/30"
+    >
+      <div className="flex items-center">
+        {item.hasTaskAttributes && (
           <Checkbox 
             id={`embedded-task-${item.id}`} 
             checked={item.taskDone} 
             onCheckedChange={handleTaskChange}
-            className="text-task data-[state=checked]:bg-task data-[state=checked]:text-white border-task"
+            className="ml-2 text-task data-[state=checked]:bg-task data-[state=checked]:text-white border-task"
           />
-          <label 
-            htmlFor={`embedded-task-${item.id}`}
-            className={cn(
-              "text-sm cursor-pointer flex-grow", 
-              item.taskDone && "line-through text-muted-foreground"
-            )}
+        )}
+        
+        <CollapsibleTrigger asChild className="flex-grow">
+          <Button 
+            variant="ghost" 
+            className="w-full flex items-center justify-between p-2 text-sm hover:bg-muted"
           >
-            {item.title}
-          </label>
-        </div>
-      )}
-      
-      {item.hasEventAttributes && (
-        <div className="p-2 bg-event-light/20 rounded-md mb-2">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5 text-sm text-event">
-              <Calendar className="size-4" />
-              <span>{item.title}</span>
+            <div className="flex items-center gap-2">
+              <ContentTypeTags item={item} onUpdate={onUpdate} />
+              <span className={cn(
+                "font-medium text-primary",
+                item.hasTaskAttributes && item.taskDone && "line-through text-muted-foreground"
+              )}>
+                {item.title}
+              </span>
             </div>
-            {item.eventDate && (
-              <div className="text-xs font-medium">
-                {format(item.eventDate, 'PPP')}
+            {isExpanded ? 
+              <ChevronDown className="size-4 text-muted-foreground" /> : 
+              <ChevronRight className="size-4 text-muted-foreground" />
+            }
+          </Button>
+        </CollapsibleTrigger>
+      </div>
+      
+      <CollapsibleContent className="p-3 bg-background border-t">
+        {/* Show content details without nested embeddings */}
+        <div className="text-sm text-muted-foreground whitespace-pre-line">
+          {item.content}
+        </div>
+        
+        {/* Show specific attributes based on type */}
+        {item.hasEventAttributes && item.eventDate && (
+          <div className="mt-2 p-2 bg-event-light/20 rounded-sm">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-1.5 text-xs text-event">
+                <Calendar className="size-3" />
+                <span>{format(item.eventDate, 'PPP')}</span>
               </div>
-            )}
-          </div>
-          {item.eventLocation && (
-            <div className="text-xs text-muted-foreground mt-1">
-              {item.eventLocation}
+              {item.eventLocation && (
+                <div className="text-xs text-muted-foreground">
+                  {item.eventLocation}
+                </div>
+              )}
             </div>
-          )}
-        </div>
-      )}
-      
-      {item.hasMailAttributes && (
-        <div className="p-2 bg-mail-light/20 rounded-md mb-2">
-          <div className="flex items-center gap-1.5 text-sm text-mail mb-1">
-            <Mail className="size-4" />
-            <span>{item.title}</span>
           </div>
-          <div className="grid text-xs space-y-0.5">
-            {item.mailFrom && (
-              <div className="flex">
-                <span className="w-12 text-muted-foreground">From:</span>
-                <span className="font-medium">{item.mailFrom}</span>
-              </div>
-            )}
-            {item.mailTo && item.mailTo.length > 0 && (
-              <div className="flex">
-                <span className="w-12 text-muted-foreground">To:</span>
-                <span className="font-medium">{item.mailTo.join(', ')}</span>
-              </div>
-            )}
+        )}
+        
+        {item.hasMailAttributes && (
+          <div className="mt-2 p-2 bg-mail-light/20 rounded-sm">
+            <div className="grid text-xs space-y-0.5">
+              {item.mailFrom && (
+                <div className="flex">
+                  <span className="w-12 text-muted-foreground">From:</span>
+                  <span className="font-medium">{item.mailFrom}</span>
+                </div>
+              )}
+              {item.mailTo && item.mailTo.length > 0 && (
+                <div className="flex">
+                  <span className="w-12 text-muted-foreground">To:</span>
+                  <span className="font-medium">{item.mailTo.join(', ')}</span>
+                </div>
+              )}
+            </div>
           </div>
-        </div>
-      )}
-      
-      {(!item.hasTaskAttributes && !item.hasEventAttributes && !item.hasMailAttributes) && (
-        <div className="text-sm text-muted-foreground">
-          {item.content.length > 150 
-            ? `${item.content.substring(0, 150)}...` 
-            : item.content}
-        </div>
-      )}
-    </div>
+        )}
+      </CollapsibleContent>
+    </Collapsible>
   );
 };
 

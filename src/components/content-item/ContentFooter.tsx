@@ -1,18 +1,18 @@
 
 import React from 'react';
 import { Content, toggleContentAttribute, ContentAttributeType } from '@/lib/content-utils';
-import { Edit, Copy, Plus } from 'lucide-react';
+import { Edit, Trash2, Plus } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
 interface ContentFooterProps {
   item: Content;
   onUpdate: (updatedItem: Content) => void;
-  handleCopy: () => void;
+  onDelete: (id: string) => void;
   onEdit: () => void;
 }
 
-const ContentFooter: React.FC<ContentFooterProps> = ({ item, onUpdate, handleCopy, onEdit }) => {
+const ContentFooter: React.FC<ContentFooterProps> = ({ item, onUpdate, onDelete, onEdit }) => {
   // Handle adding a new attribute type
   const handleAddAttribute = () => {
     const attributesToAdd = ['task', 'event', 'mail'].filter(
@@ -43,17 +43,17 @@ const ContentFooter: React.FC<ContentFooterProps> = ({ item, onUpdate, handleCop
         </button>
         <button 
           className="p-1 rounded hover:bg-muted transition-colors"
-          onClick={handleCopy}
-          aria-label="Copy content"
-        >
-          <Copy className="size-3 text-muted-foreground" />
-        </button>
-        <button 
-          className="p-1 rounded hover:bg-muted transition-colors"
           onClick={handleAddAttribute}
           aria-label="Add attribute"
         >
           <Plus className="size-3 text-muted-foreground" />
+        </button>
+        <button 
+          className="p-1 rounded hover:bg-destructive/10 transition-colors"
+          onClick={() => onDelete(item.id)}
+          aria-label="Delete item"
+        >
+          <Trash2 className="size-3 text-destructive" />
         </button>
       </div>
     </div>
