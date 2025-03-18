@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { getMockData, Content, parseYamlToContent, parseYaml } from '@/lib/content-utils';
 import { toast } from 'sonner';
@@ -6,11 +7,15 @@ import ContentCreator from '@/components/ContentCreator';
 import Navbar from '@/components/Navbar';
 import GitHubSync from '@/components/GitHubSync';
 import { Button } from '@/components/ui/button';
-import { 
-  Plus, Check, ArrowRight, FileText, Calendar, 
-  Mail, CheckCircle, X, Tag, Github
-} from 'lucide-react';
+import { Plus, Check, Github } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
+import TagsFilter from '@/components/filters/TagsFilter';
+import TypeFilter from '@/components/filters/TypeFilter';
+import EmptyState from '@/components/content/EmptyState';
+import ContentList from '@/components/content/ContentList';
+import SelectedItemView from '@/components/content/SelectedItemView';
+import WelcomeNote from '@/components/UI/WelcomeNote';
+import ActionStyles from '@/components/UI/ActionStyles';
 
 const Index = () => {
   const [items, setItems] = useState<Content[]>([]);
@@ -22,8 +27,6 @@ const Index = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Content | null>(null);
   const [showWelcomeNote, setShowWelcomeNote] = useState(true);
-  const [isAddingTag, setIsAddingTag] = useState(false);
-  const [newTagName, setNewTagName] = useState('');
   const [showGitHubSync, setShowGitHubSync] = useState(false);
   
   const isMobile = useIsMobile();
@@ -61,14 +64,6 @@ const Index = () => {
       setFilter('all');
     } else {
       setFilter(type);
-    }
-  };
-  
-  const handleAddNewTag = () => {
-    if (newTagName.trim()) {
-      toggleTag(newTagName.trim());
-      setNewTagName('');
-      setIsAddingTag(false);
     }
   };
   
@@ -177,10 +172,6 @@ const Index = () => {
     input.click();
   };
   
-  const handleSelectItem = (item: Content) => {
-    setSelectedItem(item);
-  };
-  
   const getEmptyStateMessage = () => {
     if (search) {
       return `No ${filter !== 'all' ? filter : 'items'} found matching "${search}"`;
@@ -196,28 +187,6 @@ const Index = () => {
     
     return 'No items yet';
   };
-  
-  const getFilterIcon = () => {
-    switch (filter) {
-      case 'task':
-        return <CheckCircle className="size-5 text-task mr-1.5" />;
-      case 'event':
-        return <Calendar className="size-5 text-event mr-1.5" />;
-      case 'note':
-        return <FileText className="size-5 text-note mr-1.5" />;
-      case 'mail':
-        return <Mail className="size-5 text-mail mr-1.5" />;
-      default:
-        return null;
-    }
-  };
-
-  const typeFilterTags = [
-    { type: 'note', label: 'Notes', icon: <FileText className="size-3" />, className: 'bg-note-light text-note' },
-    { type: 'task', label: 'Tasks', icon: <CheckCircle className="size-3" />, className: 'bg-task-light text-task' },
-    { type: 'event', label: 'Events', icon: <Calendar className="size-3" />, className: 'bg-event-light text-event' },
-    { type: 'mail', label: 'Emails', icon: <Mail className="size-3" />, className: 'bg-mail-light text-mail' }
-  ];
   
   return (
     <div className="min-h-screen flex flex-col bg-background">
@@ -255,13 +224,10 @@ const Index = () => {
           <div className="flex flex-col md:flex-row gap-6">
             <div className={`flex-1 ${selectedItem && !isMobile ? 'md:w-1/2 lg:w-2/5' : 'w-full'}`}>
               <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center">
-                  {getFilterIcon()}
-                  <h2 className="text-lg font-medium">
-                    {filter === 'all' ? 'All Items' : `${filter.charAt(0).toUpperCase() + filter.slice(1)}s`}
-                    <span className="text-muted-foreground ml-2 text-sm">({filteredItems.length})</span>
-                  </h2>
-                </div>
+                <h2 className="text-lg font-medium">
+                  {filter === 'all' ? 'All Items' : `${filter.charAt(0).toUpperCase() + filter.slice(1)}s`}
+                  <span className="text-muted-foreground ml-2 text-sm">({filteredItems.length})</span>
+                </h2>
                 <div className="flex items-center gap-2">
                   <Button
                     variant="outline"
@@ -283,145 +249,42 @@ const Index = () => {
                 </div>
               </div>
               
-              <div className="mb-4">
-                <div className="text-sm text-muted-foreground mb-2">Filter by type:</div>
-                <div className="flex flex-wrap gap-1">
-                  {typeFilterTags.map(({ type, label, icon, className }) => (
-                    <button
-                      key={type}
-                      className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
-                        filter === type
-                          ? 'bg-primary text-primary-foreground'
-                          : className + ' hover:opacity-90'
-                      }`}
-                      onClick={() => toggleTypeTag(type)}
-                    >
-                      {icon}
-                      {label}
-                      {filter === type && <X className="size-3" />}
-                    </button>
-                  ))}
-                </div>
-              </div>
+              <TypeFilter 
+                activeFilter={filter} 
+                toggleTypeTag={toggleTypeTag} 
+              />
 
-              <div className="mb-4">
-                <div className="text-sm text-muted-foreground mb-2 flex items-center">
-                  <Tag className="size-3 mr-1" />
-                  Tags filter:
-                </div>
-                <div className="flex flex-wrap gap-1">
-                  {getAllTags().map(tag => (
-                    <button
-                      key={tag}
-                      className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
-                        selectedTags.includes(tag)
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                      }`}
-                      onClick={() => toggleTag(tag)}
-                    >
-                      {tag}
-                      {selectedTags.includes(tag) && <X className="size-3" />}
-                    </button>
-                  ))}
-                  
-                  {isAddingTag ? (
-                    <div className="flex items-center">
-                      <input
-                        type="text"
-                        value={newTagName}
-                        onChange={(e) => setNewTagName(e.target.value)}
-                        placeholder="New tag..."
-                        className="text-xs rounded-l-full py-1 px-2 bg-muted border-0 focus:ring-0"
-                        onKeyDown={(e) => {
-                          if (e.key === 'Enter') {
-                            handleAddNewTag();
-                          } else if (e.key === 'Escape') {
-                            setIsAddingTag(false);
-                            setNewTagName('');
-                          }
-                        }}
-                        autoFocus
-                      />
-                      <button
-                        className="bg-primary text-primary-foreground rounded-r-full text-xs py-1 px-2"
-                        onClick={handleAddNewTag}
-                      >
-                        Add
-                      </button>
-                      <button
-                        className="bg-muted text-muted-foreground rounded-full ml-1 p-1"
-                        onClick={() => {
-                          setIsAddingTag(false);
-                          setNewTagName('');
-                        }}
-                      >
-                        <X className="size-3" />
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      className="text-xs px-2 py-1 rounded-full flex items-center gap-1 bg-muted text-muted-foreground hover:bg-muted/80"
-                      onClick={() => setIsAddingTag(true)}
-                    >
-                      <Plus className="size-3" />
-                      Add tag
-                    </button>
-                  )}
-                </div>
-              </div>
+              <TagsFilter 
+                selectedTags={selectedTags}
+                toggleTag={toggleTag}
+                getAllTags={getAllTags}
+              />
               
               {filteredItems.length > 0 ? (
-                <div className="border rounded-lg overflow-hidden shadow-sm">
-                  {filteredItems.map((item) => (
-                    <ContentItem 
-                      key={item.id} 
-                      item={item} 
-                      onUpdate={handleUpdateItem}
-                      onDelete={handleDeleteItem}
-                      allItems={items}
-                      isListView={true}
-                      onSelect={handleSelectItem}
-                    />
-                  ))}
-                </div>
+                <ContentList 
+                  items={filteredItems}
+                  onUpdate={handleUpdateItem}
+                  onDelete={handleDeleteItem}
+                  allItems={items}
+                  onSelect={setSelectedItem}
+                />
               ) : (
-                <div className="flex flex-col items-center justify-center h-64 animate-fade-in border rounded-lg p-8">
-                  <p className="text-lg text-muted-foreground mb-4">{getEmptyStateMessage()}</p>
-                  <Button 
-                    onClick={() => setShowCreator(true)}
-                    size="lg"
-                    className="rounded-full px-6 bg-gradient-to-r from-event to-task hover:opacity-90"
-                  >
-                    <Plus className="mr-2 size-4" />
-                    Create your first item
-                  </Button>
-                </div>
+                <EmptyState 
+                  message={getEmptyStateMessage()}
+                  onCreateNew={() => setShowCreator(true)}
+                />
               )}
             </div>
             
             {selectedItem && (
-              <div className={isMobile ? "fixed inset-0 z-20 bg-background p-4" : "md:w-1/2 lg:w-3/5 sticky top-4 self-start"}>
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-lg font-medium">Selected Item</h2>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => setSelectedItem(null)}
-                  >
-                    <X className="size-4" />
-                  </Button>
-                </div>
-                
-                <div className="border rounded-lg p-4 shadow-sm">
-                  <ContentItem 
-                    item={selectedItem} 
-                    onUpdate={handleUpdateItem}
-                    onDelete={handleDeleteItem}
-                    allItems={items}
-                  />
-                </div>
-              </div>
+              <SelectedItemView
+                item={selectedItem}
+                onUpdate={handleUpdateItem}
+                onDelete={handleDeleteItem}
+                onClose={() => setSelectedItem(null)}
+                allItems={items}
+                isMobile={isMobile}
+              />
             )}
           </div>
         )}
@@ -438,61 +301,10 @@ const Index = () => {
       </main>
       
       {showWelcomeNote && (
-        <div className="fixed bottom-4 left-1/2 transform -translate-x-1/2 max-w-md w-full px-4">
-          <div className="glass-panel p-4 animate-float">
-            <h3 className="text-lg font-medium flex items-center">
-              <Check className="size-5 text-green-500 mr-2" />
-              Welcome to IdeaCraft!
-            </h3>
-            <p className="text-sm text-muted-foreground mt-1">
-              Content can now have multiple attributes and you can link between items using [[title]] syntax!
-            </p>
-            <div className="mt-3 flex justify-end">
-              <Button 
-                variant="link" 
-                className="text-muted-foreground hover:text-foreground"
-                onClick={() => setShowWelcomeNote(false)}
-              >
-                Got it <ArrowRight className="ml-1 size-3" />
-              </Button>
-            </div>
-          </div>
-        </div>
+        <WelcomeNote onDismiss={() => setShowWelcomeNote(false)} />
       )}
       
-      <style>
-        {`
-        .content-link {
-          color: #3b82f6;
-          text-decoration: underline;
-          cursor: pointer;
-        }
-        
-        .highlight-pulse {
-          animation: pulse 1.5s ease-in-out;
-        }
-        
-        @keyframes pulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-          50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2); }
-        }
-        
-        .list-content-item:not(:last-child) {
-          border-bottom: 1px solid var(--border);
-        }
-        
-        .list-content-item:hover {
-          background-color: var(--muted);
-        }
-        
-        .content-item-tag {
-          padding: 0.125rem 0.5rem;
-          border-radius: 0.25rem;
-          font-size: 0.75rem;
-          font-weight: 500;
-        }
-        `}
-      </style>
+      <ActionStyles />
     </div>
   );
 };

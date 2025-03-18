@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Content } from '@/lib/content-utils';
 import { format } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -21,18 +21,53 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 }) => {
   const [expandedLinks, setExpandedLinks] = useState<string[]>([]);
   
-  const toggleExpandLink = (itemId: string) => {
-    setExpandedLinks(prevExpanded => 
-      prevExpanded.includes(itemId)
-        ? prevExpanded.filter(id => id !== itemId)
-        : [...prevExpanded, itemId]
-    );
-  };
+  // Set up event listeners for toggling links and tasks
+  useEffect(() => {
+    const handleToggleLink = (e: CustomEvent) => {
+      const itemId = e.detail.itemId;
+      setExpandedLinks(prevExpanded => 
+        prevExpanded.includes(itemId)
+          ? prevExpanded.filter(id => id !== itemId)
+          : [...prevExpanded, itemId]
+      );
+    };
+    
+    const handleToggleLinkedTask = (e: CustomEvent) => {
+      const itemId = e.detail.itemId;
+      const isChecked = e.detail.isChecked;
+      
+      const linkedItem = allItems.find(item => item.id === itemId);
+      if (linkedItem) {
+        handleToggleTaskDone(linkedItem, isChecked);
+      }
+    };
+    
+    document.addEventListener('toggle-link', handleToggleLink as EventListener);
+    document.addEventListener('toggle-linked-task', handleToggleLinkedTask as EventListener);
+    
+    return () => {
+      document.removeEventListener('toggle-link', handleToggleLink as EventListener);
+      document.removeEventListener('toggle-linked-task', handleToggleLinkedTask as EventListener);
+    };
+  }, [allItems]);
   
   const handleToggleTaskDone = (linkedItem: Content, isDone: boolean) => {
     const updatedItem = { 
       ...linkedItem,
       taskDone: isDone
+    };
+    
+    // Re-generate YAML
+    const { formatContentWithYaml } = require('@/lib/content-utils');
+    updatedItem.yaml = formatContentWithYaml(updatedItem);
+    
+    onUpdate(updatedItem);
+  };
+
+  const handleTaskToggle = (checked: boolean) => {
+    const updatedItem = { 
+      ...item, 
+      taskDone: checked 
     };
     
     // Re-generate YAML
@@ -49,12 +84,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
           <Checkbox 
             id={`task-${item.id}`}
             checked={item.taskDone} 
-            onCheckedChange={(checked) => {
-              const { formatContentWithYaml } = require('@/lib/content-utils');
-              const updatedItem = { ...item, taskDone: !!checked };
-              updatedItem.yaml = formatContentWithYaml(updatedItem);
-              onUpdate(updatedItem);
-            }}
+            onCheckedChange={handleTaskToggle}
             className="mr-2 data-[state=checked]:bg-task data-[state=checked]:text-white border-task"
           />
           <label 
