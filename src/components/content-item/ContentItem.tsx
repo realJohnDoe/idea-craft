@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { Content, getPrimaryContentType, processContentLinks, formatContentWithYaml } from '@/lib/content-utils';
 import { toast } from 'sonner';
@@ -17,6 +18,7 @@ interface ContentItemProps {
   allItems?: Content[];
   isListView?: boolean;
   onSelect?: (item: Content) => void;
+  onTaskToggle?: (item: Content, checked: boolean) => void;
 }
 
 const ContentItem: React.FC<ContentItemProps> = ({ 
@@ -25,7 +27,8 @@ const ContentItem: React.FC<ContentItemProps> = ({
   onDelete, 
   allItems = [], 
   isListView = false,
-  onSelect
+  onSelect,
+  onTaskToggle
 }) => {
   const [isHovered, setIsHovered] = useState(false);
   const [processedContent, setProcessedContent] = useState(item.content);
@@ -86,6 +89,16 @@ const ContentItem: React.FC<ContentItemProps> = ({
     onUpdate(updatedItem);
   };
 
+  const handleListViewTaskToggle = (e: React.MouseEvent | React.ChangeEvent<HTMLInputElement>) => {
+    if (e) {
+      e.stopPropagation();
+    }
+    
+    if (onTaskToggle) {
+      onTaskToggle(item, !item.taskDone);
+    }
+  };
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -135,9 +148,9 @@ const ContentItem: React.FC<ContentItemProps> = ({
                 <input 
                   type="checkbox" 
                   checked={item.taskDone}
-                  onChange={handleTaskToggle}
-                  className="form-checkbox h-4 w-4 text-task border-task rounded"
+                  onChange={handleListViewTaskToggle}
                   onClick={(e) => e.stopPropagation()}
+                  className="form-checkbox h-4 w-4 text-task border-task rounded"
                 />
               </div>
             )}

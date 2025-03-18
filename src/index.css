@@ -46,14 +46,15 @@
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     
-    --task: 25 95% 53%;
-    --task-light: 25 100% 93%;
-    --event: 200 95% 53%;
+    /* Updated color palette */
+    --task: 280 90% 65%;
+    --task-light: 280 100% 93%;
+    --event: 200 95% 60%;
     --event-light: 200 100% 93%;
-    --note: 142 76% 36%;
-    --note-light: 142 76% 93%;
-    --mail: 280 95% 53%;
-    --mail-light: 280 100% 93%;
+    --note: 150 76% 45%;
+    --note-light: 150 76% 93%;
+    --mail: 25 95% 55%;
+    --mail-light: 25 100% 93%;
     
     color-scheme: light;
   }
@@ -96,14 +97,15 @@
     --sidebar-border: 222 25% 16%;
     --sidebar-ring: 217.2 91.2% 59.8%;
     
-    --task: 30 90% 60%;
-    --task-light: 30 90% 20%;
+    /* Updated dark mode color palette */
+    --task: 280 90% 65%;
+    --task-light: 280 30% 30%;
     --event: 200 90% 60%;
-    --event-light: 200 90% 20%;
-    --note: 142 70% 45%;
-    --note-light: 142 70% 20%;
-    --mail: 280 90% 65%;
-    --mail-light: 280 90% 20%;
+    --event-light: 200 30% 30%;
+    --note: 150 70% 45%;
+    --note-light: 150 30% 25%;
+    --mail: 25 90% 55%;
+    --mail-light: 25 30% 30%;
     
     color-scheme: dark;
   }

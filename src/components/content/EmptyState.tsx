@@ -15,7 +15,7 @@ const EmptyState = ({ message, onCreateNew }: EmptyStateProps) => {
       <Button 
         onClick={onCreateNew}
         size="lg"
-        className="rounded-full px-6 bg-gradient-to-r from-event to-task hover:opacity-90"
+        className="rounded-full px-6 bg-gradient-to-r from-note to-task hover:opacity-90"
       >
         <Plus className="mr-2 size-4" />
         Create your first item

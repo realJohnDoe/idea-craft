@@ -293,7 +293,7 @@ const Index = () => {
           <Button
             onClick={() => setShowCreator(true)}
             size="lg"
-            className="rounded-full size-14 shadow-lg bg-gradient-to-r from-event to-task hover:opacity-90"
+            className="rounded-full size-14 shadow-lg bg-gradient-to-r from-note to-task hover:opacity-90"
           >
             <Plus className="size-6" />
           </Button>

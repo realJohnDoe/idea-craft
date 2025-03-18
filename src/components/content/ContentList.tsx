@@ -12,6 +12,19 @@ interface ContentListProps {
 }
 
 const ContentList = ({ items, onUpdate, onDelete, allItems, onSelect }: ContentListProps) => {
+  const handleTaskToggle = (item: Content, checked: boolean) => {
+    const updatedItem = { 
+      ...item, 
+      taskDone: checked 
+    };
+    
+    // Re-generate YAML
+    const { formatContentWithYaml } = require('@/lib/content-utils');
+    updatedItem.yaml = formatContentWithYaml(updatedItem);
+    
+    onUpdate(updatedItem);
+  };
+
   return (
     <div className="border rounded-lg overflow-hidden shadow-sm">
       {items.map((item) => (
@@ -23,6 +36,7 @@ const ContentList = ({ items, onUpdate, onDelete, allItems, onSelect }: ContentL
           allItems={allItems}
           isListView={true}
           onSelect={onSelect}
+          onTaskToggle={handleTaskToggle}
         />
       ))}
     </div>

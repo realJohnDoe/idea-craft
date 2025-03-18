@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { Content } from '@/lib/content-utils';
+import { Content, formatContentWithYaml } from '@/lib/content-utils';
 import { format } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
 
@@ -58,7 +58,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     };
     
     // Re-generate YAML
-    const { formatContentWithYaml } = require('@/lib/content-utils');
     updatedItem.yaml = formatContentWithYaml(updatedItem);
     
     onUpdate(updatedItem);
@@ -71,7 +70,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     };
     
     // Re-generate YAML
-    const { formatContentWithYaml } = require('@/lib/content-utils');
     updatedItem.yaml = formatContentWithYaml(updatedItem);
     
     onUpdate(updatedItem);
