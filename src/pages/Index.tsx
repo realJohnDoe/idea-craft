@@ -137,41 +137,49 @@ const Index = () => {
   const handleImport = () => {
     const input = document.createElement('input');
     input.type = 'file';
+    input.webkitdirectory = true; // Allow directory selection
     input.accept = '.md,.txt';
     input.onchange = async (e) => {
-      const file = (e.target as HTMLInputElement).files?.[0];
-      if (file) {
-        try {
-          const content = await file.text();
-          const { yamlData, content: textContent } = parseYaml(content);
-          
-          const newContent: Content = {
-            id: Math.random().toString(36).substring(2, 9),
-            title: file.name.replace(/\.(md|txt)$/, ''),
-            content: textContent,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-            hasTaskAttributes: false,
-            hasEventAttributes: false,
-            hasMailAttributes: false,
-            hasNoteAttributes: true,
-            tags: [],
-            yaml: ''
-          };
-          
-          const parsedContent = parseYamlToContent(yamlData, newContent);
-          
-          setItems(prevItems => [parsedContent, ...prevItems]);
-          toast.success('Content imported successfully');
-        } catch (error) {
-          console.error('Import error:', error);
-          toast.error('Failed to import content');
-        }
+      const files = (e.target as HTMLInputElement).files;
+      if (files) {
+        const importedFiles = await Promise.all(Array.from(files).filter(file => {
+          const relativePath = file.webkitRelativePath;
+          const pathParts = relativePath.split('/');
+          return !pathParts.some(part => part.startsWith('.'));
+        })
+          .map(async (file) => {
+            try {
+              const content = await file.text();
+              const { yamlData, content: textContent } = parseYaml(content);
+              
+              const newContent: Content = {
+                id: Math.random().toString(36).substring(2, 9),
+                title: file.name.replace(/\.(md|txt)$/, ''),
+                content: textContent,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+                hasTaskAttributes: false,
+                hasEventAttributes: false,
+                hasMailAttributes: false,
+                hasNoteAttributes: true,
+                tags: [],
+                yaml: ''
+              };
+              
+              const parsedContent = parseYamlToContent(yamlData, newContent);
+              return parsedContent;
+            } catch (error) {
+              console.error('Import error:', error);
+              toast.error('Failed to import content');
+            }
+          }));
+        setItems(prevItems => [...importedFiles, ...prevItems]);
+        toast.success('Content imported successfully');
       }
     };
     input.click();
   };
-  
+
   const getEmptyStateMessage = () => {
     if (search) {
       return `No ${filter !== 'all' ? filter : 'items'} found matching "${search}"`;
