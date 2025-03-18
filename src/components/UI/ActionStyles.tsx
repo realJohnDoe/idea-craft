@@ -6,7 +6,7 @@ const ActionStyles = () => {
     <style>
       {`
       .content-link {
-        color: #3b82f6;
+        color: hsl(var(--primary));
         text-decoration: underline;
         cursor: pointer;
       }
@@ -16,8 +16,8 @@ const ActionStyles = () => {
       }
       
       @keyframes pulse {
-        0%, 100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
-        50% { box-shadow: 0 0 0 8px rgba(59, 130, 246, 0.2); }
+        0%, 100% { box-shadow: 0 0 0 0 rgba(var(--primary), 0); }
+        50% { box-shadow: 0 0 0 8px rgba(var(--primary), 0.2); }
       }
       
       .list-content-item:not(:last-child) {
@@ -25,7 +25,7 @@ const ActionStyles = () => {
       }
       
       .list-content-item:hover {
-        background-color: var(--muted);
+        background-color: hsl(var(--muted));
       }
       
       .content-item-tag {
@@ -33,6 +33,28 @@ const ActionStyles = () => {
         border-radius: 0.25rem;
         font-size: 0.75rem;
         font-weight: 500;
+      }
+      
+      /* Enhanced styling for content type borders */
+      .content-task {
+        border-left: 4px solid hsl(var(--task));
+      }
+      
+      .content-event {
+        border-left: 4px solid hsl(var(--event));
+      }
+      
+      .content-note {
+        border-left: 4px solid hsl(var(--note));
+      }
+      
+      .content-mail {
+        border-left: 4px solid hsl(var(--mail));
+      }
+      
+      /* Checkbox styling for tasks */
+      input[type="checkbox"] {
+        accent-color: hsl(var(--task));
       }
       `}
     </style>

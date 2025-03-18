@@ -81,12 +81,18 @@ const ContentItem: React.FC<ContentItemProps> = ({
 
   const handleTaskToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    const updatedItem = { 
-      ...item, 
-      taskDone: e.target.checked 
-    };
-    updatedItem.yaml = formatContentWithYaml(updatedItem);
-    onUpdate(updatedItem);
+    
+    // Use either the passed in onTaskToggle or directly update
+    if (onTaskToggle) {
+      onTaskToggle(item, e.target.checked);
+    } else {
+      const updatedItem = { 
+        ...item, 
+        taskDone: e.target.checked 
+      };
+      updatedItem.yaml = formatContentWithYaml(updatedItem);
+      onUpdate(updatedItem);
+    }
   };
 
   const handleListViewTaskToggle = (e: React.MouseEvent | React.ChangeEvent<HTMLInputElement>) => {
@@ -148,7 +154,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
                 <input 
                   type="checkbox" 
                   checked={item.taskDone}
-                  onChange={handleListViewTaskToggle}
+                  onChange={handleTaskToggle}
                   onClick={(e) => e.stopPropagation()}
                   className="form-checkbox h-4 w-4 text-task border-task rounded"
                 />

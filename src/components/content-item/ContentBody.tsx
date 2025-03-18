@@ -201,16 +201,18 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         dangerouslySetInnerHTML={{
           __html: `
             document.addEventListener('click', function(e) {
-              if (e.target.closest('[data-link-toggle]')) {
-                const itemId = e.target.closest('[data-link-toggle]').getAttribute('data-link-toggle');
+              const linkToggle = e.target.closest('[data-link-toggle]');
+              if (linkToggle) {
+                const itemId = linkToggle.getAttribute('data-link-toggle');
                 const event = new CustomEvent('toggle-link', { detail: { itemId } });
                 document.dispatchEvent(event);
               }
               
-              if (e.target.closest('[data-linked-task]')) {
+              const linkedTask = e.target.closest('[data-linked-task]');
+              if (linkedTask) {
                 e.stopPropagation();
-                const itemId = e.target.closest('[data-linked-task]').getAttribute('data-linked-task');
-                const isChecked = e.target.closest('[data-linked-task]').checked;
+                const itemId = linkedTask.getAttribute('data-linked-task');
+                const isChecked = linkedTask.checked;
                 const event = new CustomEvent('toggle-linked-task', { 
                   detail: { itemId, isChecked } 
                 });

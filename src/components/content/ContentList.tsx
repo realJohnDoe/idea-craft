@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Content } from '@/lib/content-utils';
+import { Content, formatContentWithYaml } from '@/lib/content-utils';
 import ContentItem from '@/components/content-item';
 
 interface ContentListProps {
@@ -19,7 +19,6 @@ const ContentList = ({ items, onUpdate, onDelete, allItems, onSelect }: ContentL
     };
     
     // Re-generate YAML
-    const { formatContentWithYaml } = require('@/lib/content-utils');
     updatedItem.yaml = formatContentWithYaml(updatedItem);
     
     onUpdate(updatedItem);
