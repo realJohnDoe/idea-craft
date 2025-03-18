@@ -75,7 +75,7 @@ export default {
 					foreground: 'hsl(var(--card-foreground))'
 				},
 				task: {
-					DEFAULT: '#FF9500',
+					DEFAULT: 'hsl(var(--task))',
 					light: '#FFE5C2',
 				},
 				event: {
@@ -83,7 +83,7 @@ export default {
 					light: '#CEE4FF',
 				},
 				note: {
-					DEFAULT: '#32D74B',
+					DEFAULT: '#D58C00',
 					light: '#D1F7D7',
 				},
 				mail: {

@@ -66,14 +66,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
   const getTypeClass = () => {
     const primaryType = getPrimaryContentType(item);
     switch (primaryType) {
-      case 'task':
-        return 'content-task';
-      case 'event':
-        return 'content-event';
-      case 'note':
-        return 'content-note';
-      case 'mail':
-        return 'content-mail';
       default:
         return '';
     }

@@ -9,10 +9,10 @@ interface TypeFilterProps {
 
 const TypeFilter = ({ activeFilter, toggleTypeTag }: TypeFilterProps) => {
   const typeFilterTags = [
-    { type: 'note', label: 'Notes', icon: <FileText className="size-3" />, className: 'bg-note-light text-note' },
-    { type: 'task', label: 'Tasks', icon: <CheckCircle className="size-3" />, className: 'bg-task-light text-task' },
-    { type: 'event', label: 'Events', icon: <Calendar className="size-3" />, className: 'bg-event-light text-event' },
-    { type: 'mail', label: 'Emails', icon: <Mail className="size-3" />, className: 'bg-mail-light text-mail' }
+    { type: 'note', label: 'Notes', icon: <FileText className="size-3" />, className: 'bg-note text-note-foreground' },
+    { type: 'task', label: 'Tasks', icon: <CheckCircle className="size-3" />, className: 'bg-task text-task-foreground' },
+    { type: 'event', label: 'Events', icon: <Calendar className="size-3" />, className: 'bg-event text-event-foreground' },
+    { type: 'mail', label: 'Emails', icon: <Mail className="size-3" />, className: 'bg-mail text-mail-foreground' }
   ];
 
   return (

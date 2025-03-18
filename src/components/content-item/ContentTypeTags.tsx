@@ -25,13 +25,13 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item, onUpdate }) => 
   const getTagClass = (type: ContentAttributeType) => {
     switch (type) {
       case 'task':
-        return 'bg-task-light text-task';
+        return 'bg-task text-task-foreground';
       case 'event':
-        return 'bg-event-light text-event';
+        return 'bg-event text-event-foreground';
       case 'note':
-        return 'bg-note-light text-note';
+        return 'bg-note text-note-foreground';
       case 'mail':
-        return 'bg-mail-light text-mail';
+        return 'bg-mail text-mail-foreground';
       default:
         return 'bg-muted text-muted-foreground';
     }
