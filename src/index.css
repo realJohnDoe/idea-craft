@@ -1,5 +1,4 @@
-
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -45,7 +44,7 @@
     --sidebar-accent-foreground: 240 5.9% 10%;
     --sidebar-border: 220 13% 91%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    
+
     /* Updated color palette */
     --task: 280 90% 65%;
     --task-light: 280 100% 93%;
@@ -55,15 +54,15 @@
     --note-light: 150 76% 93%;
     --mail: 25 95% 55%;
     --mail-light: 25 100% 93%;
-    
+
     color-scheme: light;
   }
 
   .dark {
-    --background: 158 24% 22%;
+    --background: 25 40% 20%;
     --foreground: 210 40% 98%;
 
-    --card: 160 25% 19%;
+    --card: 25 30% 20%;
     --card-foreground: 210 40% 98%;
 
     --popover: 160 25% 19%;
@@ -75,7 +74,7 @@
     --secondary: 223 36% 24%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 223 36% 24%;
+    --muted: 25 40% 10%;
     --muted-foreground: 215 20.2% 65.1%;
 
     --accent: 223 36% 24%;
@@ -87,7 +86,7 @@
     --border: 217 36% 20%;
     --input: 217 36% 20%;
     --ring: 212.7 26.8% 83.9%;
-    
+
     --sidebar-background: 222 25% 21%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -96,7 +95,7 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 222 25% 16%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    
+
     /* Updated dark mode color palette */
     --task: 280 90% 65%;
     --task-light: 280 30% 30%;
@@ -106,7 +105,7 @@
     --note-light: 150 30% 25%;
     --mail: 25 90% 55%;
     --mail-light: 25 30% 30%;
-    
+
     color-scheme: dark;
   }
 }
@@ -149,7 +148,12 @@
   }
 
   /* Typography adjustments */
-  h1, h2, h3, h4, h5, h6 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
     @apply font-medium tracking-tight;
   }
 }
@@ -161,48 +165,48 @@
            transition-all duration-300 hover:shadow-md hover:-translate-y-1
            animate-scale-in;
   }
-  
+
   .content-item-header {
     @apply flex items-center justify-between mb-2;
   }
-  
+
   .content-item-tag {
     @apply text-xs px-2.5 py-0.5 rounded-full font-medium;
   }
-  
+
   .content-item-body {
     @apply flex-1;
   }
-  
+
   .content-item-footer {
     @apply flex items-center justify-between mt-2 pt-2 border-t border-border/50;
   }
-  
+
   .glass-panel {
     @apply bg-background/80 backdrop-blur-md border border-border/50 rounded-xl shadow-sm;
   }
-  
+
   .sidebar-item {
     @apply flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
            transition-all duration-200 hover:bg-muted;
   }
-  
+
   .sidebar-item.active {
     @apply bg-primary text-primary-foreground hover:bg-primary/90;
   }
-  
+
   .content-task {
     @apply border-l-4 border-task;
   }
-  
+
   .content-event {
     @apply border-l-4 border-event;
   }
-  
+
   .content-note {
     @apply border-l-4 border-note;
   }
-  
+
   .content-mail {
     @apply border-l-4 border-mail;
   }
@@ -212,34 +216,54 @@
   }
 
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+    0%,
+    100% {
+      transform: translateY(0px);
+    }
+    50% {
+      transform: translateY(-10px);
+    }
   }
-  
+
   .animate-scale-in {
     animation: scaleIn 0.2s ease-out forwards;
   }
-  
+
   @keyframes scaleIn {
-    from { transform: scale(0.95); opacity: 0; }
-    to { transform: scale(1); opacity: 1; }
+    from {
+      transform: scale(0.95);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
   }
-  
+
   .animate-fade-in {
     animation: fadeIn 0.3s ease-out forwards;
   }
-  
+
   @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
-  
+
   .animate-pulse-subtle {
     animation: pulseSub 1.5s ease-in-out infinite;
   }
-  
+
   @keyframes pulseSub {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.5; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
   }
 }
