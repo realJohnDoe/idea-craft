@@ -1,16 +1,16 @@
-
 import React, { useState, useEffect } from 'react';
 import { getMockData, Content, parseYamlToContent, parseYaml } from '@/lib/content-utils';
 import { toast } from 'sonner';
 import ContentItem from '@/components/content-item';
 import ContentCreator from '@/components/ContentCreator';
 import Navbar from '@/components/Navbar';
+import GitHubSync from '@/components/GitHubSync';
 import { Button } from '@/components/ui/button';
 import { 
   Plus, Check, ArrowRight, FileText, Calendar, 
-  Mail, CheckCircle, X, Tag
+  Mail, CheckCircle, X, Tag, Github
 } from 'lucide-react';
-import { useMediaQuery, useIsMobile } from '@/hooks/use-mobile';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 const Index = () => {
   const [items, setItems] = useState<Content[]>([]);
@@ -22,6 +22,9 @@ const Index = () => {
   const [isLoaded, setIsLoaded] = useState(false);
   const [selectedItem, setSelectedItem] = useState<Content | null>(null);
   const [showWelcomeNote, setShowWelcomeNote] = useState(true);
+  const [isAddingTag, setIsAddingTag] = useState(false);
+  const [newTagName, setNewTagName] = useState('');
+  const [showGitHubSync, setShowGitHubSync] = useState(false);
   
   const isMobile = useIsMobile();
   
@@ -35,7 +38,6 @@ const Index = () => {
     }, 300);
   }, []);
   
-  // Get all unique tags from items
   const getAllTags = () => {
     const tags = new Set<string>();
     items.forEach(item => {
@@ -46,7 +48,6 @@ const Index = () => {
     return Array.from(tags).sort();
   };
   
-  // Toggle tag selection
   const toggleTag = (tag: string) => {
     setSelectedTags(prevTags => 
       prevTags.includes(tag) 
@@ -55,12 +56,19 @@ const Index = () => {
     );
   };
 
-  // Toggle type filter tags
   const toggleTypeTag = (type: string) => {
     if (type === filter) {
       setFilter('all');
     } else {
       setFilter(type);
+    }
+  };
+  
+  const handleAddNewTag = () => {
+    if (newTagName.trim()) {
+      toggleTag(newTagName.trim());
+      setNewTagName('');
+      setIsAddingTag(false);
     }
   };
   
@@ -84,7 +92,6 @@ const Index = () => {
       }
     }
     
-    // Filter by selected tags
     if (selectedTags.length > 0) {
       result = result.filter(item => 
         item.tags && 
@@ -111,7 +118,6 @@ const Index = () => {
       )
     );
     
-    // Update selected item if it was updated
     if (selectedItem && selectedItem.id === updatedItem.id) {
       setSelectedItem(updatedItem);
     }
@@ -120,7 +126,6 @@ const Index = () => {
   const handleDeleteItem = (id: string) => {
     setItems(prevItems => prevItems.filter(item => item.id !== id));
     
-    // Clear selected item if it was deleted
     if (selectedItem && selectedItem.id === id) {
       setSelectedItem(null);
     }
@@ -207,7 +212,6 @@ const Index = () => {
     }
   };
 
-  // Type filter tags that will replace the nav buttons
   const typeFilterTags = [
     { type: 'note', label: 'Notes', icon: <FileText className="size-3" />, className: 'bg-note-light text-note' },
     { type: 'task', label: 'Tasks', icon: <CheckCircle className="size-3" />, className: 'bg-task-light text-task' },
@@ -233,9 +237,22 @@ const Index = () => {
             onCreate={handleCreateItem}
             onCancel={() => setShowCreator(false)}
           />
+        ) : showGitHubSync ? (
+          <div>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-medium">GitHub Sync</h2>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowGitHubSync(false)}
+              >
+                Back to items
+              </Button>
+            </div>
+            <GitHubSync items={items} />
+          </div>
         ) : (
           <div className="flex flex-col md:flex-row gap-6">
-            {/* List view panel */}
             <div className={`flex-1 ${selectedItem && !isMobile ? 'md:w-1/2 lg:w-2/5' : 'w-full'}`}>
               <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center">
@@ -245,17 +262,27 @@ const Index = () => {
                     <span className="text-muted-foreground ml-2 text-sm">({filteredItems.length})</span>
                   </h2>
                 </div>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleImport}
-                  className="text-xs"
-                >
-                  Import
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowGitHubSync(true)}
+                    className="text-xs"
+                  >
+                    <Github className="mr-1 size-3" />
+                    Sync
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleImport}
+                    className="text-xs"
+                  >
+                    Import
+                  </Button>
+                </div>
               </div>
               
-              {/* Type filter tags */}
               <div className="mb-4">
                 <div className="text-sm text-muted-foreground mb-2">Filter by type:</div>
                 <div className="flex flex-wrap gap-1">
@@ -277,31 +304,72 @@ const Index = () => {
                 </div>
               </div>
 
-              {/* Tags filter */}
-              {getAllTags().length > 0 && (
-                <div className="mb-4">
-                  <div className="text-sm text-muted-foreground mb-2 flex items-center">
-                    <Tag className="size-3 mr-1" />
-                    Tags filter:
-                  </div>
-                  <div className="flex flex-wrap gap-1">
-                    {getAllTags().map(tag => (
-                      <button
-                        key={tag}
-                        className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
-                          selectedTags.includes(tag)
-                            ? 'bg-primary text-primary-foreground'
-                            : 'bg-muted text-muted-foreground hover:bg-muted/80'
-                        }`}
-                        onClick={() => toggleTag(tag)}
-                      >
-                        {tag}
-                        {selectedTags.includes(tag) && <X className="size-3" />}
-                      </button>
-                    ))}
-                  </div>
+              <div className="mb-4">
+                <div className="text-sm text-muted-foreground mb-2 flex items-center">
+                  <Tag className="size-3 mr-1" />
+                  Tags filter:
                 </div>
-              )}
+                <div className="flex flex-wrap gap-1">
+                  {getAllTags().map(tag => (
+                    <button
+                      key={tag}
+                      className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
+                        selectedTags.includes(tag)
+                          ? 'bg-primary text-primary-foreground'
+                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                      }`}
+                      onClick={() => toggleTag(tag)}
+                    >
+                      {tag}
+                      {selectedTags.includes(tag) && <X className="size-3" />}
+                    </button>
+                  ))}
+                  
+                  {isAddingTag ? (
+                    <div className="flex items-center">
+                      <input
+                        type="text"
+                        value={newTagName}
+                        onChange={(e) => setNewTagName(e.target.value)}
+                        placeholder="New tag..."
+                        className="text-xs rounded-l-full py-1 px-2 bg-muted border-0 focus:ring-0"
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            handleAddNewTag();
+                          } else if (e.key === 'Escape') {
+                            setIsAddingTag(false);
+                            setNewTagName('');
+                          }
+                        }}
+                        autoFocus
+                      />
+                      <button
+                        className="bg-primary text-primary-foreground rounded-r-full text-xs py-1 px-2"
+                        onClick={handleAddNewTag}
+                      >
+                        Add
+                      </button>
+                      <button
+                        className="bg-muted text-muted-foreground rounded-full ml-1 p-1"
+                        onClick={() => {
+                          setIsAddingTag(false);
+                          setNewTagName('');
+                        }}
+                      >
+                        <X className="size-3" />
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      className="text-xs px-2 py-1 rounded-full flex items-center gap-1 bg-muted text-muted-foreground hover:bg-muted/80"
+                      onClick={() => setIsAddingTag(true)}
+                    >
+                      <Plus className="size-3" />
+                      Add tag
+                    </button>
+                  )}
+                </div>
+              </div>
               
               {filteredItems.length > 0 ? (
                 <div className="border rounded-lg overflow-hidden shadow-sm">
@@ -332,7 +400,6 @@ const Index = () => {
               )}
             </div>
             
-            {/* Detail view panel */}
             {selectedItem && (
               <div className={isMobile ? "fixed inset-0 z-20 bg-background p-4" : "md:w-1/2 lg:w-3/5 sticky top-4 self-start"}>
                 <div className="flex justify-between items-center mb-4">
@@ -375,7 +442,7 @@ const Index = () => {
           <div className="glass-panel p-4 animate-float">
             <h3 className="text-lg font-medium flex items-center">
               <Check className="size-5 text-green-500 mr-2" />
-              Welcome to Transform!
+              Welcome to IdeaCraft!
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
               Content can now have multiple attributes and you can link between items using [[title]] syntax!

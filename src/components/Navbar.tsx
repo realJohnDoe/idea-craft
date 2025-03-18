@@ -26,7 +26,7 @@ const Navbar: React.FC<NavbarProps> = ({
         <div className="mr-4 flex items-center">
           <Link to="/" className="flex items-center">
             <span className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-event to-task">
-              Transform
+              IdeaCraft
             </span>
           </Link>
         </div>

@@ -1,11 +1,13 @@
 
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
   :root {
-    --background: 210 40% 98%;
+    --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
 
     --card: 0 0% 100%;
@@ -46,41 +48,41 @@
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 151 24% 23%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 151 24% 21%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 151 24% 21%;
     --popover-foreground: 210 40% 98%;
 
     --primary: 210 40% 98%;
     --primary-foreground: 222.2 47.4% 11.2%;
 
-    --secondary: 217.2 32.6% 17.5%;
+    --secondary: 217 36% 24%;
     --secondary-foreground: 210 40% 98%;
 
-    --muted: 217.2 32.6% 17.5%;
+    --muted: 217 36% 24%;
     --muted-foreground: 215 20.2% 65.1%;
 
-    --accent: 217.2 32.6% 17.5%;
+    --accent: 217 36% 24%;
     --accent-foreground: 210 40% 98%;
 
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
+    --border: 217 36% 20%;
+    --input: 217 36% 20%;
     --ring: 212.7 26.8% 83.9%;
     
-    --sidebar-background: 240 5.9% 10%;
+    --sidebar-background: 222 17% 23%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent: 222 17% 18%;
     --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-border: 222 17% 18%;
     --sidebar-ring: 217.2 91.2% 59.8%;
   }
 }
@@ -91,7 +93,7 @@
   }
 
   body {
-    @apply bg-background text-foreground font-sans;
+    @apply bg-background text-foreground font-jakarta;
   }
 
   /* Smooth scrolling for the entire page */
@@ -131,7 +133,7 @@
 /* Utility classes for content items */
 @layer components {
   .content-item {
-    @apply relative flex flex-col bg-white rounded-xl border border-border p-4 shadow-sm
+    @apply relative flex flex-col bg-white dark:bg-card rounded-xl border border-border p-4 shadow-sm
            transition-all duration-300 hover:shadow-md hover:-translate-y-1
            animate-scale-in;
   }

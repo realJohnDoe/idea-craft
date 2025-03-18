@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { Content, getPrimaryContentType, processContentLinks } from '@/lib/content-utils';
+import { Content, getPrimaryContentType, processContentLinks, formatContentWithYaml } from '@/lib/content-utils';
 import { toast } from 'sonner';
 import ContentHeader from './ContentHeader';
 import ContentBody from './ContentBody';
@@ -77,6 +76,16 @@ const ContentItem: React.FC<ContentItemProps> = ({
     }
   };
 
+  const handleTaskToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    const updatedItem = { 
+      ...item, 
+      taskDone: e.target.checked 
+    };
+    updatedItem.yaml = formatContentWithYaml(updatedItem);
+    onUpdate(updatedItem);
+  };
+
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -126,13 +135,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
                 <input 
                   type="checkbox" 
                   checked={item.taskDone}
-                  onChange={(e) => {
-                    e.stopPropagation();
-                    const { formatContentWithYaml } = require('@/lib/content-utils');
-                    const updatedItem = { ...item, taskDone: e.target.checked };
-                    updatedItem.yaml = formatContentWithYaml(updatedItem);
-                    onUpdate(updatedItem);
-                  }}
+                  onChange={handleTaskToggle}
                   className="form-checkbox h-4 w-4 text-task border-task rounded"
                   onClick={(e) => e.stopPropagation()}
                 />
@@ -181,12 +184,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
             <Calendar className="size-3 text-event" />
             {format(item.eventDate, 'PPP')}
             {item.eventLocation && <span> • {item.eventLocation}</span>}
-          </div>
-        )}
-        
-        {item.content && (
-          <div className="text-xs text-muted-foreground mt-1 line-clamp-1">
-            {item.content}
           </div>
         )}
       </div>

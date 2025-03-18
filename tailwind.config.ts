@@ -20,7 +20,15 @@ export default {
 		},
 		extend: {
 			fontFamily: {
+				jakarta: [
+					'Plus Jakarta Sans',
+					'SF Pro Display', 
+					'Inter', 
+					'system-ui', 
+					'sans-serif'
+				],
 				sans: [
+					'Plus Jakarta Sans',
 					'SF Pro Display', 
 					'Inter', 
 					'system-ui', 
