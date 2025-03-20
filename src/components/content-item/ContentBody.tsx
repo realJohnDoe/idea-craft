@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Content, formatContentWithYaml } from '@/lib/content-utils';
 import { format } from 'date-fns';
 import { Checkbox } from '@/components/ui/checkbox';
+import ContentRenderer from './ContentRenderer';
 
 interface ContentBodyProps {
   item: Content;
@@ -21,35 +22,20 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 }) => {
   const [expandedLinks, setExpandedLinks] = useState<string[]>([]);
   
-  // Set up event listeners for toggling links and tasks
-  useEffect(() => {
-    const handleToggleLink = (e: CustomEvent) => {
-      const itemId = e.detail.itemId;
-      setExpandedLinks(prevExpanded => 
-        prevExpanded.includes(itemId)
-          ? prevExpanded.filter(id => id !== itemId)
-          : [...prevExpanded, itemId]
-      );
-    };
-    
-    const handleToggleLinkedTask = (e: CustomEvent) => {
-      const itemId = e.detail.itemId;
-      const isChecked = e.detail.isChecked;
-      
-      const linkedItem = allItems.find(item => item.id === itemId);
-      if (linkedItem) {
-        handleToggleTaskDone(linkedItem, isChecked);
-      }
-    };
-    
-    document.addEventListener('toggle-link', handleToggleLink as EventListener);
-    document.addEventListener('toggle-linked-task', handleToggleLinkedTask as EventListener);
-    
-    return () => {
-      document.removeEventListener('toggle-link', handleToggleLink as EventListener);
-      document.removeEventListener('toggle-linked-task', handleToggleLinkedTask as EventListener);
-    };
-  }, [allItems]);
+  const handleToggleLink = (itemId: string) => {
+    setExpandedLinks(prevExpanded => 
+      prevExpanded.includes(itemId)
+        ? prevExpanded.filter(id => id !== itemId)
+        : [...prevExpanded, itemId]
+    );
+  };
+  
+  const handleToggleLinkedTask = (itemId: string, isChecked: boolean) => {
+    const linkedItem = allItems.find(item => item.id === itemId);
+    if (linkedItem) {
+      handleToggleTaskDone(linkedItem, isChecked);
+    }
+  };
   
   const handleToggleTaskDone = (linkedItem: Content, isDone: boolean) => {
     const updatedItem = { 
@@ -133,95 +119,16 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         </div>
       )}
       
-      <div 
-        className="prose prose-sm max-w-none dark:prose-invert"
-        onClick={handleLinkClick}
-        dangerouslySetInnerHTML={{
-          __html: processedContent.replace(
-            /<span class="content-link" data-item-id="(.*?)">(.*?)<\/span>/g, 
-            (_, itemId, title) => {
-              const linkedItem = allItems.find(item => item.id === itemId);
-              if (!linkedItem) return _;
-              
-              const isExpanded = expandedLinks.includes(itemId);
-              
-              return `
-                <div class="linked-content-container my-2 border border-muted rounded-md overflow-hidden">
-                  <div 
-                    class="linked-content-header flex items-center justify-between p-2 bg-muted/30 cursor-pointer hover:bg-muted/50 transition-colors"
-                    data-link-toggle="${itemId}"
-                  >
-                    <div class="flex items-center">
-                      ${linkedItem.hasTaskAttributes ? `
-                        <input 
-                          type="checkbox" 
-                          class="form-checkbox h-4 w-4 text-task border-task rounded mr-2" 
-                          ${linkedItem.taskDone ? 'checked' : ''}
-                          data-linked-task="${itemId}"
-                        />
-                      ` : ''}
-                      <span class="${linkedItem.hasTaskAttributes && linkedItem.taskDone ? 'line-through text-muted-foreground' : 'font-medium'}">${title}</span>
-                    </div>
-                    <button class="text-muted-foreground">
-                      ${isExpanded ? 
-                        '<svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m18 15-6-6-6 6"/></svg>' : 
-                        '<svg class="size-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>'
-                      }
-                    </button>
-                  </div>
-                  ${isExpanded ? `
-                    <div class="linked-content-body p-3">
-                      ${linkedItem.hasTaskAttributes ? `
-                        <div class="mb-2">
-                          <span class="text-xs font-medium ${linkedItem.taskDone ? 'text-green-500' : 'text-amber-500'}">
-                            ${linkedItem.taskDone ? 'Completed' : 'In Progress'}
-                          </span>
-                        </div>
-                      ` : ''}
-                      
-                      ${linkedItem.tags && linkedItem.tags.length > 0 ? `
-                        <div class="mb-2 flex flex-wrap gap-1">
-                          ${linkedItem.tags.map(tag => `
-                            <span class="bg-muted text-xs px-2 py-0.5 rounded-full">${tag}</span>
-                          `).join('')}
-                        </div>
-                      ` : ''}
-                      
-                      <div class="text-sm">${linkedItem.content}</div>
-                    </div>
-                  ` : ''}
-                </div>
-              `;
-            }
-          )
-        }}
-      />
-      
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            document.addEventListener('click', function(e) {
-              const linkToggle = e.target.closest('[data-link-toggle]');
-              if (linkToggle) {
-                const itemId = linkToggle.getAttribute('data-link-toggle');
-                const event = new CustomEvent('toggle-link', { detail: { itemId } });
-                document.dispatchEvent(event);
-              }
-              
-              const linkedTask = e.target.closest('[data-linked-task]');
-              if (linkedTask) {
-                e.stopPropagation();
-                const itemId = linkedTask.getAttribute('data-linked-task');
-                const isChecked = linkedTask.checked;
-                const event = new CustomEvent('toggle-linked-task', { 
-                  detail: { itemId, isChecked } 
-                });
-                document.dispatchEvent(event);
-              }
-            });
-          `
-        }}
-      />
+      <div className="prose prose-sm max-w-none dark:prose-invert">
+        <ContentRenderer 
+          content={processedContent}
+          allItems={allItems}
+          expandedLinks={expandedLinks}
+          handleLinkClick={handleLinkClick}
+          onToggleLink={handleToggleLink}
+          onToggleLinkedTask={handleToggleLinkedTask}
+        />
+      </div>
     </div>
   );
 };
