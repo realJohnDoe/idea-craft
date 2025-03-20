@@ -76,19 +76,19 @@ export default {
 				},
 				task: {
 					DEFAULT: 'hsl(var(--task))',
-					light: '#FFE5C2',
+					light: 'hsl(var(--task-light))',
 				},
 				event: {
-					DEFAULT: '#007AFF',
-					light: '#CEE4FF',
+					DEFAULT: 'hsl(var(--event))',
+					light: 'hsl(var(--event-light))',
 				},
 				note: {
-					DEFAULT: '#D58C00',
-					light: '#D1F7D7',
+					DEFAULT: 'hsl(var(--note))',
+					light: 'hsl(var(--note-light))',
 				},
 				mail: {
-					DEFAULT: '#FF2D55',
-					light: '#FFD3DD',
+					DEFAULT: 'hsl(var(--mail))',
+					light: 'hsl(var(--mail-light))',
 				},
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
@@ -143,6 +143,10 @@ export default {
 					'0%, 100%': { opacity: '1' },
 					'50%': { opacity: '0.8' },
 				},
+				'pulse': {
+					'0%, 100%': { boxShadow: '0 0 0 0 rgba(var(--primary), 0)' },
+					'50%': { boxShadow: '0 0 0 8px rgba(var(--primary), 0.2)' },
+				},
 			},
 			animation: {
 				'accordion-down': 'accordion-down 0.2s ease-out',
@@ -154,6 +158,7 @@ export default {
 				'scale-in': 'scale-in 0.2s ease-out',
 				'float': 'float 3s ease-in-out infinite',
 				'pulse-subtle': 'pulse-subtle 3s ease-in-out infinite',
+				'pulse': 'pulse 1.5s ease-in-out',
 			},
 			backdropFilter: {
 				'none': 'none',
