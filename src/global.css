@@ -7,105 +7,109 @@
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    /* One Dark inspired light theme */
+    --background: 220 14% 96%;
+    --foreground: 220 14% 20%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 220 14% 20%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 220 14% 20%;
 
-    --primary: 222.2 47.4% 11.2%;
+    --primary: 220 100% 50%;
     --primary-foreground: 210 40% 98%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    --secondary: 220 14% 90%;
+    --secondary-foreground: 220 14% 20%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 220 14% 90%;
+    --muted-foreground: 220 10% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    --accent: 220 14% 90%;
+    --accent-foreground: 220 14% 20%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    --border: 220 13% 85%;
+    --input: 220 13% 85%;
+    --ring: 224 76.3% 48%;
 
-    --radius: 1rem;
+    --radius: 0.75rem;
 
-    --sidebar-background: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
-    --sidebar-primary: 240 5.9% 10%;
-    --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
-    --sidebar-border: 220 13% 91%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --sidebar-background: 220 18% 94%;
+    --sidebar-foreground: 220 14% 20%;
+    --sidebar-primary: 220 100% 50%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 14% 90%;
+    --sidebar-accent-foreground: 220 14% 20%;
+    --sidebar-border: 220 13% 85%;
+    --sidebar-ring: 224 76.3% 48%;
 
-    /* Updated color palette */
-    --task: 280 90% 65%;
-    --task-light: 280 100% 93%;
-    --event: 200 95% 60%;
-    --event-light: 200 100% 93%;
-    --note: 150 76% 45%;
-    --note-light: 150 76% 93%;
-    --mail: 25 95% 55%;
-    --mail-light: 25 100% 93%;
+    /* Color palette based on One Dark */
+    --task: 286 89% 53%;
+    --task-light: 286 100% 93%;
+    --event: 199 90% 48%;
+    --event-light: 199 100% 93%;
+    --note: 114 74% 51%;
+    --note-light: 114 74% 93%;
+    --mail: 35 91% 56%;
+    --mail-light: 35 100% 93%;
 
     color-scheme: light;
   }
 
   .dark {
-    --background: 25 40% 20%;
-    --foreground: 210 40% 98%;
+    /* One Dark theme colors */
+    --background: 220 14% 18%;
+    --foreground: 220 14% 80%;
 
-    --card: 25 30% 20%;
-    --card-foreground: 210 40% 98%;
+    --card: 220 13% 22%;
+    --card-foreground: 220 14% 80%;
 
-    --popover: 160 25% 19%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 220 13% 25%;
+    --popover-foreground: 220 14% 80%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    --primary: 199 90% 64%;
+    --primary-foreground: 220 14% 18%;
 
-    --secondary: 223 36% 24%;
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 220 13% 28%;
+    --secondary-foreground: 220 14% 80%;
 
-    --muted: 25 40% 10%;
-    --muted-foreground: 215 20.2% 65.1%;
+    --muted: 220 13% 22%;
+    --muted-foreground: 220 10% 60%;
 
-    --accent: 223 36% 24%;
-    --accent-foreground: 210 40% 98%;
+    --accent: 220 13% 28%;
+    --accent-foreground: 220 14% 80%;
 
-    --destructive: 0 62.8% 30.6%;
+    --destructive: 0 62.8% 50.6%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217 36% 20%;
-    --input: 217 36% 20%;
-    --ring: 212.7 26.8% 83.9%;
+    --border: 220 13% 30%;
+    --input: 220 13% 30%;
+    --ring: 199 90% 64%;
 
-    --sidebar-background: 222 25% 21%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 222 25% 16%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 222 25% 16%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
+    --radius: 0.75rem;
 
-    /* Updated dark mode color palette */
-    --task: 280 90% 65%;
-    --task-light: 280 30% 30%;
-    --event: 200 90% 60%;
-    --event-light: 200 30% 30%;
-    --note: 150 70% 45%;
-    --note-light: 150 30% 25%;
-    --mail: 25 90% 55%;
-    --mail-light: 25 30% 30%;
+    --sidebar-background: 220 13% 22%;
+    --sidebar-foreground: 220 14% 80%;
+    --sidebar-primary: 199 90% 64%;
+    --sidebar-primary-foreground: 220 14% 18%;
+    --sidebar-accent: 220 13% 25%;
+    --sidebar-accent-foreground: 220 14% 80%;
+    --sidebar-border: 220 13% 25%;
+    --sidebar-ring: 199 90% 64%;
+
+    /* Color palette based on One Dark */
+    --task: 286 89% 66%;
+    --task-light: 286 30% 30%;
+    --event: 199 90% 60%;
+    --event-light: 199 30% 30%;
+    --note: 114 74% 45%;
+    --note-light: 114 30% 25%;
+    --mail: 35 91% 55%;
+    --mail-light: 35 30% 30%;
 
     color-scheme: dark;
   }

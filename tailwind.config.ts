@@ -41,6 +41,19 @@ export default {
 				],
 			},
 			colors: {
+				// One Dark Theme Colors
+				'one-dark': {
+					background: '#282C34',
+					foreground: '#ABB2BF',
+					red: '#E06C75',
+					green: '#98C379',
+					yellow: '#E5C07B',
+					blue: '#61AFEF',
+					purple: '#C678DD',
+					cyan: '#56B6C2',
+					black: '#282C34',
+					gray: '#5C6370',
+				},
 				border: 'hsl(var(--border))',
 				input: 'hsl(var(--input))',
 				ring: 'hsl(var(--ring))',
