@@ -168,142 +168,162 @@ export default {
 	},
 	plugins: [
 		require("tailwindcss-animate"),
-		({ addBase }) => {
+		function({ addBase, theme }) {
 			addBase({
-				":root": {
-					// Dark theme (default)
-					"--background": "240 10% 3.9%",
-					"--foreground": "0 0% 98%",
-					"--card": "240 10% 3.9%",
-					"--card-foreground": "0 0% 98%",
-					"--popover": "240 10% 3.9%",
-					"--popover-foreground": "0 0% 98%",
-					"--primary": "0 0% 98%",
-					"--primary-foreground": "240 5.9% 10%",
-					"--secondary": "240 3.7% 15.9%",
-					"--secondary-foreground": "0 0% 98%",
-					"--muted": "240 3.7% 15.9%",
-					"--muted-foreground": "240 5% 64.9%",
-					"--accent": "240 3.7% 15.9%",
-					"--accent-foreground": "0 0% 98%",
-					"--destructive": "0 62.8% 30.6%",
-					"--destructive-foreground": "0 0% 98%",
-					"--border": "240 3.7% 15.9%",
-					"--input": "240 3.7% 15.9%",
-					"--ring": "240 4.9% 83.9%",
-					"--radius": "0.75rem",
-					
-					// Content type colors
-					"--task": "142 76% 36%",
-					"--task-light": "142 76% 86%",
-					"--event": "250 100% 60%",
-					"--event-light": "250 100% 90%",
-					"--note": "48 100% 50%",
-					"--note-light": "48 100% 90%",
-					"--mail": "0 100% 60%",
-					"--mail-light": "0 100% 90%",
-					
-					// Sidebar colors
-					"--sidebar-background": "240 10% 3.9%",
-					"--sidebar-foreground": "0 0% 98%",
-					"--sidebar-primary": "0 0% 98%",
-					"--sidebar-primary-foreground": "240 5.9% 10%",
-					"--sidebar-accent": "240 3.7% 15.9%",
-					"--sidebar-accent-foreground": "0 0% 98%",
-					"--sidebar-border": "240 3.7% 15.9%",
-					"--sidebar-ring": "240 4.9% 83.9%"
+				':root': {
+					'--background': '0 0% 100%',
+					'--foreground': '222.2 84% 4.9%',
+					'--card': '0 0% 100%',
+					'--card-foreground': '222.2 84% 4.9%',
+					'--popover': '0 0% 100%',
+					'--popover-foreground': '222.2 84% 4.9%',
+					'--primary': '222.2 47.4% 11.2%',
+					'--primary-foreground': '210 40% 98%',
+					'--secondary': '210 40% 96.1%',
+					'--secondary-foreground': '222.2 47.4% 11.2%',
+					'--muted': '210 40% 96.1%',
+					'--muted-foreground': '215.4 16.3% 46.9%',
+					'--accent': '210 40% 96.1%',
+					'--accent-foreground': '222.2 47.4% 11.2%',
+					'--destructive': '0 84.2% 60.2%',
+					'--destructive-foreground': '210 40% 98%',
+					'--border': '214.3 31.8% 91.4%',
+					'--input': '214.3 31.8% 91.4%',
+					'--ring': '222.2 84% 4.9%',
+					'--radius': '1rem',
+					'--sidebar-background': '0 0% 98%',
+					'--sidebar-foreground': '240 5.3% 26.1%',
+					'--sidebar-primary': '240 5.9% 10%',
+					'--sidebar-primary-foreground': '0 0% 98%',
+					'--sidebar-accent': '240 4.8% 95.9%',
+					'--sidebar-accent-foreground': '240 5.9% 10%',
+					'--sidebar-border': '220 13% 91%',
+					'--sidebar-ring': '217.2 91.2% 59.8%',
+					'--task': '280 90% 65%',
+					'--task-light': '280 100% 93%',
+					'--event': '200 95% 60%',
+					'--event-light': '200 100% 93%',
+					'--note': '150 76% 45%',
+					'--note-light': '150 76% 93%',
+					'--mail': '25 95% 55%',
+					'--mail-light': '25 100% 93%',
+					'color-scheme': 'light',
 				},
-				".theme-light": {
-					// Light theme
-					"--background": "0 0% 100%",
-					"--foreground": "240 10% 3.9%",
-					"--card": "0 0% 100%",
-					"--card-foreground": "240 10% 3.9%",
-					"--popover": "0 0% 100%",
-					"--popover-foreground": "240 10% 3.9%",
-					"--primary": "240 5.9% 10%",
-					"--primary-foreground": "0 0% 98%",
-					"--secondary": "240 4.8% 95.9%",
-					"--secondary-foreground": "240 5.9% 10%",
-					"--muted": "240 4.8% 95.9%",
-					"--muted-foreground": "240 3.8% 46.1%",
-					"--accent": "240 4.8% 95.9%",
-					"--accent-foreground": "240 5.9% 10%",
-					"--destructive": "0 84.2% 60.2%",
-					"--destructive-foreground": "0 0% 98%",
-					"--border": "240 5.9% 90%",
-					"--input": "240 5.9% 90%",
-					"--ring": "240 5.9% 10%",
-					
-					// Content type colors (slightly darker for light theme)
-					"--task": "142 76% 36%",
-					"--task-light": "142 76% 86%",
-					"--event": "250 100% 60%",
-					"--event-light": "250 100% 90%",
-					"--note": "48 100% 50%",
-					"--note-light": "48 100% 90%",
-					"--mail": "0 100% 60%",
-					"--mail-light": "0 100% 90%",
-					
-					// Sidebar colors
-					"--sidebar-background": "0 0% 100%",
-					"--sidebar-foreground": "240 10% 3.9%",
-					"--sidebar-primary": "240 5.9% 10%",
-					"--sidebar-primary-foreground": "0 0% 98%",
-					"--sidebar-accent": "240 4.8% 95.9%",
-					"--sidebar-accent-foreground": "240 5.9% 10%",
-					"--sidebar-border": "240 5.9% 90%",
-					"--sidebar-ring": "240 5.9% 10%"
+				'.dark': {
+					'--background': '25 40% 20%',
+					'--foreground': '210 40% 98%',
+					'--card': '25 30% 20%',
+					'--card-foreground': '210 40% 98%',
+					'--popover': '160 25% 19%',
+					'--popover-foreground': '210 40% 98%',
+					'--primary': '210 40% 98%',
+					'--primary-foreground': '222.2 47.4% 11.2%',
+					'--secondary': '223 36% 24%',
+					'--secondary-foreground': '210 40% 98%',
+					'--muted': '25 40% 10%',
+					'--muted-foreground': '215 20.2% 65.1%',
+					'--accent': '223 36% 24%',
+					'--accent-foreground': '210 40% 98%',
+					'--destructive': '0 62.8% 30.6%',
+					'--destructive-foreground': '210 40% 98%',
+					'--border': '217 36% 20%',
+					'--input': '217 36% 20%',
+					'--ring': '212.7 26.8% 83.9%',
+					'--sidebar-background': '222 25% 21%',
+					'--sidebar-foreground': '240 4.8% 95.9%',
+					'--sidebar-primary': '224.3 76.3% 48%',
+					'--sidebar-primary-foreground': '0 0% 100%',
+					'--sidebar-accent': '222 25% 16%',
+					'--sidebar-accent-foreground': '240 4.8% 95.9%',
+					'--sidebar-border': '222 25% 16%',
+					'--sidebar-ring': '217.2 91.2% 59.8%',
+					'--task': '280 90% 65%',
+					'--task-light': '280 30% 30%',
+					'--event': '200 90% 60%',
+					'--event-light': '200 30% 30%',
+					'--note': '150 70% 45%',
+					'--note-light': '150 30% 25%',
+					'--mail': '25 90% 55%',
+					'--mail-light': '25 30% 30%',
+					'color-scheme': 'dark',
 				},
-				".theme-solarized": {
-					// Solarized theme (base on solarized dark)
-					"--background": "194 14% 20%", // base03
-					"--foreground": "44 12% 72%", // base0
-					"--card": "194 14% 20%",  // base03
-					"--card-foreground": "44 12% 72%", // base0
-					"--popover": "194 14% 20%", // base03
-					"--popover-foreground": "44 12% 72%", // base0
-					"--primary": "44 12% 72%", // base0
-					"--primary-foreground": "194 14% 20%", // base03
-					"--secondary": "196 13% 30%", // base02
-					"--secondary-foreground": "44 12% 72%", // base0
-					"--muted": "196 13% 30%", // base02
-					"--muted-foreground": "46 10% 60%", // base01
-					"--accent": "196 13% 30%", // base02
-					"--accent-foreground": "44 12% 72%", // base0
-					"--destructive": "338 85% 53%", // magenta
-					"--destructive-foreground": "44 12% 72%", // base0
-					"--border": "196 13% 30%", // base02
-					"--input": "196 13% 30%", // base02
-					"--ring": "42 23% 49%", // yellow
-					
-					// Content type colors (solarized palette)
-					"--task": "135 55% 40%", // green
-					"--task-light": "135 55% 80%",
-					"--event": "205 82% 45%", // blue
-					"--event-light": "205 82% 80%",
-					"--note": "42 23% 49%", // yellow
-					"--note-light": "42 23% 80%",
-					"--mail": "1 79% 50%", // red
-					"--mail-light": "1 79% 80%",
-					
-					// Sidebar colors
-					"--sidebar-background": "196 13% 30%", // base02
-					"--sidebar-foreground": "44 12% 72%", // base0
-					"--sidebar-primary": "44 12% 72%", // base0
-					"--sidebar-primary-foreground": "194 14% 20%", // base03
-					"--sidebar-accent": "194 14% 35%", // darker base02
-					"--sidebar-accent-foreground": "44 12% 72%", // base0
-					"--sidebar-border": "196 13% 40%", // lighter base02
-					"--sidebar-ring": "42 23% 49%" // yellow
+				'*': {
+					'@apply border-border': {},
 				},
-				"*": {
-					"@apply border-border": {},
-					"scroll-behavior": "smooth"
+				'body': {
+					'@apply bg-background text-foreground font-jakarta dark': {},
 				},
-				"body": {
-					"@apply bg-background text-foreground antialiased": {}
-				}
+				'::-webkit-scrollbar': {
+					'@apply w-1.5 h-1.5': {},
+				},
+				'::-webkit-scrollbar-track': {
+					'@apply bg-transparent': {},
+				},
+				'::-webkit-scrollbar-thumb': {
+					'@apply bg-muted-foreground/20 rounded-full': {},
+				},
+				'::-webkit-scrollbar-thumb:hover': {
+					'@apply bg-muted-foreground/40': {},
+				},
+				':focus-visible': {
+					'@apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background': {},
+				},
+				'h1, h2, h3, h4, h5, h6': {
+					'@apply font-medium tracking-tight': {},
+				},
+			});
+			addBase({
+				'@import': ["url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap')"],
+			});
+			addComponents({
+				'.content-item': {
+					'@apply relative flex flex-col bg-card rounded-xl border border-border p-4 shadow-sm transition-all duration-300 hover:shadow-md hover:-translate-y-1 animate-scale-in': {},
+				},
+				'.content-item-header': {
+					'@apply flex items-center justify-between mb-2': {},
+				},
+				'.content-item-tag': {
+					'@apply text-xs px-2.5 py-0.5 rounded-full font-medium': {},
+				},
+				'.content-item-body': {
+					'@apply flex-1': {},
+				},
+				'.content-item-footer': {
+					'@apply flex items-center justify-between mt-2 pt-2 border-t border-border/50': {},
+				},
+				'.glass-panel': {
+					'@apply bg-background/80 backdrop-blur-md border border-border/50 rounded-xl shadow-sm': {},
+				},
+				'.sidebar-item': {
+					'@apply flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 hover:bg-muted': {},
+				},
+				'.sidebar-item.active': {
+					'@apply bg-primary text-primary-foreground hover:bg-primary/90': {},
+				},
+				'.content-task': {
+					'@apply border-l-4 border-task': {},
+				},
+				'.content-event': {
+					'@apply border-l-4 border-event': {},
+				},
+				'.content-note': {
+					'@apply border-l-4 border-note': {},
+				},
+				'.content-mail': {
+					'@apply border-l-4 border-mail': {},
+				},
+				'.content-link': {
+					'@apply text-primary underline cursor-pointer': {},
+				},
+				'.highlight-pulse': {
+					'@apply animate-pulse': {},
+				},
+				'.list-content-item:not(:last-child)': {
+					'@apply border-b border-border': {},
+				},
+				'.list-content-item:hover': {
+					'@apply bg-muted': {},
+				},
 			});
 		}
 	],
