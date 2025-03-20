@@ -25,7 +25,7 @@ const Navbar: React.FC<NavbarProps> = ({
       <div className="container flex h-16 items-center px-4">
         <div className="mr-4 flex items-center">
           <Link to="/" className="flex items-center">
-            <span className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-note to-task">
+            <span className="text-xl font-semibold bg-clip-text text-transparent bg-gradient-to-r from-note to-mail">
               IdeaCraft
             </span>
           </Link>
@@ -42,7 +42,7 @@ const Navbar: React.FC<NavbarProps> = ({
             />
           </div>
           
-          <Button onClick={onCreateNew} size="sm" className="rounded-full bg-gradient-to-r from-note to-task hover:opacity-90">
+          <Button onClick={onCreateNew} size="sm" className="rounded-full bg-gradient-to-r from-note to-mail hover:opacity-90">
             <Plus className="mr-2 size-4" />
             <span className="hidden md:inline">Create</span>
           </Button>

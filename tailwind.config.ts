@@ -87,22 +87,15 @@ export default {
 					DEFAULT: 'hsl(var(--card))',
 					foreground: 'hsl(var(--card-foreground))'
 				},
-				task: {
-					DEFAULT: 'hsl(var(--task))',
-					light: 'hsl(var(--task-light))',
-				},
-				event: {
-					DEFAULT: 'hsl(var(--event))',
-					light: 'hsl(var(--event-light))',
-				},
-				note: {
-					DEFAULT: 'hsl(var(--note))',
-					light: 'hsl(var(--note-light))',
-				},
-				mail: {
-					DEFAULT: 'hsl(var(--mail))',
-					light: 'hsl(var(--mail-light))',
-				},
+				note: '#98C379',
+				'note-foreground': 'black', // or any other color you want
+				task: '#C678DD',
+				'task-foreground': 'black', // or any other color you want
+				event: '#61AFEF',
+				'event-foreground': 'black', // or any other color you want
+				mail: '#E5C07B',
+				'mail-foreground': 'black',
+				red: '#E06C75',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

@@ -9,10 +9,10 @@ interface TypeFilterProps {
 
 const TypeFilter = ({ activeFilter, toggleTypeTag }: TypeFilterProps) => {
   const typeFilterTags = [
-    { type: 'note', label: 'Notes', icon: <FileText className="size-3" />, className: 'bg-[#98C379] text-black' },
-    { type: 'task', label: 'Tasks', icon: <CheckCircle className="size-3" />, className: 'bg-[#C678DD] text-white' },
-    { type: 'event', label: 'Events', icon: <Calendar className="size-3" />, className: 'bg-[#61AFEF] text-black' },
-    { type: 'mail', label: 'Emails', icon: <Mail className="size-3" />, className: 'bg-[#E5C07B] text-black' }
+    { type: 'note', label: 'Note', icon: <FileText className="size-3" />, className: 'bg-note text-note-foreground' },
+    { type: 'task', label: 'Task', icon: <CheckCircle className="size-3" />, className: 'bg-task text-task-foreground' },
+    { type: 'event', label: 'Event', icon: <Calendar className="size-3" />, className: 'bg-event text-event-foreground' },
+    { type: 'mail', label: 'Email', icon: <Mail className="size-3" />, className: 'bg-mail text-mail-foreground' }
   ];
 
   return (
@@ -24,8 +24,8 @@ const TypeFilter = ({ activeFilter, toggleTypeTag }: TypeFilterProps) => {
             key={type}
             className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
               activeFilter === type
-                ? 'bg-[#E06C75] text-white'
-                : className + ' hover:opacity-90'
+                ? 'bg-red text-white'
+                : className + ' hover:opacity-80'
             }`}
             onClick={() => toggleTypeTag(type)}
           >
