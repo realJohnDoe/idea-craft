@@ -13,8 +13,6 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
   item,
   onUpdate,
 }) => {
-  const [customTag, setCustomTag] = useState("");
-
   // Get content type tag elements
   const getTypeTags = () => {
     const tags = [];
