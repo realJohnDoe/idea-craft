@@ -1,7 +1,6 @@
-
-import React, { useState } from 'react';
-import { Tag, Plus, X } from 'lucide-react';
-import { Content } from '@/lib/content-utils';
+import React, { useState } from "react";
+import { Tag, Plus, X } from "lucide-react";
+import { Content } from "@/lib/content-utils";
 
 interface TagsFilterProps {
   selectedTags: string[];
@@ -9,14 +8,18 @@ interface TagsFilterProps {
   getAllTags: () => string[];
 }
 
-const TagsFilter = ({ selectedTags, toggleTag, getAllTags }: TagsFilterProps) => {
+const TagsFilter = ({
+  selectedTags,
+  toggleTag,
+  getAllTags,
+}: TagsFilterProps) => {
   const [isAddingTag, setIsAddingTag] = useState(false);
-  const [newTagName, setNewTagName] = useState('');
+  const [newTagName, setNewTagName] = useState("");
 
   const handleAddNewTag = () => {
     if (newTagName.trim()) {
       toggleTag(newTagName.trim());
-      setNewTagName('');
+      setNewTagName("");
       setIsAddingTag(false);
     }
   };
@@ -28,13 +31,13 @@ const TagsFilter = ({ selectedTags, toggleTag, getAllTags }: TagsFilterProps) =>
         Tags filter:
       </div>
       <div className="flex flex-wrap gap-1">
-        {getAllTags().map(tag => (
+        {getAllTags().map((tag) => (
           <button
             key={tag}
             className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
               selectedTags.includes(tag)
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-muted text-muted-foreground hover:bg-muted/80'
+                ? "bg-red text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:bg-muted/80"
             }`}
             onClick={() => toggleTag(tag)}
           >
@@ -42,7 +45,7 @@ const TagsFilter = ({ selectedTags, toggleTag, getAllTags }: TagsFilterProps) =>
             {selectedTags.includes(tag) && <X className="size-3" />}
           </button>
         ))}
-        
+
         {isAddingTag ? (
           <div className="flex items-center">
             <input
@@ -52,11 +55,11 @@ const TagsFilter = ({ selectedTags, toggleTag, getAllTags }: TagsFilterProps) =>
               placeholder="New tag..."
               className="text-xs rounded-l-full py-1 px-2 bg-muted border-0 focus:ring-0"
               onKeyDown={(e) => {
-                if (e.key === 'Enter') {
+                if (e.key === "Enter") {
                   handleAddNewTag();
-                } else if (e.key === 'Escape') {
+                } else if (e.key === "Escape") {
                   setIsAddingTag(false);
-                  setNewTagName('');
+                  setNewTagName("");
                 }
               }}
               autoFocus
@@ -71,7 +74,7 @@ const TagsFilter = ({ selectedTags, toggleTag, getAllTags }: TagsFilterProps) =>
               className="bg-muted text-muted-foreground rounded-full ml-1 p-1"
               onClick={() => {
                 setIsAddingTag(false);
-                setNewTagName('');
+                setNewTagName("");
               }}
             >
               <X className="size-3" />

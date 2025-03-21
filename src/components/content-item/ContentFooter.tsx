@@ -18,20 +18,20 @@ const ContentFooter: React.FC<ContentFooterProps> = ({ item, onDelete, onEdit })
         {format(item.updatedAt, 'PPP')}
       </span>
       
-      <div className="opacity-0 group-hover:opacity-100 transition-opacity flex space-x-1">
+      <div className="transition-opacity flex space-x-1">
         <button 
-          className="p-1 rounded hover:bg-muted transition-colors"
+          className="p-1 rounded hover:opacity-80 transition-colors"
           onClick={onEdit}
           aria-label="Edit item"
         >
           <Edit className="size-3 text-muted-foreground" />
         </button>
         <button 
-          className="p-1 rounded hover:bg-destructive/10 transition-colors"
+          className="p-1 rounded hover:bg-red/10 transition-colors"
           onClick={() => onDelete(item.id)}
           aria-label="Delete item"
         >
-          <Trash2 className="size-3 text-destructive" />
+          <Trash2 className="size-3 text-red" />
         </button>
       </div>
     </div>

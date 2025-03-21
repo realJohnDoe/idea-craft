@@ -29,7 +29,6 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
   const [hasTaskAttributes, setHasTaskAttributes] = useState(false);
   const [hasEventAttributes, setHasEventAttributes] = useState(false);
   const [hasMailAttributes, setHasMailAttributes] = useState(false);
-  const [hasNoteAttributes, setHasNoteAttributes] = useState(true); // Always true if no others are active
   
   // Centralized tags
   const [tags, setTags] = useState<string[]>([]);

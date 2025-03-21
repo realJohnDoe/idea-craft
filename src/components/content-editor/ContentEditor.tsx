@@ -31,7 +31,6 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ item, onUpdate, onCancel 
   const [hasTaskAttributes, setHasTaskAttributes] = useState(item.hasTaskAttributes);
   const [hasEventAttributes, setHasEventAttributes] = useState(item.hasEventAttributes);
   const [hasMailAttributes, setHasMailAttributes] = useState(item.hasMailAttributes);
-  const [hasNoteAttributes, setHasNoteAttributes] = useState(item.hasNoteAttributes);
   
   // Centralized tags
   const [tags, setTags] = useState<string[]>(item.tags || []);
@@ -137,7 +136,7 @@ const ContentEditor: React.FC<ContentEditorProps> = ({ item, onUpdate, onCancel 
   const showNoteAttributes = calculateHasNoteAttributes();
   
   return (
-    <Card className="border rounded-xl p-6 shadow-sm bg-card animate-fade-in space-y-4">
+    <Card className="rounded-xl p-6 shadow-sm animate-fade-in space-y-4">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-medium">Edit Content</h2>
         <Button variant="ghost" size="icon" onClick={onCancel}>
