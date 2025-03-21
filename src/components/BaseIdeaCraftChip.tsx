@@ -18,7 +18,7 @@ const BaseIdeaCraftChip: React.FC<IdeaCraftChipProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`flex items-center gap-2 px-2 py-1 rounded-full ${className} transition-colors`}
+      className={`flex items-center gap-2 px-2 py-0.5 rounded ${className} transition-colors`}
     >
       {prefixIcon}
       <span className="text-xs">{label}</span>

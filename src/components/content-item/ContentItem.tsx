@@ -129,14 +129,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
     return (
       <div
         id={`content-item-${item.id}`}
-        className={cn(
-          "list-content-item group py-2 px-3 border-b cursor-pointer",
-          getTypeClass(),
-          isHovered && "bg-muted/50"
-        )}
-        onMouseEnter={() => setIsHovered(true)}
-        onMouseLeave={() => setIsHovered(false)}
-        onClick={handleItemSelect}
+        className={cn("group py-2 px-3 border-b", getTypeClass())}
       >
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
@@ -153,11 +146,12 @@ const ContentItem: React.FC<ContentItemProps> = ({
             )}
             <h3
               className={cn(
-                "text-sm font-medium",
+                "text-sm font-medium cursor-pointer hover:underline",
                 item.hasTaskAttributes &&
                   item.taskDone &&
                   "line-through text-muted-foreground"
               )}
+              onClick={handleItemSelect}
             >
               {item.title}
             </h3>
