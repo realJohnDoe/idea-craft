@@ -17,25 +17,25 @@ const ColoredIdeaCraftChip: React.FC<IdeaCraftChipProps> = ({
     note: {
       label: "Note",
       icon: <FileText className="size-3" />,
-      className: "bg-note text-note-foreground",
+      className: "bg-note hover:bg-note/80 text-note-foreground",
     },
     task: {
       type: "task",
       label: "Task",
       icon: <CheckCircle className="size-3" />,
-      className: "bg-task text-task-foreground",
+      className: "bg-task hover:bg-task/80 text-task-foreground",
     },
     event: {
       type: "event",
       label: "Event",
       icon: <Calendar className="size-3" />,
-      className: "bg-event text-event-foreground",
+      className: "bg-event hover:bg-event/80 text-event-foreground",
     },
     mail: {
       type: "mail",
       label: "Email",
       icon: <Mail className="size-3" />,
-      className: "bg-mail text-mail-foreground",
+      className: "bg-mail hover:bg-mail/80 text-mail-foreground",
     },
   };
 
@@ -45,7 +45,9 @@ const ColoredIdeaCraftChip: React.FC<IdeaCraftChipProps> = ({
       label={label}
       prefixIcon={icon}
       suffixIcon={toggled && <X className="size-3" />}
-      className={toggled ? "red" : className}
+      className={
+        toggled ? "bg-red hover:bg-red/80 text-red-foreground " : className
+      }
       onClick={onClick}
     />
   );
