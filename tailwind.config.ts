@@ -96,6 +96,7 @@ export default {
 				mail: '#E5C07B',
 				'mail-foreground': 'black',
 				red: '#E06C75',
+				'red-foreground': 'black',
 				sidebar: {
 					DEFAULT: 'hsl(var(--sidebar-background))',
 					foreground: 'hsl(var(--sidebar-foreground))',

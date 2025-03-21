@@ -1,5 +1,6 @@
 import React from "react";
 import { FileText, CheckCircle, Calendar, Mail, X } from "lucide-react";
+import BaseIdeaCraftChip from "./BaseIdeaCraftChip";
 
 interface IdeaCraftChipProps {
   type: string;
@@ -7,7 +8,7 @@ interface IdeaCraftChipProps {
   onClick: () => void;
 }
 
-const IdeaCraftChip: React.FC<IdeaCraftChipProps> = ({
+const ColoredIdeaCraftChip: React.FC<IdeaCraftChipProps> = ({
   type,
   toggled,
   onClick,
@@ -40,17 +41,14 @@ const IdeaCraftChip: React.FC<IdeaCraftChipProps> = ({
 
   const { label, icon, className } = typeFilterTags[type];
   return (
-    <button
-      className={`hover:opacity-80 text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
-        toggled ? "bg-red text-white" : className
-      }`}
+    <BaseIdeaCraftChip
+      label={label}
+      prefixIcon={icon}
+      suffixIcon={toggled && <X className="size-3" />}
+      className={toggled ? "red" : className}
       onClick={onClick}
-    >
-      {icon}
-      {label}
-      {toggled && <X className="size-3" />}
-    </button>
+    />
   );
 };
 
-export default IdeaCraftChip;
+export default ColoredIdeaCraftChip;

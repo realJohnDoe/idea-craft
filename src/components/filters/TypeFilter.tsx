@@ -1,4 +1,4 @@
-import IdeaCraftChip from "../IdeaCraftChip";
+import ColoredIdeaCraftChip from "../ColoredIdeaCraftChip";
 
 interface TypeFilterProps {
   activeFilter: string;
@@ -13,7 +13,7 @@ const TypeFilter = ({ activeFilter, toggleTypeTag }: TypeFilterProps) => {
       <div className="text-sm text-muted-foreground mb-2">Filter by type:</div>
       <div className="flex flex-wrap gap-1">
         {types.map((type) => (
-          <IdeaCraftChip
+          <ColoredIdeaCraftChip
             key={type}
             type={type}
             toggled={activeFilter === type}

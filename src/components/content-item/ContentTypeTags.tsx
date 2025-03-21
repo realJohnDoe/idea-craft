@@ -14,7 +14,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "sonner";
-import IdeaCraftChip from "../IdeaCraftChip";
+import ColoredIdeaCraftChip from "../ColoredIdeaCraftChip";
 
 interface ContentTypeTagsProps {
   item: Content;
@@ -71,19 +71,31 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
 
     if (item.hasTaskAttributes) {
       tags.push(
-        <IdeaCraftChip type={"task"} toggled={false} onClick={() => {}} />
+        <ColoredIdeaCraftChip
+          type={"task"}
+          toggled={false}
+          onClick={() => {}}
+        />
       );
     }
 
     if (item.hasEventAttributes) {
       tags.push(
-        <IdeaCraftChip type={"event"} toggled={false} onClick={() => {}} />
+        <ColoredIdeaCraftChip
+          type={"event"}
+          toggled={false}
+          onClick={() => {}}
+        />
       );
     }
 
     if (item.hasMailAttributes) {
       tags.push(
-        <IdeaCraftChip type={"mail"} toggled={false} onClick={() => {}} />
+        <ColoredIdeaCraftChip
+          type={"mail"}
+          toggled={false}
+          onClick={() => {}}
+        />
       );
     }
 
@@ -94,7 +106,11 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
       !item.hasMailAttributes
     ) {
       tags.push(
-        <IdeaCraftChip type={"note"} toggled={false} onClick={() => {}} />
+        <ColoredIdeaCraftChip
+          type={"note"}
+          toggled={false}
+          onClick={() => {}}
+        />
       );
     }
 
