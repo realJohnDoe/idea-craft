@@ -61,7 +61,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   };
 
   return (
-    <div className="content-item-body">
+    <div className="content-item-body px-2">
       {item.hasTaskAttributes && (
         <div className="mb-3 flex items-center">
           <IdeaCraftCheckbox

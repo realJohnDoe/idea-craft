@@ -15,6 +15,7 @@ import ContentTypeTags from "./ContentTypeTags";
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
+import { Card } from "../ui/card";
 
 interface ContentItemProps {
   item: Content;
@@ -113,43 +114,42 @@ const ContentItem: React.FC<ContentItemProps> = ({
 
   if (isListView) {
     return (
-      <div
-        id={`content-item-${item.id}`}
-        className={"group py-2 px-3 border-b flex flex-col gap-1"}
-      >
-        <div className="flex items-center">
-          {item.hasTaskAttributes && (
-            <div className="flex items-center">
-              <IdeaCraftCheckbox
-                checked={item.taskDone}
-                onToggle={handleTaskToggle}
-              />
+      <div id={`content-item-${item.id}`}>
+        <Card className={"group py-2 px-3 border-b flex flex-col gap-1 m-2"}>
+          <div className="flex items-center">
+            {item.hasTaskAttributes && (
+              <div className="flex items-center">
+                <IdeaCraftCheckbox
+                  checked={item.taskDone}
+                  onToggle={handleTaskToggle}
+                />
+              </div>
+            )}
+            <h3
+              className={cn(
+                "text-sm font-medium cursor-pointer hover:underline",
+                item.hasTaskAttributes &&
+                  item.taskDone &&
+                  "line-through text-muted-foreground"
+              )}
+              onClick={handleItemSelect}
+            >
+              {item.title}
+            </h3>
+          </div>
+
+          <div className="flex mt-1 items-center gap-2">
+            <ContentTypeTags item={item} onUpdate={onUpdate} />
+          </div>
+
+          {item.eventDate && (
+            <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+              <Calendar className="size-3 text-event" />
+              {format(item.eventDate, "PPP")}
+              {item.eventLocation && <span> • {item.eventLocation}</span>}
             </div>
           )}
-          <h3
-            className={cn(
-              "text-sm font-medium cursor-pointer hover:underline",
-              item.hasTaskAttributes &&
-                item.taskDone &&
-                "line-through text-muted-foreground"
-            )}
-            onClick={handleItemSelect}
-          >
-            {item.title}
-          </h3>
-        </div>
-
-        <div className="flex mt-1 items-center gap-2">
-          <ContentTypeTags item={item} onUpdate={onUpdate} />
-        </div>
-
-        {item.eventDate && (
-          <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-            <Calendar className="size-3 text-event" />
-            {format(item.eventDate, "PPP")}
-            {item.eventLocation && <span> • {item.eventLocation}</span>}
-          </div>
-        )}
+        </Card>
       </div>
     );
   }

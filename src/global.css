@@ -37,25 +37,6 @@
 
     --radius: 0.75rem;
 
-    --sidebar-background: 220 18% 94%;
-    --sidebar-foreground: 220 14% 20%;
-    --sidebar-primary: 220 100% 50%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 220 14% 90%;
-    --sidebar-accent-foreground: 220 14% 20%;
-    --sidebar-border: 220 13% 85%;
-    --sidebar-ring: 224 76.3% 48%;
-
-    /* Color palette based on One Dark */
-    --task: 286 89% 53%;
-    --task-light: 286 100% 93%;
-    --event: 199 90% 48%;
-    --event-light: 199 100% 93%;
-    --note: 114 74% 51%;
-    --note-light: 114 74% 93%;
-    --mail: 35 91% 56%;
-    --mail-light: 35 100% 93%;
-
     color-scheme: light;
   }
 
@@ -90,25 +71,6 @@
     --ring: 199 90% 64%;
 
     --radius: 0.75rem;
-
-    --sidebar-background: 220 13% 22%;
-    --sidebar-foreground: 220 14% 80%;
-    --sidebar-primary: 199 90% 64%;
-    --sidebar-primary-foreground: 220 14% 18%;
-    --sidebar-accent: 220 13% 25%;
-    --sidebar-accent-foreground: 220 14% 80%;
-    --sidebar-border: 220 13% 25%;
-    --sidebar-ring: 199 90% 64%;
-
-    /* Color palette based on One Dark */
-    --task: 286 89% 66%;
-    --task-light: 286 30% 30%;
-    --event: 199 90% 60%;
-    --event-light: 199 30% 30%;
-    --note: 114 74% 45%;
-    --note-light: 114 30% 25%;
-    --mail: 35 91% 55%;
-    --mail-light: 35 30% 30%;
 
     color-scheme: dark;
   }
@@ -156,7 +118,7 @@
 /* Tailwind component classes */
 @layer components {
   .content-item {
-    @apply relative flex flex-col bg-card rounded-xl border border-border p-4 shadow-sm
+    @apply relative flex flex-col bg-card rounded-xl border border-border p-2 shadow-sm
            transition-all duration-300 hover:shadow-md
            animate-scale-in;
   }
@@ -167,15 +129,6 @@
 
   .glass-panel {
     @apply bg-background/80 backdrop-blur-md border border-border/50 rounded-xl shadow-sm;
-  }
-
-  .sidebar-item {
-    @apply flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium
-           transition-all duration-200 hover:bg-muted;
-  }
-
-  .sidebar-item.active {
-    @apply bg-primary text-primary-foreground hover:bg-primary/90;
   }
 
   .content-link {

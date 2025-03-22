@@ -1,6 +1,5 @@
-
-import React from 'react';
-import { Content } from '@/lib/content-utils';
+import React from "react";
+import { Content } from "@/lib/content-utils";
 
 interface ContentHeaderProps {
   item: Content;
@@ -9,12 +8,10 @@ interface ContentHeaderProps {
   onEdit: () => void;
 }
 
-const ContentHeader: React.FC<ContentHeaderProps> = ({ 
-  item
-}) => {
+const ContentHeader: React.FC<ContentHeaderProps> = ({ item }) => {
   return (
-    <div className="content-item-header flex justify-between items-center mb-2">
-      <h3 className="text-base font-medium truncate">{item.title}</h3>
+    <div className="content-item-header bg-background p-2 rounded-md flex justify-between items-center mb-2">
+      <h3 className=" text-base font-medium truncate">{item.title}</h3>
     </div>
   );
 };
