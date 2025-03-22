@@ -3,9 +3,6 @@ import { Content } from "@/lib/content-utils";
 
 interface ContentHeaderProps {
   item: Content;
-  onUpdate: (updatedItem: Content) => void;
-  onDelete: (id: string) => void;
-  onEdit: () => void;
 }
 
 const ContentHeader: React.FC<ContentHeaderProps> = ({ item }) => {

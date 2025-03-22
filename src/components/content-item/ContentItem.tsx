@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
   Content,
-  getPrimaryContentType,
   processContentLinks,
   formatContentWithYaml,
 } from "@/lib/content-utils";
@@ -112,74 +111,43 @@ const ContentItem: React.FC<ContentItemProps> = ({
     onUpdate(updatedItem);
   };
 
-  if (isListView) {
-    return (
-      <div id={`content-item-${item.id}`}>
-        <Card className={"group py-2 px-3 border-b flex flex-col gap-1 m-2"}>
-          <div className="flex items-center">
-            {item.hasTaskAttributes && (
-              <div className="flex items-center">
-                <IdeaCraftCheckbox
-                  checked={item.taskDone}
-                  onToggle={handleTaskToggle}
-                />
-              </div>
-            )}
-            <h3
-              className={cn(
-                "text-sm font-medium cursor-pointer hover:underline",
-                item.hasTaskAttributes &&
-                  item.taskDone &&
-                  "line-through text-muted-foreground"
-              )}
-              onClick={handleItemSelect}
-            >
-              {item.title}
-            </h3>
-          </div>
-
-          <div className="flex mt-1 items-center gap-2">
-            <ContentTypeTags item={item} onUpdate={onUpdate} />
-          </div>
-
-          {item.eventDate && (
-            <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-              <Calendar className="size-3 text-event" />
-              {format(item.eventDate, "PPP")}
-              {item.eventLocation && <span> • {item.eventLocation}</span>}
+  return (
+    <div id={`content-item-${item.id}`}>
+      <Card className={"group py-2 px-3 border-b flex flex-col gap-1 m-2"}>
+        <div className="flex items-center">
+          {item.hasTaskAttributes && (
+            <div className="flex items-center">
+              <IdeaCraftCheckbox
+                checked={item.taskDone}
+                onToggle={handleTaskToggle}
+              />
             </div>
           )}
-        </Card>
-      </div>
-    );
-  }
+          <h3
+            className={cn(
+              "text-sm font-medium cursor-pointer hover:underline",
+              item.hasTaskAttributes &&
+                item.taskDone &&
+                "line-through text-muted-foreground"
+            )}
+            onClick={handleItemSelect}
+          >
+            {item.title}
+          </h3>
+        </div>
 
-  return (
-    <div
-      id={`content-item-${item.id}`}
-      className={"content-item border rounded-lg shadow-sm"}
-    >
-      <ContentHeader
-        item={item}
-        onUpdate={onUpdate}
-        onDelete={onDelete}
-        onEdit={handleEditClick}
-      />
+        <div className="flex mt-1 items-center gap-2">
+          <ContentTypeTags item={item} onUpdate={onUpdate} />
+        </div>
 
-      <ContentBody
-        item={item}
-        onUpdate={onUpdate}
-        processedContent={processedContent}
-        handleLinkClick={handleLinkClick}
-        allItems={allItems}
-      />
-
-      <ContentFooter
-        item={item}
-        onUpdate={onUpdate}
-        onDelete={onDelete}
-        onEdit={handleEditClick}
-      />
+        {item.eventDate && (
+          <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
+            <Calendar className="size-3 text-event" />
+            {format(item.eventDate, "PPP")}
+            {item.eventLocation && <span> • {item.eventLocation}</span>}
+          </div>
+        )}
+      </Card>
     </div>
   );
 };

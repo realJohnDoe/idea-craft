@@ -1,8 +1,13 @@
-import React from "react";
-import { Content } from "@/lib/content-utils";
+import React, { useEffect, useState } from "react";
+import { Content, processContentLinks } from "@/lib/content-utils";
 import ContentItem from "@/components/content-item";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
+import { toast } from "sonner";
+import ContentFooter from "../content-item/ContentFooter";
+import ContentHeader from "../content-item/ContentHeader";
+import ContentBody from "../content-item/ContentBody";
+import ContentEditor from "../content-editor/ContentEditor";
 
 interface SelectedItemViewProps {
   item: Content;
@@ -21,6 +26,56 @@ const SelectedItemView = ({
   allItems,
   isMobile,
 }: SelectedItemViewProps) => {
+  const [processedContent, setProcessedContent] = useState(item.content);
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    if (allItems.length > 0) {
+      setProcessedContent(processContentLinks(item.content, allItems));
+    }
+  }, [item.content, allItems]);
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const target = e.target as HTMLElement;
+    if (target.classList.contains("content-link")) {
+      e.stopPropagation();
+      const itemId = target.getAttribute("data-item-id");
+      if (itemId) {
+        const linkedItem = allItems.find((item) => item.id === itemId);
+        if (linkedItem) {
+          toast.info(`Linked to: ${linkedItem.title}`);
+
+          const linkedElement = document.getElementById(
+            `content-item-${itemId}`
+          );
+          if (linkedElement) {
+            linkedElement.scrollIntoView({
+              behavior: "smooth",
+              block: "center",
+            });
+            linkedElement.classList.add("highlight-pulse");
+            setTimeout(() => {
+              linkedElement.classList.remove("highlight-pulse");
+            }, 2000);
+          }
+        }
+      }
+    }
+  };
+
+  const handleEditClick = () => {
+    setIsEditing(true);
+  };
+
+  const handleEditorUpdate = (updatedItem: Content) => {
+    onUpdate(updatedItem);
+    setIsEditing(false);
+  };
+
+  const handleEditorCancel = () => {
+    setIsEditing(false);
+  };
+
   return (
     <div
       className={
@@ -36,12 +91,39 @@ const SelectedItemView = ({
         </Button>
       </div>
 
-      <ContentItem
-        item={item}
-        onUpdate={onUpdate}
-        onDelete={onDelete}
-        allItems={allItems}
-      />
+      <div
+        id={`content-item-${item.id}`}
+        className={"content-item border rounded-lg shadow-sm"}
+      >
+        {/* If editing, show the editor instead of the item */}
+        {isEditing && (
+          <ContentEditor
+            item={item}
+            onUpdate={handleEditorUpdate}
+            onCancel={handleEditorCancel}
+          />
+        )}
+        {!isEditing && (
+          <div>
+            <ContentHeader item={item} />
+
+            <ContentBody
+              item={item}
+              onUpdate={onUpdate}
+              processedContent={processedContent}
+              handleLinkClick={handleLinkClick}
+              allItems={allItems}
+            />
+
+            <ContentFooter
+              item={item}
+              onUpdate={onUpdate}
+              onDelete={onDelete}
+              onEdit={handleEditClick}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
