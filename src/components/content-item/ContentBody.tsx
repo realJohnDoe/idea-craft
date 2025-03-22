@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { Content, formatContentWithYaml } from "@/lib/content-utils";
 import { format } from "date-fns";
-import { Checkbox } from "@/components/ui/checkbox";
 import ContentRenderer from "./ContentRenderer";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 

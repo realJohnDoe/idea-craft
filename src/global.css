@@ -161,18 +161,6 @@
            animate-scale-in;
   }
 
-  .content-item-header {
-    @apply flex items-center justify-between mb-2;
-  }
-
-  .content-item-tag {
-    @apply text-xs px-2.5 py-0.5 rounded-full font-medium;
-  }
-
-  .content-item-body {
-    @apply flex-1;
-  }
-
   .content-item-footer {
     @apply flex items-center justify-between mt-2 pt-2 border-t border-border/50;
   }
@@ -188,22 +176,6 @@
 
   .sidebar-item.active {
     @apply bg-primary text-primary-foreground hover:bg-primary/90;
-  }
-
-  .content-task {
-    @apply border-l-4 border-task;
-  }
-
-  .content-event {
-    @apply border-l-4 border-event;
-  }
-
-  .content-note {
-    @apply border-l-4 border-note;
-  }
-
-  .content-mail {
-    @apply border-l-4 border-mail;
   }
 
   .content-link {

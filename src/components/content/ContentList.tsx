@@ -1,7 +1,6 @@
-
-import React from 'react';
-import { Content, formatContentWithYaml } from '@/lib/content-utils';
-import ContentItem from '@/components/content-item';
+import React from "react";
+import { Content, formatContentWithYaml } from "@/lib/content-utils";
+import ContentItem from "@/components/content-item";
 
 interface ContentListProps {
   items: Content[];
@@ -11,31 +10,24 @@ interface ContentListProps {
   onSelect: (item: Content) => void;
 }
 
-const ContentList = ({ items, onUpdate, onDelete, allItems, onSelect }: ContentListProps) => {
-  const handleTaskToggle = (item: Content, checked: boolean) => {
-    const updatedItem = { 
-      ...item, 
-      taskDone: checked 
-    };
-    
-    // Re-generate YAML
-    updatedItem.yaml = formatContentWithYaml(updatedItem);
-    
-    onUpdate(updatedItem);
-  };
-
+const ContentList = ({
+  items,
+  onUpdate,
+  onDelete,
+  allItems,
+  onSelect,
+}: ContentListProps) => {
   return (
     <div className="border rounded-lg overflow-hidden shadow-sm">
       {items.map((item) => (
-        <ContentItem 
-          key={item.id} 
-          item={item} 
+        <ContentItem
+          key={item.id}
+          item={item}
           onUpdate={onUpdate}
           onDelete={onDelete}
           allItems={allItems}
           isListView={true}
           onSelect={onSelect}
-          onTaskToggle={handleTaskToggle}
         />
       ))}
     </div>

@@ -14,6 +14,7 @@ import { cn } from "@/lib/utils";
 import ContentTypeTags from "./ContentTypeTags";
 import { Calendar } from "lucide-react";
 import { format } from "date-fns";
+import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 
 interface ContentItemProps {
   item: Content;
@@ -22,7 +23,6 @@ interface ContentItemProps {
   allItems?: Content[];
   isListView?: boolean;
   onSelect?: (item: Content) => void;
-  onTaskToggle?: (item: Content, checked: boolean) => void;
 }
 
 const ContentItem: React.FC<ContentItemProps> = ({
@@ -32,9 +32,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
   allItems = [],
   isListView = false,
   onSelect,
-  onTaskToggle,
 }) => {
-  const [isHovered, setIsHovered] = useState(false);
   const [processedContent, setProcessedContent] = useState(item.content);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -72,30 +70,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
     }
   };
 
-  const getTypeClass = () => {
-    const primaryType = getPrimaryContentType(item);
-    switch (primaryType) {
-      default:
-        return "";
-    }
-  };
-
-  const handleTaskToggle = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.stopPropagation();
-
-    // Use either the passed in onTaskToggle or directly update
-    if (onTaskToggle) {
-      onTaskToggle(item, e.target.checked);
-    } else {
-      const updatedItem = {
-        ...item,
-        taskDone: e.target.checked,
-      };
-      updatedItem.yaml = formatContentWithYaml(updatedItem);
-      onUpdate(updatedItem);
-    }
-  };
-
   const handleEditClick = () => {
     setIsEditing(true);
   };
@@ -125,37 +99,44 @@ const ContentItem: React.FC<ContentItemProps> = ({
     );
   }
 
+  const handleTaskToggle = (checked: boolean) => {
+    const updatedItem = {
+      ...item,
+      taskDone: checked,
+    };
+
+    // Re-generate YAML
+    updatedItem.yaml = formatContentWithYaml(updatedItem);
+
+    onUpdate(updatedItem);
+  };
+
   if (isListView) {
     return (
       <div
         id={`content-item-${item.id}`}
-        className={cn("group py-2 px-3 border-b", getTypeClass())}
+        className={"group py-2 px-3 border-b flex flex-col gap-1"}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {item.hasTaskAttributes && (
-              <div className="mr-1">
-                <input
-                  type="checkbox"
-                  checked={item.taskDone}
-                  onChange={handleTaskToggle}
-                  onClick={(e) => e.stopPropagation()}
-                  className="form-checkbox h-4 w-4 text-task border-task rounded"
-                />
-              </div>
+        <div className="flex items-center">
+          {item.hasTaskAttributes && (
+            <div className="flex items-center">
+              <IdeaCraftCheckbox
+                checked={item.taskDone}
+                onToggle={handleTaskToggle}
+              />
+            </div>
+          )}
+          <h3
+            className={cn(
+              "text-sm font-medium cursor-pointer hover:underline",
+              item.hasTaskAttributes &&
+                item.taskDone &&
+                "line-through text-muted-foreground"
             )}
-            <h3
-              className={cn(
-                "text-sm font-medium cursor-pointer hover:underline",
-                item.hasTaskAttributes &&
-                  item.taskDone &&
-                  "line-through text-muted-foreground"
-              )}
-              onClick={handleItemSelect}
-            >
-              {item.title}
-            </h3>
-          </div>
+            onClick={handleItemSelect}
+          >
+            {item.title}
+          </h3>
         </div>
 
         <div className="flex mt-1 items-center gap-2">
@@ -176,7 +157,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
   return (
     <div
       id={`content-item-${item.id}`}
-      className={cn("content-item border rounded-lg shadow-sm", getTypeClass())}
+      className={"content-item border rounded-lg shadow-sm"}
     >
       <ContentHeader
         item={item}
