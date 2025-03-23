@@ -288,10 +288,10 @@ export function processContentLinks(content: string, allItems: Content[]): strin
     const linkedItem = allItems.find(item => 
       item.title.toLowerCase() === linkTitle.toLowerCase());
     
-    if (linkedItem) {
-      // Return a span with a special class for styling
-      return `<span class="content-link" data-item-id="${linkedItem.id}">${linkTitle}</span>`;
-    }
+    // if (linkedItem) {
+    //   // Return a span with a special class for styling
+    //   return `<span class="content-link" data-item-id="${linkedItem.id}">${linkTitle}</span>`;
+    // }
     
     // If no match, return the original link format
     return match;
