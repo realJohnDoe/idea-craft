@@ -76,6 +76,20 @@ const SelectedItemView = ({
     setIsEditing(false);
   };
 
+  const handleTitleChanged = (title: string) => {
+    if (!title.trim()) {
+      toast.error("Title is required");
+      return;
+    }
+
+    const updatedContent: Content = {
+      ...item,
+      title,
+      updatedAt: new Date(),
+    };
+    onUpdate(updatedContent);
+  };
+
   return (
     <div
       className={
@@ -105,7 +119,10 @@ const SelectedItemView = ({
         )}
         {!isEditing && (
           <div>
-            <ContentHeader item={item} />
+            <ContentHeader
+              title_in={item.title}
+              onUpdate={handleTitleChanged}
+            />
 
             <ContentBody
               item={item}

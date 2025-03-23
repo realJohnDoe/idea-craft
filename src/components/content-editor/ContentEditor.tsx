@@ -6,11 +6,9 @@ import {
 } from "@/lib/content-utils";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Card } from "@/components/ui/card";
 
 // Import the components
 import AttributeTypeSelector from "../content-creation/AttributeTypeSelector";

@@ -1,14 +1,34 @@
-import React from "react";
-import { Content } from "@/lib/content-utils";
+import React, { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
 
 interface ContentHeaderProps {
-  item: Content;
+  title_in: string;
+  onUpdate: (new_title: string) => void;
 }
 
-const ContentHeader: React.FC<ContentHeaderProps> = ({ item }) => {
+const ContentHeader: React.FC<ContentHeaderProps> = ({
+  title_in,
+  onUpdate,
+}) => {
+  const [title, setTitle] = useState(title_in);
+
+  useEffect(() => {
+    setTitle(title_in);
+  }, [title_in]);
+
+  const handleBlur = () => {
+    if (title !== title_in) {
+      onUpdate(title);
+    }
+  };
+
   return (
-    <div className="content-item-header bg-background p-2 rounded-md flex justify-between items-center mb-2">
-      <h3 className=" text-base font-medium truncate">{item.title}</h3>
+    <div className="pb-2">
+      <Input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        onBlur={handleBlur}
+      />
     </div>
   );
 };
