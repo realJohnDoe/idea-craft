@@ -1,5 +1,4 @@
-import React from "react";
-import { Content, formatContentWithYaml } from "@/lib/content-utils";
+import { Content } from "@/lib/content-utils";
 import ContentItem from "@/components/content-item";
 
 interface ContentListProps {
