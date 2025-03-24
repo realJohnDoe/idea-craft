@@ -126,7 +126,7 @@ const Index = () => {
     setFilteredItems(result);
   }, [items, filter, search, selectedTags]);
 
-  const handleUpdateItem = (updatedItem: Content) => {
+  const handleUpdateItem = (updatedItem: Item) => {
     setItems((prevItems) =>
       prevItems.map((item) => (item.id === updatedItem.id ? updatedItem : item))
     );
@@ -146,7 +146,7 @@ const Index = () => {
     toast.success("Item deleted successfully");
   };
 
-  const handleCreateItem = (newItem: Content) => {
+  const handleCreateItem = (newItem: Item) => {
     setItems((prevItems) => [newItem, ...prevItems]);
     setShowCreator(false);
     toast.success("Item created successfully");
