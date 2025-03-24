@@ -158,21 +158,69 @@ const Index = () => {
     return newId;
   };
 
+  interface ParsedTask {
+    content: string;
+    isDone: boolean;
+  }
+
+  function parseTasks(content: string): {
+    tasks: ParsedTask[];
+    updatedContent: string;
+  } {
+    const taskRegex = /^- \[([ x])\] (.+)$/gm;
+    const tasks: ParsedTask[] = [];
+    const updatedContent = content.replace(
+      taskRegex,
+      (match, status, taskContent) => {
+        tasks.push({
+          content: taskContent.trim(),
+          isDone: status === "x",
+        });
+        return `[[task-placeholder-${tasks.length - 1}]]`;
+      }
+    );
+    return { tasks, updatedContent };
+  }
+
   const createNewContent = (
     file: File,
     textContent: string,
     existingItems: Content[]
-  ): Content => {
+  ): { mainContent: Content; taskContents: Content[] } => {
     const baseTitle = file.name.replace(/\.(md|txt)$/, "");
     const baseId = baseTitle.toLowerCase().replace(/\s+/g, "-");
 
     const existingIds = new Set(existingItems.map((item) => item.id));
-    const uniqueId = generateUniqueId(baseId, existingIds);
 
-    return {
-      id: uniqueId,
+    const { tasks, updatedContent } = parseTasks(textContent);
+
+    const taskContents: Content[] = tasks.map((task, index) => ({
+      id: generateUniqueId(`${baseId}-task-${index + 1}`, existingIds),
+      title: task.content.substring(0, 50), // Use first 50 chars as title
+      content: task.content,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      hasTaskAttributes: true,
+      hasEventAttributes: false,
+      hasMailAttributes: false,
+      hasNoteAttributes: false,
+      taskDone: task.isDone,
+      tags: [],
+      yaml: "",
+    }));
+
+    // Replace placeholders with actual task IDs
+    const finalContent = updatedContent.replace(
+      /\[\[task-placeholder-(\d+)\]\]/g,
+      (_, index) => {
+        return `[[${taskContents[parseInt(index)].id}]]`;
+      }
+    );
+
+    const mainContent: Content = {
+      id: generateUniqueId(baseId, existingIds),
       title: baseTitle,
-      content: textContent,
+      content: finalContent,
       createdAt: new Date(),
       updatedAt: new Date(),
       hasTaskAttributes: false,
@@ -182,6 +230,8 @@ const Index = () => {
       tags: [],
       yaml: "",
     };
+
+    return { mainContent, taskContents };
   };
 
   const handleImport = () => {
@@ -192,7 +242,7 @@ const Index = () => {
     input.onchange = async (e) => {
       const files = (e.target as HTMLInputElement).files;
       if (files) {
-        const importedFiles = await Promise.all(
+        const importedContents = await Promise.all(
           Array.from(files)
             .filter((file) => {
               const relativePath = file.webkitRelativePath;
@@ -204,17 +254,31 @@ const Index = () => {
                 const content = await file.text();
                 const { yamlData, content: textContent } = parseYaml(content);
 
-                const newContent = createNewContent(file, textContent, items);
+                const { mainContent, taskContents } = createNewContent(
+                  file,
+                  textContent,
+                  items
+                );
 
-                const parsedContent = parseYamlToContent(yamlData, newContent);
-                return parsedContent;
+                const parsedMainContent = parseYamlToContent(
+                  yamlData,
+                  mainContent
+                );
+
+                // Apply YAML parsing to task contents if needed
+                const parsedTaskContents = taskContents.map((taskContent) =>
+                  parseYamlToContent(yamlData, taskContent)
+                );
+
+                return [parsedMainContent, ...parsedTaskContents];
               } catch (error) {
                 console.error("Import error:", error);
                 toast.error("Failed to import content");
               }
             })
         );
-        setItems((prevItems) => [...importedFiles, ...prevItems]);
+        const allNewContents = importedContents.flat();
+        setItems((prevItems) => [...allNewContents, ...prevItems]);
         toast.success("Content imported successfully");
       }
     };
