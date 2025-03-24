@@ -145,6 +145,45 @@ const Index = () => {
     toast.success("Item created successfully");
   };
 
+  const generateUniqueId = (
+    baseId: string,
+    existingIds: Set<string>
+  ): string => {
+    let newId = baseId;
+    let counter = 0;
+    while (existingIds.has(newId)) {
+      counter++;
+      newId = `${baseId}-${counter}`;
+    }
+    return newId;
+  };
+
+  const createNewContent = (
+    file: File,
+    textContent: string,
+    existingItems: Content[]
+  ): Content => {
+    const baseTitle = file.name.replace(/\.(md|txt)$/, "");
+    const baseId = baseTitle.toLowerCase().replace(/\s+/g, "-");
+
+    const existingIds = new Set(existingItems.map((item) => item.id));
+    const uniqueId = generateUniqueId(baseId, existingIds);
+
+    return {
+      id: uniqueId,
+      title: baseTitle,
+      content: textContent,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      hasTaskAttributes: false,
+      hasEventAttributes: false,
+      hasMailAttributes: false,
+      hasNoteAttributes: true,
+      tags: [],
+      yaml: "",
+    };
+  };
+
   const handleImport = () => {
     const input = document.createElement("input");
     input.type = "file";
@@ -165,19 +204,7 @@ const Index = () => {
                 const content = await file.text();
                 const { yamlData, content: textContent } = parseYaml(content);
 
-                const newContent: Content = {
-                  id: Math.random().toString(36).substring(2, 9),
-                  title: file.name.replace(/\.(md|txt)$/, ""),
-                  content: textContent,
-                  createdAt: new Date(),
-                  updatedAt: new Date(),
-                  hasTaskAttributes: false,
-                  hasEventAttributes: false,
-                  hasMailAttributes: false,
-                  hasNoteAttributes: true,
-                  tags: [],
-                  yaml: "",
-                };
+                const newContent = createNewContent(file, textContent, items);
 
                 const parsedContent = parseYamlToContent(yamlData, newContent);
                 return parsedContent;
