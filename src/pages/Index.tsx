@@ -10,7 +10,7 @@ import ContentCreator from "@/components/ContentCreator";
 import Navbar from "@/components/Navbar";
 import GitHubSync from "@/components/GitHubSync";
 import { Button } from "@/components/ui/button";
-import { Plus, Check, Github } from "lucide-react";
+import { Plus, Github } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import TagsFilter from "@/components/filters/TagsFilter";
 import TypeFilter from "@/components/filters/TypeFilter";

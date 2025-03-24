@@ -21,33 +21,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 }) => {
   const [expandedLinks, setExpandedLinks] = useState<string[]>([]);
 
-  const handleToggleLink = (itemId: string) => {
-    setExpandedLinks((prevExpanded) =>
-      prevExpanded.includes(itemId)
-        ? prevExpanded.filter((id) => id !== itemId)
-        : [...prevExpanded, itemId]
-    );
-  };
-
-  const handleToggleLinkedTask = (itemId: string, isChecked: boolean) => {
-    const linkedItem = allItems.find((item) => item.id === itemId);
-    if (linkedItem) {
-      handleToggleTaskDone(linkedItem, isChecked);
-    }
-  };
-
-  const handleToggleTaskDone = (linkedItem: Content, isDone: boolean) => {
-    const updatedItem = {
-      ...linkedItem,
-      taskDone: isDone,
-    };
-
-    // Re-generate YAML
-    updatedItem.yaml = formatContentWithYaml(updatedItem);
-
-    onUpdate(updatedItem);
-  };
-
   const handleTaskToggle = (checked: boolean) => {
     const updatedItem = {
       ...item,
@@ -136,10 +109,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         <ContentRenderer
           content={processedContent}
           allItems={allItems}
-          expandedLinks={expandedLinks}
           handleWikiLinkClick={handleUpdateSelectedItem}
-          onToggleLink={handleToggleLink}
-          onToggleLinkedTask={handleToggleLinkedTask}
         />
       </div>
     </div>

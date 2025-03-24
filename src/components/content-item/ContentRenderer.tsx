@@ -7,19 +7,13 @@ import { Content } from "@/lib/content-utils";
 interface ContentRendererProps {
   content: string;
   allItems?: Content[];
-  expandedLinks: string[];
   handleWikiLinkClick: (wikilinkId: string) => void;
-  onToggleLink: (itemId: string) => void;
-  onToggleLinkedTask: (itemId: string, isChecked: boolean) => void;
 }
 
 const ContentRenderer: React.FC<ContentRendererProps> = ({
   content,
   allItems = [],
-  expandedLinks,
   handleWikiLinkClick,
-  onToggleLink,
-  onToggleLinkedTask,
 }) => {
   const processWikilinks = (markdown: string) => {
     const regex = /\[\[(.*?)\]\]/g;
