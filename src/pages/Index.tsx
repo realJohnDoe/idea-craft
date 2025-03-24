@@ -239,10 +239,6 @@ const Index = () => {
     return "No items yet";
   };
 
-  const handleWikiLinkClick = (wikilinkId: string) => {
-    setSelectedItem(items.find((item) => item.id === wikilinkId) || null);
-  };
-
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar
