@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Content, formatContentWithYaml } from "@/lib/content-utils";
 import { format } from "date-fns";
 import ContentRenderer from "./ContentRenderer";
@@ -19,8 +19,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   handleWikiLinkClick: handleUpdateSelectedItem,
   allItems = [],
 }) => {
-  const [expandedLinks, setExpandedLinks] = useState<string[]>([]);
-
   const handleTaskToggle = (checked: boolean) => {
     const updatedItem = {
       ...item,
