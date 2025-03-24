@@ -165,10 +165,10 @@ export function itemToContent(item: Item): Content {
 }
 
 // Parse the YAML frontmatter from the content
-export function parseYaml(content: string): { yamlData: any; content: string } {
+export function parseYaml(fileContent: string): { yamlData: any; content: string } {
   // Simple regex to extract YAML frontmatter between --- delimiters
   const frontmatterRegex = /^---\s*\n([\s\S]*?)\n---\s*\n([\s\S]*)$/;
-  const match = content.match(frontmatterRegex);
+  const match = fileContent.match(frontmatterRegex);
 
   if (match) {
     try {
@@ -178,10 +178,10 @@ export function parseYaml(content: string): { yamlData: any; content: string } {
       return { yamlData, content: contentStr };
     } catch (e) {
       console.error('Error parsing YAML:', e);
-      return { yamlData: {}, content };
+      return { yamlData: {}, content: fileContent };
     }
   }
-  return { yamlData: {}, content };
+  return { yamlData: {}, content: fileContent };
 }
 
 // Generate YAML for a content item
