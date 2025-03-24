@@ -4,10 +4,6 @@ import {
   processContentLinks,
   formatContentWithYaml,
 } from "@/lib/content-utils";
-import { toast } from "sonner";
-import ContentHeader from "./ContentHeader";
-import ContentBody from "./ContentBody";
-import ContentFooter from "./ContentFooter";
 import ContentEditor from "../content-editor/ContentEditor";
 import { cn } from "@/lib/utils";
 import ContentTypeTags from "./ContentTypeTags";
@@ -15,6 +11,7 @@ import { Calendar } from "lucide-react";
 import { format } from "date-fns";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 import { Card } from "../ui/card";
+import { useNavigate } from "react-router-dom";
 
 interface ContentItemProps {
   item: Content;
@@ -28,7 +25,6 @@ interface ContentItemProps {
 const ContentItem: React.FC<ContentItemProps> = ({
   item,
   onUpdate,
-  onDelete,
   allItems = [],
   isListView = false,
   onSelect,
@@ -41,38 +37,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
       setProcessedContent(processContentLinks(item.content, allItems));
     }
   }, [item.content, allItems]);
-
-  const handleLinkClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLElement;
-    if (target.classList.contains("content-link")) {
-      e.stopPropagation();
-      const itemId = target.getAttribute("data-item-id");
-      if (itemId) {
-        const linkedItem = allItems.find((item) => item.id === itemId);
-        if (linkedItem) {
-          toast.info(`Linked to: ${linkedItem.title}`);
-
-          const linkedElement = document.getElementById(
-            `content-item-${itemId}`
-          );
-          if (linkedElement) {
-            linkedElement.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-            linkedElement.classList.add("highlight-pulse");
-            setTimeout(() => {
-              linkedElement.classList.remove("highlight-pulse");
-            }, 2000);
-          }
-        }
-      }
-    }
-  };
-
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
 
   const handleEditorUpdate = (updatedItem: Content) => {
     onUpdate(updatedItem);
@@ -111,6 +75,8 @@ const ContentItem: React.FC<ContentItemProps> = ({
     onUpdate(updatedItem);
   };
 
+  const navigate = useNavigate();
+
   return (
     <div id={`content-item-${item.id}`}>
       <Card className={"group py-2 px-3 border-b flex flex-col gap-1 m-2"}>
@@ -130,7 +96,10 @@ const ContentItem: React.FC<ContentItemProps> = ({
                 item.taskDone &&
                 "line-through text-muted-foreground"
             )}
-            onClick={handleItemSelect}
+            onClick={(e) => {
+              e.preventDefault();
+              navigate(`/item/${item.id}`);
+            }}
           >
             {item.title}
           </h3>

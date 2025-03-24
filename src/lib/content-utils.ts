@@ -340,7 +340,7 @@ export function getMockData(): Content[] {
       yaml: 'event:\n  date: 2023-06-05\n  location: Conference Room A\ntags:\n  - meeting\n  - weekly'
     },
     {
-      id: '3',
+      id: 'ideas-for-new-feature',
       title: 'Ideas for new feature',
       content: 'The new dashboard should include:\n- User activity metrics\n- Conversion rates\n- Custom date ranges',
       createdAt: new Date('2023-06-03'),

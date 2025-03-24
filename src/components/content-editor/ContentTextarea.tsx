@@ -1,74 +1,80 @@
-
-import React, { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { Textarea } from '@/components/ui/textarea';
-import { toast } from 'sonner';
-import { Loader2 } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { Content } from '@/lib/content-utils';
-import { cn } from '@/lib/utils';
+import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
+import { Textarea } from "@/components/ui/textarea";
+import { Loader2 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
+import { Content } from "@/lib/content-utils";
+import { cn } from "@/lib/utils";
 
 interface ContentTextareaProps {
   value: string;
   onChange: (value: string) => void;
 }
 
-const ContentTextarea: React.FC<ContentTextareaProps> = ({ 
-  value, 
-  onChange 
+const ContentTextarea: React.FC<ContentTextareaProps> = ({
+  value,
+  onChange,
 }) => {
   const [cursorPosition, setCursorPosition] = useState<number | null>(null);
   const [showSuggestions, setShowSuggestions] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
+  const [searchTerm, setSearchTerm] = useState("");
   const [selectedIndex, setSelectedIndex] = useState(0);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const suggestionBoxRef = useRef<HTMLDivElement>(null);
-  const [suggestionPosition, setSuggestionPosition] = useState<{ top: number, left: number }>({ top: 0, left: 0 });
+  const [suggestionPosition, setSuggestionPosition] = useState<{
+    top: number;
+    left: number;
+  }>({ top: 0, left: 0 });
 
   const { data: allItems = [], isLoading } = useQuery({
-    queryKey: ['content-items'],
+    queryKey: ["content-items"],
     queryFn: async () => {
-      const { getMockData } = await import('@/lib/content-utils');
+      const { getMockData } = await import("@/lib/content-utils");
       return getMockData();
-    }
+    },
   });
 
   const calculateSuggestionPosition = () => {
     if (!textareaRef.current || cursorPosition === null) return;
-    
+
     const textarea = textareaRef.current;
     const textBeforeCursor = value.substring(0, cursorPosition);
-    const lines = textBeforeCursor.split('\n');
+    const lines = textBeforeCursor.split("\n");
     const currentLineText = lines[lines.length - 1];
     const currentLineLength = currentLineText.length;
-    
+
     // Create a temporary span to measure text width
-    const span = document.createElement('span');
-    span.style.visibility = 'hidden';
-    span.style.position = 'absolute';
-    span.style.whiteSpace = 'pre';
+    const span = document.createElement("span");
+    span.style.visibility = "hidden";
+    span.style.position = "absolute";
+    span.style.whiteSpace = "pre";
     span.style.font = window.getComputedStyle(textarea).font;
     span.textContent = currentLineText;
     document.body.appendChild(span);
-    
+
     const computedStyle = window.getComputedStyle(textarea);
     const paddingLeft = parseFloat(computedStyle.paddingLeft);
-    const lineHeight = parseFloat(computedStyle.lineHeight) || parseFloat(computedStyle.fontSize) * 1.2;
+    const lineHeight =
+      parseFloat(computedStyle.lineHeight) ||
+      parseFloat(computedStyle.fontSize) * 1.2;
     const rect = textarea.getBoundingClientRect();
-    
+
     // Position horizontally based on cursor position in current line
-    const textWidth = Math.min(span.getBoundingClientRect().width, textarea.clientWidth - paddingLeft * 2);
-    
+    const textWidth = Math.min(
+      span.getBoundingClientRect().width,
+      textarea.clientWidth - paddingLeft * 2
+    );
+
     // Position vertically based on current line
     const scrollTop = textarea.scrollTop;
     const currentLineTop = (lines.length - 1) * lineHeight;
     const visibleTop = currentLineTop - scrollTop;
-    
+
     document.body.removeChild(span);
-    
+
     // Position the suggestion box
     const top = rect.top + visibleTop + lineHeight + window.scrollY;
     const left = rect.left + paddingLeft + textWidth + window.scrollX;
-    
+
     setSuggestionPosition({ top, left });
   };
 
@@ -90,40 +96,46 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
   }, [value, cursorPosition]);
 
   const handleKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key !== 'ArrowUp' && e.key !== 'ArrowDown' && e.key !== 'Tab' && e.key !== 'Enter') {
+    if (
+      e.key !== "ArrowUp" &&
+      e.key !== "ArrowDown" &&
+      e.key !== "Tab" &&
+      e.key !== "Enter"
+    ) {
       setCursorPosition(e.currentTarget.selectionStart);
     }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLTextAreaElement>) => {
     if (!showSuggestions) return;
-    
+
     const filteredSuggestions = allItems
-      .filter(item => 
-        !searchTerm || 
-        item.title.toLowerCase().includes(searchTerm.toLowerCase())
+      .filter(
+        (item) =>
+          !searchTerm ||
+          item.title.toLowerCase().includes(searchTerm.toLowerCase())
       )
       .slice(0, 5);
-    
+
     switch (e.key) {
-      case 'ArrowDown':
+      case "ArrowDown":
         e.preventDefault();
-        setSelectedIndex(prev => 
+        setSelectedIndex((prev) =>
           prev < filteredSuggestions.length - 1 ? prev + 1 : prev
         );
         break;
-      case 'ArrowUp':
+      case "ArrowUp":
         e.preventDefault();
-        setSelectedIndex(prev => (prev > 0 ? prev - 1 : 0));
+        setSelectedIndex((prev) => (prev > 0 ? prev - 1 : 0));
         break;
-      case 'Tab':
-      case 'Enter':
+      case "Tab":
+      case "Enter":
         if (filteredSuggestions.length > 0) {
           e.preventDefault();
           handleSelectSuggestion(filteredSuggestions[selectedIndex]);
         }
         break;
-      case 'Escape':
+      case "Escape":
         e.preventDefault();
         setShowSuggestions(false);
         break;
@@ -140,20 +152,18 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
 
     const textBeforeCursor = value.substring(0, cursorPosition);
     const textAfterCursor = value.substring(cursorPosition);
-    
-    const lastOpenBracketIndex = textBeforeCursor.lastIndexOf('[[');
-    
+
+    const lastOpenBracketIndex = textBeforeCursor.lastIndexOf("[[");
+
     if (lastOpenBracketIndex !== -1) {
-      const newText = 
-        textBeforeCursor.substring(0, lastOpenBracketIndex) + 
-        `[[${item.title}]]` + 
+      const newText =
+        textBeforeCursor.substring(0, lastOpenBracketIndex) +
+        `[[${item.title}]]` +
         textAfterCursor;
-      
+
       onChange(newText);
       setShowSuggestions(false);
-      
-      toast.success(`Linked to "${item.title}"`);
-      
+
       setTimeout(() => {
         if (textareaRef.current) {
           const newCursorPos = lastOpenBracketIndex + item.title.length + 4;
@@ -165,9 +175,10 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
   };
 
   const filteredSuggestions = allItems
-    .filter(item => 
-      !searchTerm || 
-      item.title.toLowerCase().includes(searchTerm.toLowerCase())
+    .filter(
+      (item) =>
+        !searchTerm ||
+        item.title.toLowerCase().includes(searchTerm.toLowerCase())
     )
     .slice(0, 5);
 
@@ -180,16 +191,18 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
         onChange={handleChange}
         onKeyUp={handleKeyUp}
         onKeyDown={handleKeyDown}
-        onClick={() => setCursorPosition(textareaRef.current?.selectionStart || null)}
+        onClick={() =>
+          setCursorPosition(textareaRef.current?.selectionStart || null)
+        }
         rows={5}
         className="resize-none"
       />
 
       {showSuggestions && (
-        <div 
+        <div
           ref={suggestionBoxRef}
           className="fixed z-50 w-64 bg-popover border rounded-md shadow-md animate-in fade-in-0 zoom-in-95"
-          style={{ 
+          style={{
             top: `${suggestionPosition.top}px`,
             left: `${suggestionPosition.left}px`,
           }}
@@ -214,7 +227,7 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
                     <div className="font-medium truncate">{item.title}</div>
                     <div className="text-xs text-muted-foreground truncate">
                       {item.content.substring(0, 40)}
-                      {item.content.length > 40 ? '...' : ''}
+                      {item.content.length > 40 ? "..." : ""}
                     </div>
                   </button>
                 ))}

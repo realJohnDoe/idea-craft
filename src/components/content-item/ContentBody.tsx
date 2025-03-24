@@ -8,7 +8,7 @@ interface ContentBodyProps {
   item: Content;
   onUpdate: (updatedItem: Content) => void;
   processedContent: string;
-  handleLinkClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  handleWikiLinkClick?: (wikilinkId: string) => void;
   allItems?: Content[];
 }
 
@@ -16,7 +16,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   item,
   onUpdate,
   processedContent,
-  handleLinkClick,
+  handleWikiLinkClick: handleUpdateSelectedItem,
   allItems = [],
 }) => {
   const [expandedLinks, setExpandedLinks] = useState<string[]>([]);
@@ -137,7 +137,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
           content={processedContent}
           allItems={allItems}
           expandedLinks={expandedLinks}
-          handleLinkClick={handleLinkClick}
+          handleWikiLinkClick={handleUpdateSelectedItem}
           onToggleLink={handleToggleLink}
           onToggleLinkedTask={handleToggleLinkedTask}
         />

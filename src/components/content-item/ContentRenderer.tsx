@@ -1,4 +1,5 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import { Content } from "@/lib/content-utils";
@@ -7,7 +8,7 @@ interface ContentRendererProps {
   content: string;
   allItems?: Content[];
   expandedLinks: string[];
-  handleLinkClick?: (e: React.MouseEvent<HTMLDivElement>) => void;
+  handleWikiLinkClick: (wikilinkId: string) => void;
   onToggleLink: (itemId: string) => void;
   onToggleLinkedTask: (itemId: string, isChecked: boolean) => void;
 }
@@ -16,7 +17,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
   content,
   allItems = [],
   expandedLinks,
-  handleLinkClick,
+  handleWikiLinkClick,
   onToggleLink,
   onToggleLinkedTask,
 }) => {
@@ -25,30 +26,41 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
     return markdown.replace(regex, (match, content) => {
       const [title, id] = content.split("|");
       const linkId = id || content.replace(/\s+/g, "-").toLowerCase();
-      return `[${title || content}](wikilink:${linkId})`;
+      return `[${title || content}](#${linkId})`;
     });
   };
 
   const processedContent = processWikilinks(content);
 
   const CustomLink = ({ href, children }) => {
-    if (href.startsWith("wikilink:")) {
-      const itemId = href.slice(9); // Remove 'wikilink:' prefix
+    const navigate = useNavigate();
+
+    if (href.startsWith("#")) {
+      const itemId = href.slice(1);
       const linkedItem = allItems.find((item) => item.id === itemId);
+
+      if (!linkedItem) {
+        console.log("Invalid link:", href);
+        return <span className="text-red-500">[[Invalid Link]]</span>;
+      }
 
       return (
         <a
-          href={`#${itemId}`}
-          className="wikilink text-blue-600 hover:underline cursor-pointer bg-blue-50 px-1 rounded"
+          className="hover:underline cursor-pointer bg-background px-1 pb-1 rounded"
           onClick={(e) => {
             e.preventDefault();
-            onToggleLink(itemId);
+            if (linkedItem) {
+              navigate(`/item/${linkedItem.id}`); // Use React Router navigation
+              handleWikiLinkClick(linkedItem.id);
+            }
           }}
         >
-          [[{children}]]
+          {children}
         </a>
       );
     }
+
+    // For external links, keep existing behavior
     return (
       <a href={href} className="text-blue-600 hover:underline">
         {children}
@@ -66,7 +78,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
   };
 
   return (
-    <div onClick={handleLinkClick}>
+    <div>
       <ReactMarkdown
         rehypePlugins={[rehypeRaw]}
         components={{

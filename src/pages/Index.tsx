@@ -6,7 +6,6 @@ import {
   parseYaml,
 } from "@/lib/content-utils";
 import { toast } from "sonner";
-import ContentItem from "@/components/content-item";
 import ContentCreator from "@/components/ContentCreator";
 import Navbar from "@/components/Navbar";
 import GitHubSync from "@/components/GitHubSync";
@@ -20,8 +19,10 @@ import ContentList from "@/components/content/ContentList";
 import SelectedItemView from "@/components/content/SelectedItemView";
 import WelcomeNote from "@/components/UI/WelcomeNote";
 import ActionStyles from "@/components/UI/ActionStyles";
+import { useParams } from "react-router-dom";
 
 const Index = () => {
+  const { itemId } = useParams();
   const [items, setItems] = useState<Content[]>([]);
   const [filteredItems, setFilteredItems] = useState<Content[]>([]);
   const [filter, setFilter] = useState("all");
@@ -44,6 +45,14 @@ const Index = () => {
       setIsLoaded(true);
     }, 300);
   }, []);
+
+  // Sync URL parameter with selected item
+  useEffect(() => {
+    if (itemId) {
+      const item = items.find((i) => i.id === itemId);
+      setSelectedItem(item || null);
+    }
+  }, [itemId, items]);
 
   const getAllTags = () => {
     const tags = new Set<string>();
@@ -201,6 +210,10 @@ const Index = () => {
     }
 
     return "No items yet";
+  };
+
+  const handleWikiLinkClick = (wikilinkId: string) => {
+    setSelectedItem(items.find((item) => item.id === wikilinkId) || null);
   };
 
   return (

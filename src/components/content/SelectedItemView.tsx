@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Content, processContentLinks } from "@/lib/content-utils";
-import ContentItem from "@/components/content-item";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { toast } from "sonner";
@@ -35,30 +34,22 @@ const SelectedItemView = ({
     }
   }, [item.content, allItems]);
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLDivElement>) => {
-    const target = e.target as HTMLElement;
-    if (target.classList.contains("content-link")) {
-      e.stopPropagation();
-      const itemId = target.getAttribute("data-item-id");
-      if (itemId) {
-        const linkedItem = allItems.find((item) => item.id === itemId);
-        if (linkedItem) {
-          toast.info(`Linked to: ${linkedItem.title}`);
-
-          const linkedElement = document.getElementById(
-            `content-item-${itemId}`
-          );
-          if (linkedElement) {
-            linkedElement.scrollIntoView({
-              behavior: "smooth",
-              block: "center",
-            });
-            linkedElement.classList.add("highlight-pulse");
-            setTimeout(() => {
-              linkedElement.classList.remove("highlight-pulse");
-            }, 2000);
-          }
-        }
+  const handleUpdateSelectedItem = (wikilinkId: string) => {
+    console.log(wikilinkId);
+    const linkedItem = allItems.find((item) => item.id === wikilinkId);
+    if (linkedItem) {
+      const linkedElement = document.getElementById(
+        `content-item-${wikilinkId}`
+      );
+      if (linkedElement) {
+        linkedElement.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        linkedElement.classList.add("highlight-pulse");
+        setTimeout(() => {
+          linkedElement.classList.remove("highlight-pulse");
+        }, 2000);
       }
     }
   };
@@ -128,7 +119,7 @@ const SelectedItemView = ({
               item={item}
               onUpdate={onUpdate}
               processedContent={processedContent}
-              handleLinkClick={handleLinkClick}
+              handleWikiLinkClick={handleUpdateSelectedItem}
               allItems={allItems}
             />
 
