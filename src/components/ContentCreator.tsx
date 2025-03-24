@@ -1,67 +1,73 @@
-
-import React, { useState } from 'react';
-import { Content, parseYaml, generateYaml, ContentAttributeType } from '@/lib/content-utils';
-import { X } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { toast } from 'sonner';
+import React, { useState } from "react";
+import {
+  Content,
+  generateYaml,
+  ContentAttributeType,
+} from "@/lib/content-utils";
+import { X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
 // Import the components
-import AttributeTypeSelector from './content-creation/AttributeTypeSelector';
-import TaskAttributeEditor from './content-creation/TaskAttributeEditor';
-import EventAttributeEditor from './content-creation/EventAttributeEditor';
-import MailAttributeEditor from './content-creation/MailAttributeEditor';
-import TagsEditor from './content-creation/TagsEditor';
-import YamlPreview from './content-creation/YamlPreview';
+import AttributeTypeSelector from "./content-creation/AttributeTypeSelector";
+import TaskAttributeEditor from "./content-creation/TaskAttributeEditor";
+import EventAttributeEditor from "./content-creation/EventAttributeEditor";
+import MailAttributeEditor from "./content-creation/MailAttributeEditor";
+import TagsEditor from "./content-creation/TagsEditor";
+import YamlPreview from "./content-creation/YamlPreview";
 
 interface ContentCreatorProps {
   onCreate: (content: Content) => void;
   onCancel: () => void;
 }
 
-const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) => {
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  
+const ContentCreator: React.FC<ContentCreatorProps> = ({
+  onCreate,
+  onCancel,
+}) => {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
   // Attribute toggles - note is now automatic based on other attributes
   const [hasTaskAttributes, setHasTaskAttributes] = useState(false);
   const [hasEventAttributes, setHasEventAttributes] = useState(false);
   const [hasMailAttributes, setHasMailAttributes] = useState(false);
-  
+
   // Centralized tags
   const [tags, setTags] = useState<string[]>([]);
-  
+
   // Task specific state
   const [taskDone, setTaskDone] = useState(false);
-  
+
   // Event specific state
   const [eventDate, setEventDate] = useState<Date | undefined>(new Date());
-  const [eventLocation, setEventLocation] = useState('');
-  
+  const [eventLocation, setEventLocation] = useState("");
+
   // Mail specific state
-  const [mailFrom, setMailFrom] = useState('');
-  const [mailTo, setMailTo] = useState<string[]>([]); 
-  
+  const [mailFrom, setMailFrom] = useState("");
+  const [mailTo, setMailTo] = useState<string[]>([]);
+
   // Toggle attribute sections
   const toggleAttribute = (type: ContentAttributeType) => {
     switch (type) {
-      case 'task':
+      case "task":
         setHasTaskAttributes(!hasTaskAttributes);
         break;
-      case 'event':
+      case "event":
         setHasEventAttributes(!hasEventAttributes);
         break;
-      case 'mail':
+      case "mail":
         setHasMailAttributes(!hasMailAttributes);
         break;
-      case 'note':
+      case "note":
         // Note is now automatic - it's active if no other attributes are active
         break;
     }
   };
-  
+
   // Get active attributes count
   const getActiveAttributesCount = () => {
     let count = 0;
@@ -70,90 +76,92 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
     if (hasMailAttributes) count++;
     return count;
   };
-  
+
   // Calculate if notes should be the default
   const calculateHasNoteAttributes = () => {
     return getActiveAttributesCount() === 0;
   };
-  
+
   const handleCreate = () => {
     if (!title.trim()) {
-      toast.error('Title is required');
+      toast.error("Title is required");
       return;
     }
-    
+
     // Validate required fields for active attribute types
     if (hasEventAttributes && !eventDate) {
-      toast.error('Date is required for events');
+      toast.error("Date is required for events");
       return;
     }
-    
+
     if (hasMailAttributes && (!mailFrom || mailTo.length === 0)) {
-      toast.error('From and To fields are required for emails');
+      toast.error("From and To fields are required for emails");
       return;
     }
-    
+
     // Create content object
     const id = Math.random().toString(36).substring(2, 9);
     const now = new Date();
-    
+
     // Calculate if we should be a note - always true if no other attributes
     const isNote = calculateHasNoteAttributes();
-    
+
     const newContent: Content = {
       id,
       title,
       content,
       createdAt: now,
       updatedAt: now,
-      
+
       // Attribute flags
       hasTaskAttributes,
       hasEventAttributes,
       hasMailAttributes,
       hasNoteAttributes: isNote, // Automatic based on other attributes
-      
+
       // Centralized tags
       tags,
-      
+
       // Task attributes
       taskDone: hasTaskAttributes ? taskDone : undefined,
-      
+
       // Event attributes
       eventDate: hasEventAttributes ? eventDate : undefined,
-      eventLocation: hasEventAttributes ? eventLocation || undefined : undefined,
-      
+      eventLocation: hasEventAttributes
+        ? eventLocation || undefined
+        : undefined,
+
       // Mail attributes
       mailFrom: hasMailAttributes ? mailFrom : undefined,
       mailTo: hasMailAttributes ? mailTo : undefined,
-      
+
       // Generate YAML
-      yaml: ''
+      yaml: "",
     };
-    
+
     // Generate YAML and update
     newContent.yaml = generateYaml(newContent);
-    
+
     // Create and reset form
     onCreate(newContent);
-    
+
     // Reset form
-    setTitle('');
-    setContent('');
+    setTitle("");
+    setContent("");
     setHasTaskAttributes(false);
     setHasEventAttributes(false);
     setHasMailAttributes(false);
     setTags([]);
     setTaskDone(false);
     setEventDate(new Date());
-    setEventLocation('');
-    setMailFrom('');
+    setEventLocation("");
+    setMailFrom("");
     setMailTo([]);
   };
-  
+
   // Calculate if we should be showing note attributes
   const showNoteAttributes = calculateHasNoteAttributes();
-  
+
   return (
     <div className="border rounded-xl p-6 shadow-sm bg-card animate-fade-in space-y-4">
       <div className="flex items-center justify-between">
@@ -162,7 +170,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
           <X className="size-4" />
         </Button>
       </div>
-      
+
       <div className="space-y-4">
         {/* Common fields */}
         <div className="space-y-2">
@@ -174,7 +182,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
             onChange={(e) => setTitle(e.target.value)}
           />
         </div>
-        
+
         {/* Content attributes selection */}
         <AttributeTypeSelector
           hasTaskAttributes={hasTaskAttributes}
@@ -183,15 +191,12 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
           hasNoteAttributes={showNoteAttributes}
           toggleAttribute={toggleAttribute}
         />
-        
+
         {/* Task specific fields */}
         {hasTaskAttributes && (
-          <TaskAttributeEditor 
-            taskDone={taskDone}
-            setTaskDone={setTaskDone}
-          />
+          <TaskAttributeEditor taskDone={taskDone} setTaskDone={setTaskDone} />
         )}
-        
+
         {/* Event specific fields */}
         {hasEventAttributes && (
           <EventAttributeEditor
@@ -201,7 +206,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
             setEventLocation={setEventLocation}
           />
         )}
-        
+
         {/* Mail specific fields */}
         {hasMailAttributes && (
           <MailAttributeEditor
@@ -211,13 +216,10 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
             setMailTo={setMailTo}
           />
         )}
-        
+
         {/* Centralized tags editor */}
-        <TagsEditor 
-          tags={tags} 
-          setTags={setTags} 
-        />
-        
+        <TagsEditor tags={tags} setTags={setTags} />
+
         {/* Content */}
         <div className="space-y-2">
           <Label htmlFor="content">Content</Label>
@@ -230,9 +232,9 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
             className="resize-none"
           />
         </div>
-        
+
         {/* YAML Preview */}
-        <YamlPreview 
+        <YamlPreview
           content={{
             hasTaskAttributes,
             hasEventAttributes,
@@ -243,14 +245,16 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({ onCreate, onCancel }) =
             eventDate,
             eventLocation,
             mailFrom,
-            mailTo
+            mailTo,
           }}
         />
-        
+
         {/* Action buttons */}
         <div className="flex justify-end space-x-2 pt-2">
-          <Button variant="outline" onClick={onCancel}>Cancel</Button>
-          <Button 
+          <Button variant="outline" onClick={onCancel}>
+            Cancel
+          </Button>
+          <Button
             onClick={handleCreate}
             className="bg-primary hover:bg-primary/90"
           >

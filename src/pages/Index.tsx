@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
 import {
   getMockData,
+  getMockItems,
   Content,
+  Item,
   parseYamlToContent,
   parseYaml,
+  hasTaskAttributes,
+  hasEventAttributes,
+  hasNoteAttributes,
+  hasMailAttributes,
+  itemToContent,
 } from "@/lib/content-utils";
 import { toast } from "sonner";
 import ContentCreator from "@/components/ContentCreator";
@@ -23,21 +30,21 @@ import { useParams } from "react-router-dom";
 
 const Index = () => {
   const { itemId } = useParams();
-  const [items, setItems] = useState<Content[]>([]);
-  const [filteredItems, setFilteredItems] = useState<Content[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
+  const [filteredItems, setFilteredItems] = useState<Item[]>([]);
   const [filter, setFilter] = useState("all");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [search, setSearch] = useState("");
   const [showCreator, setShowCreator] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [selectedItem, setSelectedItem] = useState<Content | null>(null);
+  const [selectedItem, setSelectedItem] = useState<Item | null>(null);
   const [showWelcomeNote, setShowWelcomeNote] = useState(true);
   const [showGitHubSync, setShowGitHubSync] = useState(false);
 
   const isMobile = useIsMobile();
 
   useEffect(() => {
-    const data = getMockData();
+    const data = getMockItems();
     setItems(data);
     setFilteredItems(data);
 
@@ -86,16 +93,16 @@ const Index = () => {
     if (filter !== "all") {
       switch (filter) {
         case "task":
-          result = result.filter((item) => item.hasTaskAttributes);
+          result = result.filter((item) => hasTaskAttributes(item));
           break;
         case "event":
-          result = result.filter((item) => item.hasEventAttributes);
+          result = result.filter((item) => hasEventAttributes(item));
           break;
         case "note":
-          result = result.filter((item) => item.hasNoteAttributes);
+          result = result.filter((item) => hasNoteAttributes(item));
           break;
         case "mail":
-          result = result.filter((item) => item.hasMailAttributes);
+          result = result.filter((item) => hasMailAttributes(item));
           break;
       }
     }
@@ -185,7 +192,7 @@ const Index = () => {
   const createNewContent = (
     file: File,
     textContent: string,
-    existingItems: Content[]
+    existingItems: Item[]
   ): { mainContent: Content; taskContents: Content[] } => {
     const baseTitle = file.name.replace(/\.(md|txt)$/, "");
     const baseId = baseTitle.toLowerCase().replace(/\s+/g, "-");
@@ -333,7 +340,7 @@ const Index = () => {
                 Back to items
               </Button>
             </div>
-            <GitHubSync items={items} />
+            <GitHubSync items={items.map(itemToContent)} />
           </div>
         ) : (
           <div className="flex flex-col md:flex-row gap-6">
@@ -382,10 +389,10 @@ const Index = () => {
 
               {filteredItems.length > 0 ? (
                 <ContentList
-                  items={filteredItems}
+                  items={filteredItems.map(itemToContent)}
                   onUpdate={handleUpdateItem}
                   onDelete={handleDeleteItem}
-                  allItems={items}
+                  allItems={items.map(itemToContent)}
                   onSelect={setSelectedItem}
                 />
               ) : (
@@ -398,11 +405,11 @@ const Index = () => {
 
             {selectedItem && (
               <SelectedItemView
-                item={selectedItem}
+                item={itemToContent(selectedItem)}
                 onUpdate={handleUpdateItem}
                 onDelete={handleDeleteItem}
                 onClose={() => setSelectedItem(null)}
-                allItems={items}
+                allItems={items.map(itemToContent)}
                 isMobile={isMobile}
               />
             )}

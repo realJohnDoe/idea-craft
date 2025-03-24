@@ -38,6 +38,132 @@ export interface Content {
   yaml: string;
 }
 
+export interface Item {
+  id: string;
+  title: string;
+  tags: string[];
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+  done?: boolean;
+  date?: Date;
+  location?: string;
+  from?: string;
+  to?: string[];
+}
+
+function contentToItem(content: Content): Item {
+  return {
+    id: content.id,
+    title: content.title,
+    tags: content.tags,
+    content: content.content,
+    createdAt: content.createdAt,
+    updatedAt: content.updatedAt,
+    done: content.taskDone, // Map taskDone to done
+    date: content.eventDate, // Map eventDate to date
+    location: content.eventLocation, // Map eventLocation to location
+    from: content.mailFrom, // Map mailFrom to from
+    to: content.mailTo, // Map mailTo to to 
+  };
+}
+
+export function generateYamlFromItem(item: Item): string {
+  const yamlObj: any = {};
+
+  // Add task attributes if `done` is present
+  if (item.done !== undefined) {
+    yamlObj.task = {
+      done: item.done,
+    };
+  }
+
+  // Add event attributes if `date` or `location` are present
+  if (item.date || item.location) {
+    yamlObj.event = {};
+
+    if (item.date) {
+      yamlObj.event.date = item.date.toISOString().split('T')[0];
+    }
+
+    if (item.location) {
+      yamlObj.event.location = item.location;
+    }
+
+    // If the event object is empty, remove it
+    if (Object.keys(yamlObj.event).length === 0) {
+      delete yamlObj.event;
+    }
+  }
+
+  // Add mail attributes if `from` or `to` are present
+  if (item.from || item.to) {
+    yamlObj.mail = {};
+
+    if (item.from) {
+      yamlObj.mail.from = item.from;
+    }
+
+    if (item.to) {
+      yamlObj.mail.to = item.to;
+    }
+
+    // If the mail object is empty, remove it
+    if (Object.keys(yamlObj.mail).length === 0) {
+      delete yamlObj.mail;
+    }
+  }
+
+  // If the YAML object is empty, return an empty string
+  if (Object.keys(yamlObj).length === 0) {
+    return '';
+  }
+
+  return yaml.stringify(yamlObj);
+}
+
+export function hasTaskAttributes(item: Item): boolean {
+  return item.done !== undefined;
+}
+
+export function hasEventAttributes(item: Item): boolean {
+  return item.date !== undefined;
+}
+
+export function hasMailAttributes(item: Item): boolean {
+  return item.from !== undefined || item.to !== undefined;
+}
+
+export function hasNoteAttributes(item: Item): boolean {
+  // return true if no other attributes are present
+  return !hasTaskAttributes(item) && !hasEventAttributes(item) && !hasMailAttributes(item);  
+}
+
+
+export function itemToContent(item: Item): Content {
+  return {
+    id: item.id,
+    title: item.title,
+    tags: item.tags,
+    content: item.content,
+    createdAt: item.createdAt,
+    updatedAt: item.updatedAt,
+    hasTaskAttributes: item.done !== undefined, // Derived from the presence of done
+    taskDone: item.done, // Map done to taskDone
+    hasEventAttributes: item.date !== undefined || item.location !== undefined, // Derived from date or location
+    eventDate: item.date || null, // Map date to eventDate
+    eventEndDate: null, // No equivalent in Item; set to null
+    eventLocation: item.location || null, // Map location to eventLocation
+    hasMailAttributes: item.from !== undefined || item.to !== undefined, // Derived from from or to
+    mailFrom: item.from || null, // Map from to mailFrom
+    mailTo: item.to || null,
+    mailSubject: null, // No equivalent in Item; set to null
+    mailAttachments: [], // No equivalent in Item; set as empty array
+    hasNoteAttributes: true, // Default for Content objects
+    yaml: generateYamlFromItem(item), // YAML is generated dynamically; leave empty here
+  };
+}
+
 // Parse the YAML frontmatter from the content
 export function parseYaml(content: string): { yamlData: any; content: string } {
   // Simple regex to extract YAML frontmatter between --- delimiters
@@ -55,24 +181,6 @@ export function parseYaml(content: string): { yamlData: any; content: string } {
       return { yamlData: {}, content };
     }
   }
-
-  // Check if it's our simplified format
-  const simpleFormatRegex = /(task|event|mail|note):\s*\n([\s\S]*?)\n\n([\s\S]*)/;
-  const simpleMatch = content.match(simpleFormatRegex);
-
-  if (simpleMatch) {
-    try {
-      const type = simpleMatch[1];
-      const yamlStr = `${type}:\n${simpleMatch[2]}`;
-      const contentStr = simpleMatch[3];
-      const yamlData = yaml.parse(yamlStr);
-      return { yamlData, content: contentStr };
-    } catch (e) {
-      console.error('Error parsing simple YAML format:', e);
-      return { yamlData: {}, content };
-    }
-  }
-
   return { yamlData: {}, content };
 }
 
@@ -369,4 +477,8 @@ export function getMockData(): Content[] {
       yaml: 'task:\n  done: true\nmail:\n  from: john.doe@example.com\n  to:\n    - jane.smith@example.com\ntags:\n  - follow-up\n  - resources'
     }
   ];
+}
+
+export function getMockItems(): Item[] {
+  return getMockData().map(item => contentToItem(item));
 }
