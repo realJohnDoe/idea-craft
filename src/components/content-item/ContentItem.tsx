@@ -16,10 +16,7 @@ import { useNavigate } from "react-router-dom";
 interface ContentItemProps {
   item: Content;
   onUpdate: (updatedItem: Content) => void;
-  onDelete: (id: string) => void;
   allItems?: Content[];
-  isListView?: boolean;
-  onSelect?: (item: Content) => void;
 }
 
 const ContentItem: React.FC<ContentItemProps> = ({
@@ -98,7 +95,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
         </div>
 
         <div className="flex mt-1 items-center gap-2">
-          <ContentTypeTags item={item} onUpdate={onUpdate} />
+          <ContentTypeTags item={item} />
         </div>
 
         {item.eventDate && (

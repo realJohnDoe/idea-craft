@@ -381,9 +381,7 @@ const Index = () => {
                 <ContentList
                   items={filteredItems.map(itemToContent)}
                   onUpdate={handleUpdateItem}
-                  onDelete={handleDeleteItem}
                   allItems={items.map(itemToContent)}
-                  onSelect={setSelectedItem}
                 />
               ) : (
                 <EmptyState

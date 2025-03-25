@@ -6,13 +6,9 @@ import BaseIdeaCraftChip from "../BaseIdeaCraftChip";
 
 interface ContentTypeTagsProps {
   item: Content;
-  onUpdate: (updatedItem: Content) => void;
 }
 
-const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
-  item,
-  onUpdate,
-}) => {
+const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
   // Get content type tag elements
   const getTypeTags = () => {
     const tags = [];
