@@ -16,6 +16,7 @@ interface ContentTypeTagsProps {
 
 const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
   // Get content type tag elements
+  console.log(item);
   const getTypeTags = () => {
     const tags = [];
 

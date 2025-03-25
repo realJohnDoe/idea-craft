@@ -123,15 +123,15 @@ export function generateYamlFromItem(item: Item): string {
 }
 
 export function hasTaskAttributes(item: Item): boolean {
-  return item.done !== undefined;
+  return item.done != undefined;
 }
 
 export function hasEventAttributes(item: Item): boolean {
-  return item.date !== null;
+  return item.date != undefined;
 }
 
 export function hasMailAttributes(item: Item): boolean {
-  return item.from !== null && item.to !== null;
+  return item.from != undefined && item.to != undefined;
 }
 
 export function hasNoteAttributes(item: Item): boolean {

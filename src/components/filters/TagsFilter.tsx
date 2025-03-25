@@ -1,6 +1,4 @@
-import React, { useState } from "react";
-import { Tag, Plus, X } from "lucide-react";
-import { Content } from "@/lib/content-utils";
+import { Tag, X } from "lucide-react";
 import BaseIdeaCraftChip from "../BaseIdeaCraftChip";
 
 interface TagsFilterProps {
@@ -14,17 +12,6 @@ const TagsFilter = ({
   toggleTag,
   getAllTags,
 }: TagsFilterProps) => {
-  const [isAddingTag, setIsAddingTag] = useState(false);
-  const [newTagName, setNewTagName] = useState("");
-
-  const handleAddNewTag = () => {
-    if (newTagName.trim()) {
-      toggleTag(newTagName.trim());
-      setNewTagName("");
-      setIsAddingTag(false);
-    }
-  };
-
   return (
     <div className="mb-4">
       <div className="text-sm text-muted-foreground mb-2 flex items-center">

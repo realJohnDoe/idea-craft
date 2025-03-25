@@ -1,8 +1,6 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import {
-  getMockData,
   getMockItems,
-  Content,
   Item,
   parseYamlToItem,
   parseYaml,
@@ -85,6 +83,7 @@ const Index = () => {
     } else {
       setFilter(type);
     }
+    console.log("Filter:", filter);
   };
 
   useEffect(() => {
@@ -96,6 +95,7 @@ const Index = () => {
           result = result.filter((item) => hasTaskAttributes(item));
           break;
         case "event":
+          console.log(items);
           result = result.filter((item) => hasEventAttributes(item));
           break;
         case "note":
