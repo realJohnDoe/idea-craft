@@ -201,10 +201,19 @@ const Index = () => {
 
     const { tasks, updatedContent } = parseTasks(textContent);
 
+    // Add line breaks after wikilinks in task content
+    const processWikilinks = (content: string) => {
+      return content.replace(/\[\[(.*?)\]\]/g, (match, content) => {
+        const [title, id] = content.split("|");
+        const linkId = id || content.replace(/\s+/g, "-").toLowerCase();
+        return `[[${title || content}]]  \n`; // Add line break after wikilink
+      });
+    };
+
     const taskContents: Item[] = tasks.map((task, index) => ({
       id: generateUniqueId(`${baseId}-task-${index + 1}`, existingIds),
       title: task.content.substring(0, 50), // Use first 50 chars as title
-      content: task.content,
+      content: processWikilinks(task.content), // Process wikilinks for tasks
       createdAt: new Date(),
       updatedAt: new Date(),
       done: task.isDone,
@@ -219,10 +228,13 @@ const Index = () => {
       }
     );
 
+    // Process wikilinks for main content
+    const processedFinalContent = processWikilinks(finalContent);
+
     const mainContent: Item = {
       id: generateUniqueId(baseId, existingIds),
       title: baseTitle,
-      content: finalContent,
+      content: processedFinalContent, // Processed main content
       createdAt: new Date(),
       updatedAt: new Date(),
       tags: [],
