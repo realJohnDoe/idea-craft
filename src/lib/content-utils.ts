@@ -299,7 +299,7 @@ export function parseYamlToItem(yamlData: any, item: Item): Item {
       yamlData.tags : [yamlData.tags];
   }
   
-  console.log(updatedItem.done);
+  console.log(updatedItem);
   return updatedItem;
 }
 

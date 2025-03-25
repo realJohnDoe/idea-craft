@@ -201,19 +201,14 @@ const Index = () => {
 
     const { tasks, updatedContent } = parseTasks(textContent);
 
-    const taskContents: Content[] = tasks.map((task, index) => ({
+    const taskContents: Item[] = tasks.map((task, index) => ({
       id: generateUniqueId(`${baseId}-task-${index + 1}`, existingIds),
       title: task.content.substring(0, 50), // Use first 50 chars as title
       content: task.content,
       createdAt: new Date(),
       updatedAt: new Date(),
-      hasTaskAttributes: true,
-      hasEventAttributes: false,
-      hasMailAttributes: false,
-      hasNoteAttributes: false,
-      taskDone: task.isDone,
+      done: task.isDone,
       tags: [],
-      yaml: "",
     }));
 
     // Replace placeholders with actual task IDs
@@ -224,18 +219,13 @@ const Index = () => {
       }
     );
 
-    const mainContent: Content = {
+    const mainContent: Item = {
       id: generateUniqueId(baseId, existingIds),
       title: baseTitle,
       content: finalContent,
       createdAt: new Date(),
       updatedAt: new Date(),
-      hasTaskAttributes: false,
-      hasEventAttributes: false,
-      hasMailAttributes: false,
-      hasNoteAttributes: true,
       tags: [],
-      yaml: "",
     };
 
     return { mainContent, taskContents };
