@@ -85,8 +85,6 @@ const SelectedItemView = ({
     onUpdate(updatedContent);
   };
 
-  const content = itemToContent(item);
-
   return (
     <div
       className={

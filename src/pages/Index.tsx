@@ -407,7 +407,7 @@ const Index = () => {
                 onUpdate={handleUpdateItem}
                 onDelete={handleDeleteItem}
                 onClose={() => setSelectedItem(null)}
-                allItems={items.map(itemToContent)}
+                allItems={items}
                 isMobile={isMobile}
               />
             )}

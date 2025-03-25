@@ -26,7 +26,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       return `[${title || content}](#${linkId})`;
     });
   };
-
   const processedContent = processWikilinks(content);
 
   const CustomLink = ({ href }) => {
@@ -40,6 +39,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
         console.log("Invalid link:", href);
         return <span className="text-red-500">[[Invalid Link]]</span>;
       }
+      console.log(linkedItem);
 
       // Render as a checkable task if the item has task attributes
       if (hasTaskAttributes(linkedItem)) {
