@@ -403,7 +403,7 @@ export function getMockData(): Content[] {
     {
       id: '2',
       title: 'Team meeting',
-      content: 'Weekly team sync to discuss project progress and roadblocks.',
+      content: 'Weekly team sync to discuss project progress and roadblocks.\n[[Write Meeting Minutes]]',
       createdAt: new Date('2023-06-02'),
       updatedAt: new Date('2023-06-02'),
       hasTaskAttributes: false,
@@ -442,6 +442,20 @@ export function getMockData(): Content[] {
       tags: ['follow-up', 'resources'],
       mailFrom: 'john.doe@example.com',
       mailTo: ['jane.smith@example.com'],
+      yaml: 'task:\n  done: true\nmail:\n  from: john.doe@example.com\n  to:\n    - jane.smith@example.com\ntags:\n  - follow-up\n  - resources'
+    },
+    {
+      id: '5',
+      title: 'Write Meeting Minutes',
+      content: 'Thank you for joining our meeting yesterday. As discussed, I\'m sharing the resources we talked about. Check the [[Ideas for new feature]] for details.',
+      createdAt: new Date('2023-06-04'),
+      updatedAt: new Date('2023-06-04'),
+      hasTaskAttributes: true,
+      hasEventAttributes: false,
+      hasMailAttributes: false,
+      hasNoteAttributes: false,
+      taskDone: true,
+      tags: ['follow-up', 'resources'],
       yaml: 'task:\n  done: true\nmail:\n  from: john.doe@example.com\n  to:\n    - jane.smith@example.com\ntags:\n  - follow-up\n  - resources'
     }
   ];

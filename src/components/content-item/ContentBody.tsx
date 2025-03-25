@@ -12,7 +12,7 @@ import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 
 interface ContentBodyProps {
   item: Content;
-  onUpdate: (updatedItem: Content) => void;
+  onUpdate: (updatedItem: Item) => void;
   processedContent: string;
   handleWikiLinkClick?: (wikilinkId: string) => void;
   allItems?: Item[];
@@ -34,7 +34,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     // Re-generate YAML
     updatedItem.yaml = formatContentWithYaml(updatedItem);
 
-    onUpdate(updatedItem);
+    onUpdate(contentToItem(updatedItem));
   };
 
   return (
