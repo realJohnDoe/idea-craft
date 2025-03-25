@@ -28,6 +28,7 @@ const ContentHeader: React.FC<ContentHeaderProps> = ({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         onBlur={handleBlur}
+        className=""
       />
     </div>
   );

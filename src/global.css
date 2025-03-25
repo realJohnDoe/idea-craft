@@ -118,7 +118,7 @@
 /* Tailwind component classes */
 @layer components {
   .content-item {
-    @apply relative flex flex-col bg-card rounded-xl border border-border p-2 shadow-sm
+    @apply relative flex flex-col rounded-xl border border-border p-2 shadow-sm
            transition-all duration-300 hover:shadow-md
            animate-scale-in;
   }
