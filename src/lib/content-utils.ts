@@ -445,7 +445,7 @@ export function getMockData(): Content[] {
       yaml: 'task:\n  done: true\nmail:\n  from: john.doe@example.com\n  to:\n    - jane.smith@example.com\ntags:\n  - follow-up\n  - resources'
     },
     {
-      id: '5',
+      id: 'write-meeting-minutes',
       title: 'Write Meeting Minutes',
       content: 'Thank you for joining our meeting yesterday. As discussed, I\'m sharing the resources we talked about. Check the [[Ideas for new feature]] for details.',
       createdAt: new Date('2023-06-04'),
