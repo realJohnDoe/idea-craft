@@ -18,7 +18,6 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
   // Get content type tag elements
   const getTypeTags = () => {
     const tags = [];
-    console.log(item);
 
     if (hasTaskAttributes(item)) {
       tags.push(

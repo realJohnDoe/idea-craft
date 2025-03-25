@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import {
   Content,
   processContentLinks,
-  formatContentWithYaml,
   contentToItem,
+  hasTaskAttributes,
+  Item,
 } from "@/lib/content-utils";
 import ContentEditor from "../content-editor/ContentEditor";
 import { cn } from "@/lib/utils";
@@ -16,7 +17,7 @@ import { useNavigate } from "react-router-dom";
 
 interface ContentItemProps {
   item: Content;
-  onUpdate: (updatedItem: Content) => void;
+  onUpdate: (updatedItem: Item) => void;
   allItems?: Content[];
 }
 
@@ -54,13 +55,12 @@ const ContentItem: React.FC<ContentItemProps> = ({
   }
 
   const handleTaskToggle = (checked: boolean) => {
+    console.log(item);
     const updatedItem = {
-      ...item,
-      taskDone: checked,
+      ...contentToItem(item),
+      done: checked,
     };
-
-    // Re-generate YAML
-    updatedItem.yaml = formatContentWithYaml(updatedItem);
+    console.log(updatedItem);
 
     onUpdate(updatedItem);
   };
@@ -71,7 +71,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
     <div id={`content-item-${item.id}`}>
       <Card className={"group py-2 px-3 border-b flex flex-col gap-1 m-2"}>
         <div className="flex items-center">
-          {item.hasTaskAttributes && (
+          {hasTaskAttributes(contentToItem(item)) && (
             <div className="flex items-center">
               <IdeaCraftCheckbox
                 checked={item.taskDone}

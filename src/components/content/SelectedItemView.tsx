@@ -35,7 +35,6 @@ const SelectedItemView = ({
   }, [item.content, allItems]);
 
   const handleUpdateSelectedItem = (wikilinkId: string) => {
-    console.log(wikilinkId);
     const linkedItem = allItems.find((item) => item.id === wikilinkId);
     if (linkedItem) {
       const linkedElement = document.getElementById(
