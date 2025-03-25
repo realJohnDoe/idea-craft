@@ -3,6 +3,7 @@ import {
   Content,
   processContentLinks,
   formatContentWithYaml,
+  contentToItem,
 } from "@/lib/content-utils";
 import ContentEditor from "../content-editor/ContentEditor";
 import { cn } from "@/lib/utils";
@@ -95,7 +96,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
         </div>
 
         <div className="flex mt-1 items-center gap-2">
-          <ContentTypeTags item={item} />
+          <ContentTypeTags item={contentToItem(item)} />
         </div>
 
         {item.eventDate && (

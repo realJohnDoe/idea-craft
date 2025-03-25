@@ -52,7 +52,7 @@ export interface Item {
   to?: string[];
 }
 
-function contentToItem(content: Content): Item {
+export function contentToItem(content: Content): Item {
   return {
     id: content.id,
     title: content.title,
@@ -127,11 +127,11 @@ export function hasTaskAttributes(item: Item): boolean {
 }
 
 export function hasEventAttributes(item: Item): boolean {
-  return item.date !== undefined;
+  return item.date !== null;
 }
 
 export function hasMailAttributes(item: Item): boolean {
-  return item.from !== undefined || item.to !== undefined;
+  return item.from !== null && item.to !== null;
 }
 
 export function hasNoteAttributes(item: Item): boolean {

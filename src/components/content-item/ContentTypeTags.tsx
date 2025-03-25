@@ -1,19 +1,26 @@
-import React, { useState } from "react";
-import { Content } from "@/lib/content-utils";
+import React from "react";
+import {
+  hasEventAttributes,
+  hasMailAttributes,
+  hasNoteAttributes,
+  hasTaskAttributes,
+  Item,
+} from "@/lib/content-utils";
 
 import ColoredIdeaCraftChip from "../ColoredIdeaCraftChip";
 import BaseIdeaCraftChip from "../BaseIdeaCraftChip";
 
 interface ContentTypeTagsProps {
-  item: Content;
+  item: Item;
 }
 
 const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
   // Get content type tag elements
   const getTypeTags = () => {
     const tags = [];
+    console.log(item);
 
-    if (item.hasTaskAttributes) {
+    if (hasTaskAttributes(item)) {
       tags.push(
         <ColoredIdeaCraftChip
           key="task"
@@ -24,7 +31,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
       );
     }
 
-    if (item.hasEventAttributes) {
+    if (hasEventAttributes(item)) {
       tags.push(
         <ColoredIdeaCraftChip
           key="event"
@@ -35,7 +42,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
       );
     }
 
-    if (item.hasMailAttributes) {
+    if (hasMailAttributes(item)) {
       tags.push(
         <ColoredIdeaCraftChip
           key="mail"
@@ -46,12 +53,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
       );
     }
 
-    if (
-      item.hasNoteAttributes &&
-      !item.hasTaskAttributes &&
-      !item.hasEventAttributes &&
-      !item.hasMailAttributes
-    ) {
+    if (hasNoteAttributes(item)) {
       tags.push(
         <ColoredIdeaCraftChip
           key={"note"}
