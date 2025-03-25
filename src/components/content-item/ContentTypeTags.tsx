@@ -20,6 +20,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
     if (item.hasTaskAttributes) {
       tags.push(
         <ColoredIdeaCraftChip
+          key="task"
           type={"task"}
           toggled={false}
           onClick={() => {}}
@@ -30,6 +31,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
     if (item.hasEventAttributes) {
       tags.push(
         <ColoredIdeaCraftChip
+          key="event"
           type={"event"}
           toggled={false}
           onClick={() => {}}
@@ -40,6 +42,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
     if (item.hasMailAttributes) {
       tags.push(
         <ColoredIdeaCraftChip
+          key="mail"
           type={"mail"}
           toggled={false}
           onClick={() => {}}
@@ -55,6 +58,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
     ) {
       tags.push(
         <ColoredIdeaCraftChip
+          key={"note"}
           type={"note"}
           toggled={false}
           onClick={() => {}}
@@ -67,6 +71,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
       item.tags.forEach((tag, idx) => {
         tags.push(
           <BaseIdeaCraftChip
+            key={tag}
             label={tag}
             className="bg-muted text-muted-foreground"
             onClick={() => {}}

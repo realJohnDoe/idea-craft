@@ -257,80 +257,50 @@ export function generateYaml(content: Content): string {
 }
 
 // Parse YAML data into Content properties
-export function parseYamlToContent(yamlData: any, content: Content): Content {
-  const updatedContent = { ...content };
-  
-  // Reset all attribute flags
-  updatedContent.hasTaskAttributes = false;
-  updatedContent.hasEventAttributes = false;
-  updatedContent.hasMailAttributes = false;
-  updatedContent.hasNoteAttributes = false;
+export function parseYamlToItem(yamlData: any, item: Item): Item {
+  const updatedItem = { ...item };
   
   // Initialize tags
-  updatedContent.tags = [];
+  updatedItem.tags = [];
   
   // Process task attributes
   if (yamlData.task) {
-    updatedContent.hasTaskAttributes = true;
-    updatedContent.taskDone = yamlData.task.done === true;
+    updatedItem.done = yamlData.task.done === true;
   }
   
   // Process event attributes
   if (yamlData.event) {
-    updatedContent.hasEventAttributes = true;
     
     if (yamlData.event.date) {
-      updatedContent.eventDate = new Date(yamlData.event.date);
-    }
-    
-    if (yamlData.event.endDate) {
-      updatedContent.eventEndDate = new Date(yamlData.event.endDate);
+      updatedItem.date = new Date(yamlData.event.date);
     }
     
     if (yamlData.event.location) {
-      updatedContent.eventLocation = yamlData.event.location;
+      updatedItem.location = yamlData.event.location;
     }
   }
   
   // Process mail attributes
   if (yamlData.mail) {
-    updatedContent.hasMailAttributes = true;
     
     if (yamlData.mail.from) {
-      updatedContent.mailFrom = yamlData.mail.from;
+      updatedItem.from = yamlData.mail.from;
     }
     
     if (yamlData.mail.to) {
-      updatedContent.mailTo = Array.isArray(yamlData.mail.to) ? 
+      updatedItem.to = Array.isArray(yamlData.mail.to) ? 
         yamlData.mail.to : [yamlData.mail.to];
-    }
-    
-    if (yamlData.mail.subject) {
-      updatedContent.mailSubject = yamlData.mail.subject;
-    }
-    
-    if (yamlData.mail.attachments) {
-      updatedContent.mailAttachments = yamlData.mail.attachments;
     }
   }
   
   // Process tags
   if (yamlData.tags) {
-    updatedContent.tags = Array.isArray(yamlData.tags) ? 
+    updatedItem.tags = Array.isArray(yamlData.tags) ? 
       yamlData.tags : [yamlData.tags];
   }
   
-  // If no specific attributes, default to note
-  if (!updatedContent.hasTaskAttributes && 
-      !updatedContent.hasEventAttributes && 
-      !updatedContent.hasMailAttributes) {
-    updatedContent.hasNoteAttributes = true;
-  }
-  
-  // Regenerate YAML
-  updatedContent.yaml = generateYaml(updatedContent);
-  
-  return updatedContent;
+  console.log(updatedItem.done);
+  return updatedItem;
 }
 
 // Toggle an attribute type on a content item

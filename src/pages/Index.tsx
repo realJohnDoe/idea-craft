@@ -4,7 +4,7 @@ import {
   getMockItems,
   Content,
   Item,
-  parseYamlToContent,
+  parseYamlToItem,
   parseYaml,
   hasTaskAttributes,
   hasEventAttributes,
@@ -267,14 +267,14 @@ const Index = () => {
                   items
                 );
 
-                const parsedMainContent = parseYamlToContent(
+                const parsedMainContent = parseYamlToItem(
                   yamlData,
                   mainContent
                 );
 
                 // Apply YAML parsing to task contents if needed
                 const parsedTaskContents = taskContents.map((taskContent) =>
-                  parseYamlToContent(yamlData, taskContent)
+                  parseYamlToItem(yamlData, taskContent)
                 );
 
                 return [parsedMainContent, ...parsedTaskContents];

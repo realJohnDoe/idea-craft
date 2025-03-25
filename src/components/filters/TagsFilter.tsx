@@ -34,6 +34,7 @@ const TagsFilter = ({
       <div className="flex flex-wrap gap-1">
         {getAllTags().map((tag) => (
           <BaseIdeaCraftChip
+            key={tag}
             label={tag}
             className={
               selectedTags.includes(tag)
