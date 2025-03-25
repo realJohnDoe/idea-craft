@@ -150,7 +150,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         </div>
       </Card>
 
-      <div className="content-item-body px-2">
+      <div className="content-item-body px-3">
         <div className="prose prose-sm max-w-none dark:prose-invert">
           <ContentRenderer
             content={processedContent}

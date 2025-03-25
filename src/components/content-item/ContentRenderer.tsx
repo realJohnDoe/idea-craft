@@ -43,7 +43,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       // Render as checkable task
       if (hasTaskAttributes(linkedItem)) {
         return (
-          <span className="inline-flex items-center space-x-2">
+          <span className="inline-flex items-center space-x-2 bg-card w-full rounded-lg p-2">
             <IdeaCraftCheckbox
               checked={linkedItem.done}
               onToggle={(checked) => onTaskToggle?.(linkedItem.id, checked)}
