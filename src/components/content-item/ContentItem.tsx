@@ -55,13 +55,10 @@ const ContentItem: React.FC<ContentItemProps> = ({
   }
 
   const handleTaskToggle = (checked: boolean) => {
-    console.log(item);
     const updatedItem = {
       ...contentToItem(item),
       done: checked,
     };
-    console.log(updatedItem);
-
     onUpdate(updatedItem);
   };
 
