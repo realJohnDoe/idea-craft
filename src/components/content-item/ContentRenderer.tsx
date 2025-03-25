@@ -2,7 +2,8 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import { contentToItem, hasTaskAttributes, Item } from "@/lib/content-utils";
+import remarkGfm from "remark-gfm";
+import { hasTaskAttributes, Item } from "@/lib/content-utils";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 
 interface ContentRendererProps {
@@ -36,20 +37,19 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       const linkedItem = allItems.find((item) => item.id === itemId);
 
       if (!linkedItem) {
-        console.log("Invalid link:", href);
         return <span className="text-red-500">[[Invalid Link]]</span>;
       }
-      console.log(linkedItem);
 
-      // Render as a checkable task if the item has task attributes
+      // Render as checkable task
       if (hasTaskAttributes(linkedItem)) {
         return (
-          <div className="flex items-center space-x-2">
-            <div className="flex items-center">
-              <IdeaCraftCheckbox checked={linkedItem.done} onToggle={{}} />
-            </div>
+          <span className="inline-flex items-center space-x-2">
+            <IdeaCraftCheckbox
+              checked={linkedItem.done}
+              onToggle={(checked) => onTaskToggle?.(linkedItem.id, checked)}
+            />
             <span
-              className="cursor-pointer hover:underline"
+              className="cursor-pointer hover:underline inline-flex items-center"
               onClick={() => {
                 navigate(`/item/${linkedItem.id}`);
                 handleWikiLinkClick(linkedItem.id);
@@ -57,14 +57,14 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
             >
               {linkedItem.title}
             </span>
-          </div>
+          </span>
         );
       }
 
-      // Render as a regular link with the item's title
+      // Regular link
       return (
-        <a
-          className="hover:underline cursor-pointer bg-background px-1 pb-1 rounded"
+        <span
+          className="hover:underline cursor-pointer bg-background px-1 pb-1 rounded inline-flex items-center"
           onClick={(e) => {
             e.preventDefault();
             navigate(`/item/${linkedItem.id}`);
@@ -72,11 +72,11 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
           }}
         >
           {linkedItem.title}
-        </a>
+        </span>
       );
     }
 
-    // For external links, keep existing behavior
+    // External link
     return (
       <a href={href} className="text-blue-600 hover:underline">
         {href}
@@ -97,7 +97,9 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
     <div>
       <ReactMarkdown
         rehypePlugins={[rehypeRaw]}
+        remarkPlugins={[remarkGfm]}
         components={{
+          p: ({ children }) => <div className="my-2">{children}</div>,
           a: CustomLink,
           ul: CustomList,
           li: CustomListItem,

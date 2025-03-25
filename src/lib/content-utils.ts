@@ -403,7 +403,7 @@ export function getMockData(): Content[] {
     {
       id: '2',
       title: 'Team meeting',
-      content: 'Weekly team sync to discuss project progress and roadblocks.\n[[Write Meeting Minutes]]',
+      content: 'Weekly team sync to discuss project progress and roadblocks.\n\n[[Write Meeting Minutes]]',
       createdAt: new Date('2023-06-02'),
       updatedAt: new Date('2023-06-02'),
       hasTaskAttributes: false,
