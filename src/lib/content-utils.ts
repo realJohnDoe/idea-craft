@@ -148,7 +148,7 @@ export function itemToContent(item: Item): Content {
     content: item.content,
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
-    hasTaskAttributes: item.done !== undefined, // Derived from the presence of done
+    hasTaskAttributes: hasTaskAttributes(item), // Derived from the presence of done
     taskDone: item.done, // Map done to taskDone
     hasEventAttributes: item.date !== undefined || item.location !== undefined, // Derived from date or location
     eventDate: item.date || null, // Map date to eventDate
@@ -355,7 +355,7 @@ export function formatContentWithYaml(content: Content): string {
 }
 
 // Function to process content text and transform links
-export function processContentLinks(content: string, allItems: Content[]): string {
+export function processContentLinks(content: string, allItems: Item[]): string {
   // Match [[title]] pattern
   const linkRegex = /\[\[(.*?)\]\]/g;
   

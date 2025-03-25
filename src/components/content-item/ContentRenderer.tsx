@@ -2,11 +2,12 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
-import { Content } from "@/lib/content-utils";
+import { contentToItem, hasTaskAttributes, Item } from "@/lib/content-utils";
+import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 
 interface ContentRendererProps {
   content: string;
-  allItems?: Content[];
+  allItems?: Item[];
   handleWikiLinkClick: (wikilinkId: string) => void;
   onTaskToggle?: (taskId: string, isDone: boolean) => void; // New prop for task toggling
 }
@@ -41,18 +42,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       }
 
       // Render as a checkable task if the item has task attributes
-      if ("done" in linkedItem) {
+      if (hasTaskAttributes(linkedItem)) {
         return (
           <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              checked={linkedItem.done}
-              onChange={(e) => {
-                if (onTaskToggle) {
-                  onTaskToggle(linkedItem.id, e.target.checked);
-                }
-              }}
-            />
+            <div className="flex items-center">
+              <IdeaCraftCheckbox checked={linkedItem.done} onToggle={{}} />
+            </div>
             <span
               className="cursor-pointer hover:underline"
               onClick={() => {

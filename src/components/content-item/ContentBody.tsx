@@ -1,5 +1,11 @@
 import React from "react";
-import { Content, formatContentWithYaml } from "@/lib/content-utils";
+import {
+  Content,
+  contentToItem,
+  formatContentWithYaml,
+  hasTaskAttributes,
+  Item,
+} from "@/lib/content-utils";
 import { format } from "date-fns";
 import ContentRenderer from "./ContentRenderer";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
@@ -9,7 +15,7 @@ interface ContentBodyProps {
   onUpdate: (updatedItem: Content) => void;
   processedContent: string;
   handleWikiLinkClick?: (wikilinkId: string) => void;
-  allItems?: Content[];
+  allItems?: Item[];
 }
 
 const ContentBody: React.FC<ContentBodyProps> = ({
@@ -33,7 +39,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 
   return (
     <div className="content-item-body px-2">
-      {item.hasTaskAttributes && (
+      {hasTaskAttributes(contentToItem(item)) && (
         <div className="mb-3 flex items-center">
           <IdeaCraftCheckbox
             checked={item.taskDone}

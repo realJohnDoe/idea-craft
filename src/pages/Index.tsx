@@ -83,7 +83,6 @@ const Index = () => {
     } else {
       setFilter(type);
     }
-    console.log("Filter:", filter);
   };
 
   useEffect(() => {
@@ -95,7 +94,6 @@ const Index = () => {
           result = result.filter((item) => hasTaskAttributes(item));
           break;
         case "event":
-          console.log(items);
           result = result.filter((item) => hasEventAttributes(item));
           break;
         case "note":
@@ -405,7 +403,7 @@ const Index = () => {
 
             {selectedItem && (
               <SelectedItemView
-                item={itemToContent(selectedItem)}
+                item={selectedItem}
                 onUpdate={handleUpdateItem}
                 onDelete={handleDeleteItem}
                 onClose={() => setSelectedItem(null)}

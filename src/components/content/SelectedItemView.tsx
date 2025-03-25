@@ -1,5 +1,10 @@
 import { useEffect, useState } from "react";
-import { Content, processContentLinks } from "@/lib/content-utils";
+import {
+  Content,
+  Item,
+  itemToContent,
+  processContentLinks,
+} from "@/lib/content-utils";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { toast } from "sonner";
@@ -9,11 +14,11 @@ import ContentBody from "../content-item/ContentBody";
 import ContentEditor from "../content-editor/ContentEditor";
 
 interface SelectedItemViewProps {
-  item: Content;
-  onUpdate: (updatedItem: Content) => void;
+  item: Item;
+  onUpdate: (updatedItem: Item) => void;
   onDelete: (id: string) => void;
   onClose: () => void;
-  allItems: Content[];
+  allItems: Item[];
   isMobile: boolean;
 }
 
@@ -57,7 +62,7 @@ const SelectedItemView = ({
     setIsEditing(true);
   };
 
-  const handleEditorUpdate = (updatedItem: Content) => {
+  const handleEditorUpdate = (updatedItem: Item) => {
     onUpdate(updatedItem);
     setIsEditing(false);
   };
@@ -72,13 +77,15 @@ const SelectedItemView = ({
       return;
     }
 
-    const updatedContent: Content = {
+    const updatedContent: Item = {
       ...item,
       title,
       updatedAt: new Date(),
     };
     onUpdate(updatedContent);
   };
+
+  const content = itemToContent(item);
 
   return (
     <div
@@ -102,7 +109,7 @@ const SelectedItemView = ({
         {/* If editing, show the editor instead of the item */}
         {isEditing && (
           <ContentEditor
-            item={item}
+            item={itemToContent(item)}
             onUpdate={handleEditorUpdate}
             onCancel={handleEditorCancel}
           />
@@ -115,7 +122,7 @@ const SelectedItemView = ({
             />
 
             <ContentBody
-              item={item}
+              item={itemToContent(item)}
               onUpdate={onUpdate}
               processedContent={processedContent}
               handleWikiLinkClick={handleUpdateSelectedItem}
@@ -123,7 +130,7 @@ const SelectedItemView = ({
             />
 
             <ContentFooter
-              item={item}
+              item={itemToContent(item)}
               onUpdate={onUpdate}
               onDelete={onDelete}
               onEdit={handleEditClick}
