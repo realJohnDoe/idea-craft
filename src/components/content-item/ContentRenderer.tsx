@@ -8,12 +8,14 @@ interface ContentRendererProps {
   content: string;
   allItems?: Content[];
   handleWikiLinkClick: (wikilinkId: string) => void;
+  onTaskToggle?: (taskId: string, isDone: boolean) => void; // New prop for task toggling
 }
 
 const ContentRenderer: React.FC<ContentRendererProps> = ({
   content,
   allItems = [],
   handleWikiLinkClick,
+  onTaskToggle, // Optional callback for task toggling
 }) => {
   const processWikilinks = (markdown: string) => {
     const regex = /\[\[(.*?)\]\]/g;
@@ -26,7 +28,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
 
   const processedContent = processWikilinks(content);
 
-  const CustomLink = ({ href, children }) => {
+  const CustomLink = ({ href }) => {
     const navigate = useNavigate();
 
     if (href.startsWith("#")) {
@@ -38,18 +40,43 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
         return <span className="text-red-500">[[Invalid Link]]</span>;
       }
 
+      // Render as a checkable task if the item has task attributes
+      if ("done" in linkedItem) {
+        return (
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
+              checked={linkedItem.done}
+              onChange={(e) => {
+                if (onTaskToggle) {
+                  onTaskToggle(linkedItem.id, e.target.checked);
+                }
+              }}
+            />
+            <span
+              className="cursor-pointer hover:underline"
+              onClick={() => {
+                navigate(`/item/${linkedItem.id}`);
+                handleWikiLinkClick(linkedItem.id);
+              }}
+            >
+              {linkedItem.title}
+            </span>
+          </div>
+        );
+      }
+
+      // Render as a regular link with the item's title
       return (
         <a
           className="hover:underline cursor-pointer bg-background px-1 pb-1 rounded"
           onClick={(e) => {
             e.preventDefault();
-            if (linkedItem) {
-              navigate(`/item/${linkedItem.id}`); // Use React Router navigation
-              handleWikiLinkClick(linkedItem.id);
-            }
+            navigate(`/item/${linkedItem.id}`);
+            handleWikiLinkClick(linkedItem.id);
           }}
         >
-          {children}
+          {linkedItem.title}
         </a>
       );
     }
@@ -57,7 +84,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
     // For external links, keep existing behavior
     return (
       <a href={href} className="text-blue-600 hover:underline">
-        {children}
+        {href}
       </a>
     );
   };
