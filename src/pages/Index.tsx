@@ -193,7 +193,7 @@ const Index = () => {
     file: File,
     textContent: string,
     existingItems: Item[]
-  ): { mainContent: Content; taskContents: Content[] } => {
+  ): { mainContent: Item; taskContents: Item[] } => {
     const baseTitle = file.name.replace(/\.(md|txt)$/, "");
     const baseId = baseTitle.toLowerCase().replace(/\s+/g, "-");
 

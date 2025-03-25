@@ -26,8 +26,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
   item,
   onUpdate,
   allItems = [],
-  isListView = false,
-  onSelect,
 }) => {
   const [processedContent, setProcessedContent] = useState(item.content);
   const [isEditing, setIsEditing] = useState(false);
@@ -45,12 +43,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
 
   const handleEditorCancel = () => {
     setIsEditing(false);
-  };
-
-  const handleItemSelect = () => {
-    if (onSelect && isListView) {
-      onSelect(item);
-    }
   };
 
   if (isEditing) {

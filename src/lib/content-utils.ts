@@ -298,8 +298,6 @@ export function parseYamlToItem(yamlData: any, item: Item): Item {
     updatedItem.tags = Array.isArray(yamlData.tags) ? 
       yamlData.tags : [yamlData.tags];
   }
-  
-  console.log(updatedItem);
   return updatedItem;
 }
 
