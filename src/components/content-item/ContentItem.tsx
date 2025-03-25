@@ -66,7 +66,11 @@ const ContentItem: React.FC<ContentItemProps> = ({
 
   return (
     <div id={`content-item-${item.id}`}>
-      <Card className={"group py-2 px-3 border-b flex flex-col gap-1 m-2"}>
+      <Card
+        className={
+          "rounded-lg group py-2 px-3 border-b flex flex-col gap-1 m-2"
+        }
+      >
         <div className="flex items-center">
           {hasTaskAttributes(contentToItem(item)) && (
             <div className="flex items-center">

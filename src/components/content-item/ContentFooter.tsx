@@ -16,8 +16,8 @@ const ContentFooter: React.FC<ContentFooterProps> = ({
   onEdit,
 }) => {
   return (
-    <div className="content-item-footer">
-      <span className="ps-2 text-xs text-muted-foreground">
+    <div className="content-item-footer p-2">
+      <span className="text-xs text-muted-foreground">
         {format(item.updatedAt, "PPP")}
       </span>
 

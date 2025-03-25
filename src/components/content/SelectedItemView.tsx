@@ -114,11 +114,6 @@ const SelectedItemView = ({
         )}
         {!isEditing && (
           <div>
-            <ContentHeader
-              title_in={item.title}
-              onUpdate={handleTitleChanged}
-            />
-
             <ContentBody
               item={itemToContent(item)}
               onUpdate={onUpdate}
