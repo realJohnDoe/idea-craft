@@ -43,7 +43,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       // Render as checkable task
       if (hasTaskAttributes(linkedItem)) {
         return (
-          <span className="inline-flex items-center space-x-2 bg-card w-full rounded-lg p-2">
+          <span className="inline-flex border items-center bg-card w-full rounded-lg p-2">
             <IdeaCraftCheckbox
               checked={linkedItem.done}
               onToggle={(checked) => onTaskToggle?.(linkedItem.id, checked)}
@@ -64,7 +64,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       // Regular link
       return (
         <span
-          className="hover:underline cursor-pointer bg-background px-1 pb-1 rounded inline-flex items-center"
+          className="hover:underline border cursor-pointer bg-card px-1 rounded inline-flex"
           onClick={(e) => {
             e.preventDefault();
             navigate(`/item/${linkedItem.id}`);
