@@ -1,9 +1,5 @@
 import { useEffect, useState } from "react";
-import {
-  Item,
-  itemToContent,
-  processContentLinks,
-} from "@/lib/content-utils";
+import { Item, itemToContent, processContentLinks } from "@/lib/content-utils";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import ContentFooter from "../content-item/ContentFooter";
@@ -70,10 +66,11 @@ const SelectedItemView = ({
   };
 
   const getReferencingItems = () => {
-    const referencingItems =allItems.filter(referencingItem => 
-      referencingItem.content.includes(`[[${item.id}`) || 
-      referencingItem.content.includes(`[[${item.title}`) ||
-      referencingItem.content.includes(`[[${item.title}|`)
+    const referencingItems = allItems.filter(
+      (referencingItem) =>
+        referencingItem.content.includes(`[[${item.id}]]`) ||
+        referencingItem.content.includes(`[[${item.title}]]`) ||
+        referencingItem.content.includes(`[[${item.title}|`)
     );
     console.log(referencingItems);
     return referencingItems;
@@ -128,8 +125,17 @@ const SelectedItemView = ({
 
       <div className="mt-4">
         <h3 className="text-md font-medium mb-2">Referenced By</h3>
-
-        <ContentList items={getReferencingItems().map(item => itemToContent(item))} onUpdate={onUpdate} allItems={allItems.map(item => itemToContent(item))} />
+        {getReferencingItems().length > 0 ? (
+          <ContentList
+            items={getReferencingItems().map((item) => itemToContent(item))}
+            onUpdate={onUpdate}
+            allItems={allItems.map((item) => itemToContent(item))}
+          />
+        ) : (
+          <p className="text-sm text-muted-foreground">
+            No other items reference this content yet.
+          </p>
+        )}
       </div>
     </div>
   );
