@@ -3,6 +3,8 @@ import {
   Content,
   contentToItem,
   formatContentWithYaml,
+  hasEventAttributes,
+  hasMailAttributes,
   hasTaskAttributes,
   Item,
 } from "@/lib/content-utils";
@@ -93,7 +95,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
               </label>
             </div>
           )}
-          {item.hasEventAttributes && item.eventDate && (
+          {hasEventAttributes(contentToItem(item)) && (
             <div className="text-sm text-event px-1">
               <div className="flex items-center">
                 <svg
@@ -137,7 +139,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             </div>
           )}
 
-          {item.hasMailAttributes && (
+          {hasMailAttributes(contentToItem(item)) && (
             <div className="text-sm text-mail px-1">
               {item.mailFrom && (
                 <div >
