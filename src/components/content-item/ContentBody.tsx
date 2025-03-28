@@ -76,9 +76,9 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             className=""
           />
         </div>
-        <div className="p-1 px-3">
+        <div className="flex flex-col px-2 gap-2 mt-1 mb-2">
           {hasTaskAttributes(contentToItem(item)) && (
-            <div className="mb-3 flex items-center">
+            <div className="flex items-center px-1">
               <IdeaCraftCheckbox
                 checked={item.taskDone}
                 onToggle={handleTaskToggle}
@@ -94,7 +94,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             </div>
           )}
           {item.hasEventAttributes && item.eventDate && (
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-event px-1">
               <div className="flex items-center">
                 <svg
                   className="mr-1 h-4 w-4 text-event"
@@ -111,38 +111,44 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   <line x1="8" x2="8" y1="2" y2="6" />
                   <line x1="3" x2="21" y1="10" y2="10" />
                 </svg>
-                <span className="font-medium text-event">
+                <span>
                   {format(item.eventDate, "PPP")}
                 </span>
               </div>
 
               {item.eventLocation && (
-                <div className="mt-1 ml-5 text-sm">
-                  <span>Location: {item.eventLocation}</span>
-                </div>
+                <div className="mt-1 flex items-center">
+                <svg
+                  className="mr-1 h-4 w-4 text-event"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M12 21c-4.97-5.46-8-9.25-8-12a8 8 0 0116 0c0 2.75-3.03 6.54-8 12z"></path>
+                  <circle cx="12" cy="9" r="3"></circle>
+                </svg>
+                <span>{item.eventLocation}</span>
+              </div>
               )}
             </div>
           )}
 
           {item.hasMailAttributes && (
-            <div className="mb-3 text-sm">
+            <div className="text-sm text-mail px-1">
               {item.mailFrom && (
-                <div className="text-muted-foreground">
+                <div >
                   <span className="font-medium">From:</span> {item.mailFrom}
                 </div>
               )}
 
               {item.mailTo && item.mailTo.length > 0 && (
-                <div className="text-muted-foreground">
+                <div>
                   <span className="font-medium">To:</span>{" "}
                   {item.mailTo.join(", ")}
-                </div>
-              )}
-
-              {item.mailSubject && (
-                <div className="text-muted-foreground">
-                  <span className="font-medium">Subject:</span>{" "}
-                  {item.mailSubject}
                 </div>
               )}
             </div>
@@ -150,7 +156,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         </div>
       </Card>
 
-      <div className="content-item-body px-3">
+      <div className="content-item-body px-3 py-1">
         <div className="prose prose-sm max-w-none dark:prose-invert">
           <ContentRenderer
             content={processedContent}

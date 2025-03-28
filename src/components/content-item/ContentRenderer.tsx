@@ -43,12 +43,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       // Render as checkable task
       if (hasTaskAttributes(linkedItem)) {
         return (
-          <span className="inline-flex border items-center bg-card w-full rounded-lg p-2">
+          <div className="inline-flex border items-center bg-card w-full rounded-lg py-1 px-2">
             <IdeaCraftCheckbox
               checked={linkedItem.done}
               onToggle={(checked) => onTaskToggle?.(linkedItem.id, checked)}
             />
-            <span
+            <label
               className="cursor-pointer hover:underline inline-flex items-center"
               onClick={() => {
                 navigate(`/item/${linkedItem.id}`);
@@ -56,8 +56,8 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
               }}
             >
               {linkedItem.title}
-            </span>
-          </span>
+            </label>
+          </div>
         );
       }
 
@@ -99,7 +99,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
         rehypePlugins={[rehypeRaw]}
         remarkPlugins={[remarkGfm]}
         components={{
-          p: ({ children }) => <div className="my-2">{children}</div>,
+          p: ({ children }) => <div className="my-1">{children}</div>,
           a: CustomLink,
           ul: CustomList,
           li: CustomListItem,
