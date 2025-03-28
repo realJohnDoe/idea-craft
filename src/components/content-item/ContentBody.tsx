@@ -45,9 +45,9 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     };
     onUpdate(updatedContent);
   };
-  const handleTaskToggle = (checked: boolean) => {
+  const handleTaskToggle = (itemToUpdate: Content,checked: boolean) => {
     const updatedItem = {
-      ...item,
+      ...itemToUpdate,
       taskDone: checked,
     };
 
@@ -83,7 +83,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             <div className="flex items-center px-1">
               <IdeaCraftCheckbox
                 checked={item.taskDone}
-                onToggle={handleTaskToggle}
+                onToggle={(checked) => handleTaskToggle(item, checked)}
               />
               <label
                 htmlFor={`task-${item.id}`}
@@ -164,6 +164,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             content={processedContent}
             allItems={allItems}
             handleWikiLinkClick={handleUpdateSelectedItem}
+            onTaskToggle={handleTaskToggle}
           />
         </div>
       </div>
