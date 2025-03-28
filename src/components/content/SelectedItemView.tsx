@@ -9,6 +9,7 @@ import { X } from "lucide-react";
 import ContentFooter from "../content-item/ContentFooter";
 import ContentBody from "../content-item/ContentBody";
 import ContentEditor from "../content-editor/ContentEditor";
+import ContentList from "./ContentList";
 
 interface SelectedItemViewProps {
   item: Item;
@@ -68,6 +69,16 @@ const SelectedItemView = ({
     setIsEditing(false);
   };
 
+  const getReferencingItems = () => {
+    const referencingItems =allItems.filter(referencingItem => 
+      referencingItem.content.includes(`[[${item.id}`) || 
+      referencingItem.content.includes(`[[${item.title}`) ||
+      referencingItem.content.includes(`[[${item.title}|`)
+    );
+    console.log(referencingItems);
+    return referencingItems;
+  };
+
   return (
     <div
       className={
@@ -76,7 +87,7 @@ const SelectedItemView = ({
           : "md:w-1/2 lg:w-3/5 sticky top-4 self-start"
       }
     >
-      <div className="flex justify-between items-center mb-4">
+      <div className="flex justify-between items-center mb-2">
         <h2 className="text-lg font-medium">Selected Item</h2>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="size-4" />
@@ -113,6 +124,12 @@ const SelectedItemView = ({
             />
           </div>
         )}
+      </div>
+
+      <div className="mt-4">
+        <h3 className="text-md font-medium mb-2">Referenced By</h3>
+
+        <ContentList items={getReferencingItems().map(item => itemToContent(item))} onUpdate={onUpdate} allItems={allItems.map(item => itemToContent(item))} />
       </div>
     </div>
   );
