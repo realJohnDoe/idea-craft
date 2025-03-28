@@ -9,7 +9,6 @@ import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import { toast } from "sonner";
 import ContentFooter from "../content-item/ContentFooter";
-import ContentHeader from "../content-item/ContentHeader";
 import ContentBody from "../content-item/ContentBody";
 import ContentEditor from "../content-editor/ContentEditor";
 
