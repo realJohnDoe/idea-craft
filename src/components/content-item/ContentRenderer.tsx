@@ -3,14 +3,14 @@ import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import { Content, hasTaskAttributes, Item, itemToContent } from "@/lib/content-utils";
+import { hasTaskAttributes, Item } from "@/lib/content-utils";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 
 interface ContentRendererProps {
   content: string;
   allItems?: Item[];
   handleWikiLinkClick: (wikilinkId: string) => void;
-  onTaskToggle?: (item: Content, isDone: boolean) => void; // New prop for task toggling
+  onTaskToggle?: (item: Item, isDone: boolean) => void; // New prop for task toggling
 }
 
 const ContentRenderer: React.FC<ContentRendererProps> = ({
@@ -47,7 +47,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
           <div className="flex border items-center bg-card w-full rounded-lg py-1 px-2">
             <IdeaCraftCheckbox
               checked={linkedItem.done}
-              onToggle={(checked) => onTaskToggle?.(itemToContent(linkedItem), checked)}
+              onToggle={(checked) => onTaskToggle?.(linkedItem, checked)}
             />
             <label
               className="cursor-pointer hover:underline inline-flex items-center"

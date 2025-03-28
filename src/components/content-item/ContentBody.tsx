@@ -45,16 +45,15 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     };
     onUpdate(updatedContent);
   };
-  const handleTaskToggle = (itemToUpdate: Content,checked: boolean) => {
+  const handleTaskToggle = (itemToUpdate: Item,checked: boolean) => {
     const updatedItem = {
       ...itemToUpdate,
-      taskDone: checked,
+      done: checked,
     };
+    console.log("Item before", itemToUpdate);
+    console.log("Item after", updatedItem);
 
-    // Re-generate YAML
-    updatedItem.yaml = formatContentWithYaml(updatedItem);
-
-    onUpdate(contentToItem(updatedItem));
+    onUpdate(updatedItem);
   };
 
   useEffect(() => {
@@ -83,7 +82,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             <div className="flex items-center px-1">
               <IdeaCraftCheckbox
                 checked={item.taskDone}
-                onToggle={(checked) => handleTaskToggle(item, checked)}
+                onToggle={(checked) => handleTaskToggle(contentToItem(item), checked)}
               />
               <label
                 htmlFor={`task-${item.id}`}
