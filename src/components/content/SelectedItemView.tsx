@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import {
-  Content,
   Item,
   itemToContent,
   processContentLinks,
 } from "@/lib/content-utils";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
-import { toast } from "sonner";
 import ContentFooter from "../content-item/ContentFooter";
 import ContentBody from "../content-item/ContentBody";
 import ContentEditor from "../content-editor/ContentEditor";
@@ -68,20 +66,6 @@ const SelectedItemView = ({
 
   const handleEditorCancel = () => {
     setIsEditing(false);
-  };
-
-  const handleTitleChanged = (title: string) => {
-    if (!title.trim()) {
-      toast.error("Title is required");
-      return;
-    }
-
-    const updatedContent: Item = {
-      ...item,
-      title,
-      updatedAt: new Date(),
-    };
-    onUpdate(updatedContent);
   };
 
   return (

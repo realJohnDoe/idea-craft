@@ -103,7 +103,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
         {item.eventDate && (
           <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
             <Calendar className="size-3 text-event" />
-            {format(item.eventDate, "PPP")}
+            {format(item.eventDate, "PPPP")}
             {item.eventLocation && <span> • {item.eventLocation}</span>}
           </div>
         )}
