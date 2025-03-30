@@ -99,14 +99,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
         <div className="flex mt-1 items-center gap-2">
           <ContentTypeTags item={contentToItem(item)} />
         </div>
-
-        {item.eventDate && (
-          <div className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-            <Calendar className="size-3 text-event" />
-            {format(item.eventDate, "PPPP")}
-            {item.eventLocation && <span> • {item.eventLocation}</span>}
-          </div>
-        )}
       </Card>
     </div>
   );
