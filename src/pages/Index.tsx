@@ -408,14 +408,16 @@ const Index = () => {
 
                 {/* Selected item view */}
                 <div className="absolute right-0 top-0 w-full bg-background max-w-[720px] h-full border-l border-border shadow-lg">
-                  <SelectedItemView
-                    item={selectedItem}
-                    onUpdate={handleUpdateItem}
-                    onDelete={handleDeleteItem}
-                    onClose={() => navigate("/")}
-                    allItems={items}
-                    isMobile={isMobile}
-                  />
+                  <div className="h-full overflow-y-auto">
+                    <SelectedItemView
+                      item={selectedItem}
+                      onUpdate={handleUpdateItem}
+                      onDelete={handleDeleteItem}
+                      onClose={() => navigate("/")}
+                      allItems={items}
+                      isMobile={isMobile}
+                    />
+                  </div>
                 </div>
               </div>
             )}
