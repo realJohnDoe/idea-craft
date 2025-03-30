@@ -417,16 +417,6 @@ const Index = () => {
             )}
           </div>
         )}
-
-        <div className="md:hidden fixed bottom-6 right-6">
-          <Button
-            onClick={() => setShowCreator(true)}
-            size="lg"
-            className="rounded-full size-14 shadow-lg bg-gradient-to-r from-note to-task hover:opacity-90"
-          >
-            <Plus className="size-6" />
-          </Button>
-        </div>
       </main>
 
       {showWelcomeNote && (

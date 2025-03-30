@@ -1,25 +1,17 @@
-
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { cn } from '@/lib/utils';
-import { useIsMobile } from '@/hooks/use-mobile';
-import { Button } from '@/components/ui/button';
-import { Plus, Search } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import React from "react";
+import { Link } from "react-router-dom";
+import { cn } from "@/lib/utils";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { Button } from "@/components/ui/button";
+import { Plus, Search } from "lucide-react";
+import { Input } from "@/components/ui/input";
 
 interface NavbarProps {
-  activeFilter: string;
   onSearch: (query: string) => void;
   onCreateNew: () => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ 
-  activeFilter, 
-  onSearch,
-  onCreateNew
-}) => {
-  const isMobile = useIsMobile();
-  
+const Navbar: React.FC<NavbarProps> = ({ onSearch, onCreateNew }) => {
   return (
     <header className="sticky top-0 z-10 w-full border-b bg-background/80 backdrop-blur-md">
       <div className="container flex h-16 items-center px-4">
@@ -30,7 +22,7 @@ const Navbar: React.FC<NavbarProps> = ({
             </span>
           </Link>
         </div>
-        
+
         <div className="ml-auto flex items-center gap-2">
           <div className="relative w-40 md:w-64">
             <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
@@ -41,10 +33,14 @@ const Navbar: React.FC<NavbarProps> = ({
               onChange={(e) => onSearch(e.target.value)}
             />
           </div>
-          
-          <Button onClick={onCreateNew} size="sm" className="rounded-full bg-gradient-to-r from-note to-mail hover:opacity-90">
-            <Plus className="mr-2 size-4" />
-            <span className="hidden md:inline">Create</span>
+
+          <Button
+            onClick={onCreateNew}
+            size="sm"
+            className="w-10 h-10 md:w-auto rounded-full bg-gradient-to-r from-note to-mail hover:opacity-90"
+          >
+            <Plus />
+            <span className="ms-1 hidden md:inline">Create</span>
           </Button>
         </div>
       </div>
