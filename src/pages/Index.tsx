@@ -24,7 +24,7 @@ import ContentList from "@/components/content/ContentList";
 import SelectedItemView from "@/components/content/SelectedItemView";
 import WelcomeNote from "@/components/UI/WelcomeNote";
 import ActionStyles from "@/components/UI/ActionStyles";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const Index = () => {
   const { itemId } = useParams();
@@ -56,6 +56,8 @@ const Index = () => {
     if (itemId) {
       const item = items.find((i) => i.id === itemId);
       setSelectedItem(item || null);
+    } else {
+      setSelectedItem(null);
     }
   }, [itemId, items]);
 
@@ -310,6 +312,8 @@ const Index = () => {
     return "No items yet";
   };
 
+  const navigate = useNavigate();
+
   return (
     <div className="min-h-screen flex flex-col bg-background">
       <Navbar
@@ -406,7 +410,7 @@ const Index = () => {
                 item={selectedItem}
                 onUpdate={handleUpdateItem}
                 onDelete={handleDeleteItem}
-                onClose={() => setSelectedItem(null)}
+                onClose={() => navigate("/")}
                 allItems={items}
                 isMobile={isMobile}
               />
