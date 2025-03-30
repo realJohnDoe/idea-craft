@@ -212,15 +212,20 @@ const Index = () => {
       });
     };
 
-    const taskContents: Item[] = tasks.map((task, index) => ({
-      id: generateUniqueId(`${baseId}-task-${index + 1}`, existingIds),
-      title: task.content.substring(0, 50), // Use first 50 chars as title
-      content: processWikilinks(task.content), // Process wikilinks for tasks
-      createdAt: new Date(),
-      updatedAt: new Date(),
-      done: task.isDone,
-      tags: [],
-    }));
+    const taskContents: Item[] = tasks.map((task, index) => {
+      const title = task.content.substring(0, 50);
+      const content = task.content;
+
+      return {
+        id: generateUniqueId(`${baseId}-task-${index + 1}`, existingIds),
+        title: title,
+        content: title === content ? "" : processWikilinks(content),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        done: task.isDone,
+        tags: [],
+      };
+    });
 
     // Replace placeholders with actual task IDs
     const finalContent = updatedContent.replace(

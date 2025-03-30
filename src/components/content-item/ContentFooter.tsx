@@ -16,21 +16,21 @@ const ContentFooter: React.FC<ContentFooterProps> = ({
   onEdit,
 }) => {
   return (
-    <div className="content-item-footer p-2">
+    <div className="p-2 content-item-footer">
       <span className="text-xs text-muted-foreground">
         {format(item.updatedAt, "PPP")}
       </span>
 
-      <div className="transition-opacity flex space-x-1">
+      <div className="flex space-x-1 transition-opacity">
         <button
-          className="p-1 rounded hover:opacity-80 transition-colors"
+          className="p-1 rounded transition-colors hover:opacity-80"
           onClick={onEdit}
           aria-label="Edit item"
         >
           <Edit className="size-3 text-muted-foreground" />
         </button>
         <button
-          className="p-1 rounded hover:bg-red/10 transition-colors"
+          className="p-1 rounded transition-colors hover:bg-red/10"
           onClick={() => onDelete(item.id)}
           aria-label="Delete item"
         >

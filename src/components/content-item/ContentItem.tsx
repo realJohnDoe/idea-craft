@@ -68,7 +68,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
     <div id={`content-item-${item.id}`}>
       <Card
         className={
-          "rounded-lg group py-2 px-3 border-b flex flex-col gap-1 m-2"
+          "flex flex-col gap-1 px-3 py-2 m-2 rounded-lg border border-b group"
         }
       >
         <div className="flex items-center">
@@ -96,7 +96,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
           </h3>
         </div>
 
-        <div className="flex mt-1 items-center gap-2">
+        <div className="flex gap-2 items-center mt-1">
           <ContentTypeTags item={contentToItem(item)} />
         </div>
       </Card>

@@ -87,7 +87,7 @@ const SelectedItemView = ({
 
       <div
         id={`content-item-${item.id}`}
-        className={"content-item border rounded-lg shadow-sm"}
+        className={"rounded-lg border shadow-sm content-item"}
       >
         {/* If editing, show the editor instead of the item */}
         {isEditing && (
@@ -118,7 +118,7 @@ const SelectedItemView = ({
       </div>
 
       <div className="mt-4">
-        <h3 className="text-md font-medium mb-2">Referenced By</h3>
+        <h3 className="mb-2 font-medium text-md">Referenced By</h3>
         {getReferencingItems().length > 0 ? (
           <ContentList
             items={getReferencingItems().map((item) => itemToContent(item))}

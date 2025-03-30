@@ -94,7 +94,7 @@
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-muted-foreground/20 rounded-full;
+    @apply rounded-full bg-muted-foreground/20;
   }
 
   ::-webkit-scrollbar-thumb:hover {
@@ -102,7 +102,7 @@
   }
 
   :focus-visible {
-    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    @apply ring-2 ring-offset-2 outline-none ring-ring ring-offset-background;
   }
 
   h1,
@@ -118,21 +118,19 @@
 /* Tailwind component classes */
 @layer components {
   .content-item {
-    @apply relative flex flex-col rounded-xl border border-border shadow-sm
-           transition-all duration-300 hover:shadow-md
-           animate-scale-in;
+    @apply flex relative flex-col rounded-xl border shadow-sm transition-all duration-300 border-border hover:shadow-md animate-scale-in;
   }
 
   .content-item-footer {
-    @apply flex items-center justify-between mt-2 pt-2 border-t border-border/50;
+    @apply flex justify-between items-center pt-2 border-border/50;
   }
 
   .glass-panel {
-    @apply bg-background/80 backdrop-blur-md border border-border/50 rounded-xl shadow-sm;
+    @apply rounded-xl border shadow-sm backdrop-blur-md bg-background/80 border-border/50;
   }
 
   .content-link {
-    @apply text-primary underline cursor-pointer;
+    @apply underline cursor-pointer text-primary;
   }
 
   .highlight-pulse {

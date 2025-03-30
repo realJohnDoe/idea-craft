@@ -45,7 +45,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     };
     onUpdate(updatedContent);
   };
-  const handleTaskToggle = (itemToUpdate: Item,checked: boolean) => {
+  const handleTaskToggle = (itemToUpdate: Item, checked: boolean) => {
     const updatedItem = {
       ...itemToUpdate,
       done: checked,
@@ -68,7 +68,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 
   return (
     <div>
-      <Card className="rounded-t-lg">
+      <Card className="rounded-t-lg border-b">
         <div className="p-1">
           <Input
             value={title}
@@ -77,12 +77,14 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             className=""
           />
         </div>
-        <div className="flex flex-col px-2 gap-2 mt-1 mb-2">
+        <div className="flex flex-col gap-2 px-2 mt-1 mb-2">
           {hasTaskAttributes(contentToItem(item)) && (
             <div className="flex items-center px-1">
               <IdeaCraftCheckbox
                 checked={item.taskDone}
-                onToggle={(checked) => handleTaskToggle(contentToItem(item), checked)}
+                onToggle={(checked) =>
+                  handleTaskToggle(contentToItem(item), checked)
+                }
               />
               <label
                 htmlFor={`task-${item.id}`}
@@ -95,10 +97,10 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             </div>
           )}
           {hasEventAttributes(contentToItem(item)) && (
-            <div className="text-sm text-event px-1">
+            <div className="px-1 text-sm text-event">
               <div className="flex items-center">
                 <svg
-                  className="mr-1 h-4 w-4 text-event"
+                  className="mr-1 w-4 h-4 text-event"
                   xmlns="http://www.w3.org/2000/svg"
                   viewBox="0 0 24 24"
                   fill="none"
@@ -112,36 +114,34 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   <line x1="8" x2="8" y1="2" y2="6" />
                   <line x1="3" x2="21" y1="10" y2="10" />
                 </svg>
-                <span>
-                  {format(item.eventDate, "PPPP")}
-                </span>
+                <span>{format(item.eventDate, "PPPP")}</span>
               </div>
 
               {item.eventLocation && (
-                <div className="mt-1 flex items-center">
-                <svg
-                  className="mr-1 h-4 w-4 text-event"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <path d="M12 21c-4.97-5.46-8-9.25-8-12a8 8 0 0116 0c0 2.75-3.03 6.54-8 12z"></path>
-                  <circle cx="12" cy="9" r="3"></circle>
-                </svg>
-                <span>{item.eventLocation}</span>
-              </div>
+                <div className="flex items-center mt-1">
+                  <svg
+                    className="mr-1 w-4 h-4 text-event"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <path d="M12 21c-4.97-5.46-8-9.25-8-12a8 8 0 0116 0c0 2.75-3.03 6.54-8 12z"></path>
+                    <circle cx="12" cy="9" r="3"></circle>
+                  </svg>
+                  <span>{item.eventLocation}</span>
+                </div>
               )}
             </div>
           )}
 
           {hasMailAttributes(contentToItem(item)) && (
-            <div className="text-sm text-mail px-1">
+            <div className="px-1 text-sm text-mail">
               {item.mailFrom && (
-                <div >
+                <div>
                   <span className="font-medium">From:</span> {item.mailFrom}
                 </div>
               )}
@@ -157,16 +157,18 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         </div>
       </Card>
 
-      <div className="content-item-body px-3 py-1">
-        <div className="prose prose-sm max-w-none dark:prose-invert">
-          <ContentRenderer
-            content={processedContent}
-            allItems={allItems}
-            handleWikiLinkClick={handleUpdateSelectedItem}
-            onTaskToggle={handleTaskToggle}
-          />
+      {processedContent && (
+        <div className="px-3 py-1 border-b content-item-body">
+          <div className="max-w-none prose prose-sm dark:prose-invert">
+            <ContentRenderer
+              content={processedContent}
+              allItems={allItems}
+              handleWikiLinkClick={handleUpdateSelectedItem}
+              onTaskToggle={handleTaskToggle}
+            />
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
