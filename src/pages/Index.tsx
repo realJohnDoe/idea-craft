@@ -317,12 +317,12 @@ const Index = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="flex flex-col min-h-screen bg-background">
       <Navbar onSearch={setSearch} onCreateNew={() => setShowCreator(true)} />
 
-      <main className="flex-1 container px-4 py-4 max-w-7xl mx-auto">
+      <main className="container flex-1 px-4 py-4 mx-auto max-w-7xl">
         {!isLoaded ? (
-          <div className="flex items-center justify-center h-64">
+          <div className="flex justify-center items-center h-64">
             <div className="animate-pulse-subtle">Loading your content...</div>
           </div>
         ) : showCreator ? (
@@ -332,7 +332,7 @@ const Index = () => {
           />
         ) : showGitHubSync ? (
           <div>
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-medium">GitHub Sync</h2>
               <Button
                 variant="ghost"
@@ -345,18 +345,18 @@ const Index = () => {
             <GitHubSync items={items.map(itemToContent)} />
           </div>
         ) : (
-          <div className="flex flex-col md:flex-row gap-6">
+          <div className="flex flex-col gap-6 md:flex-row">
             <div className={`flex-1`}>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-medium">
                   {filter === "all"
                     ? "All Items"
                     : `${filter.charAt(0).toUpperCase() + filter.slice(1)}s`}
-                  <span className="text-muted-foreground ml-2 text-sm">
+                  <span className="ml-2 text-sm text-muted-foreground">
                     ({filteredItems.length})
                   </span>
                 </h2>
-                <div className="flex items-center gap-2">
+                <div className="flex gap-2 items-center">
                   <Button
                     variant="outline"
                     size="sm"
@@ -406,7 +406,7 @@ const Index = () => {
 
                 {/* Selected item view */}
                 <div className="absolute right-0 top-0 w-full bg-background max-w-[720px] h-full border-l border-border shadow-lg">
-                  <div className="h-full overflow-y-auto">
+                  <div className="overflow-y-auto h-full">
                     <SelectedItemView
                       item={selectedItem}
                       onUpdate={handleUpdateItem}
