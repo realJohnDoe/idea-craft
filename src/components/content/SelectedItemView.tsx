@@ -77,13 +77,7 @@ const SelectedItemView = ({
   };
 
   return (
-    <div
-      className={
-        isMobile
-          ? "fixed inset-0 z-20 bg-background p-4"
-          : "md:w-1/2 lg:w-3/5 sticky top-4 self-start"
-      }
-    >
+    <div className={"p-4"}>
       <div className="flex justify-between items-center mb-2">
         <h2 className="text-lg font-medium">Selected Item</h2>
         <Button variant="ghost" size="icon" onClick={onClose}>

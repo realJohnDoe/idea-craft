@@ -316,11 +316,7 @@ const Index = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-background">
-      <Navbar
-        activeFilter={filter}
-        onSearch={setSearch}
-        onCreateNew={() => setShowCreator(true)}
-      />
+      <Navbar onSearch={setSearch} onCreateNew={() => setShowCreator(true)} />
 
       <main className="flex-1 container px-4 py-4 max-w-7xl mx-auto">
         {!isLoaded ? (
@@ -406,14 +402,22 @@ const Index = () => {
             </div>
 
             {selectedItem && (
-              <SelectedItemView
-                item={selectedItem}
-                onUpdate={handleUpdateItem}
-                onDelete={handleDeleteItem}
-                onClose={() => navigate("/")}
-                allItems={items}
-                isMobile={isMobile}
-              />
+              <div className="fixed inset-0 z-10">
+                {/* Left side blur */}
+                <div className="fixed inset-0 right-[720px] bg-background/50 backdrop-blur-sm" />
+
+                {/* Selected item view */}
+                <div className="absolute right-0 top-0 w-full bg-background max-w-[720px] h-full border-l border-border shadow-lg">
+                  <SelectedItemView
+                    item={selectedItem}
+                    onUpdate={handleUpdateItem}
+                    onDelete={handleDeleteItem}
+                    onClose={() => navigate("/")}
+                    allItems={items}
+                    isMobile={isMobile}
+                  />
+                </div>
+              </div>
             )}
           </div>
         )}
