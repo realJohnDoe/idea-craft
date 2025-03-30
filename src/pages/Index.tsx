@@ -55,8 +55,10 @@ const Index = () => {
   useEffect(() => {
     if (itemId) {
       const item = items.find((i) => i.id === itemId);
+      document.body.style.overflow = "hidden";
       setSelectedItem(item || null);
     } else {
+      document.body.style.overflow = "auto";
       setSelectedItem(null);
     }
   }, [itemId, items]);
@@ -344,11 +346,7 @@ const Index = () => {
           </div>
         ) : (
           <div className="flex flex-col md:flex-row gap-6">
-            <div
-              className={`flex-1 ${
-                selectedItem && !isMobile ? "md:w-1/2 lg:w-2/5" : "w-full"
-              }`}
-            >
+            <div className={`flex-1`}>
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-lg font-medium">
                   {filter === "all"
