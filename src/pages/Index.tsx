@@ -1,23 +1,5 @@
-<<<<<<< HEAD
-import { useState, useEffect } from "react";
-import {
-  getMockItems,
-  Item,
-  parseYamlToItem,
-  parseYaml,
-  hasTaskAttributes,
-  hasEventAttributes,
-  hasNoteAttributes,
-  hasMailAttributes,
-  itemToContent,
-  generateUniqueId,
-} from "@/lib/content-utils";
-import { toast } from "sonner";
-import ContentCreator from "@/components/ContentCreator";
-=======
 
 import { useCallback, useEffect, useState } from "react";
->>>>>>> 8f7a484d72965af80c69ae67c1163c821ca33ad0
 import Navbar from "@/components/Navbar";
 import { Item, Content, itemToContent, contentToItem } from "@/lib/content-utils";
 import { useNavigate, useParams } from "react-router-dom";
@@ -108,52 +90,6 @@ const Index = () => {
     }
   }, [content]);
 
-<<<<<<< HEAD
-    toast.success("Item deleted successfully");
-  };
-
-  const handleCreateItem = (newItem: Item) => {
-    setItems((prevItems) => [newItem, ...prevItems]);
-    setShowCreator(false);
-    toast.success("Item created successfully");
-  };
-
-  interface ParsedTask {
-    content: string;
-    isDone: boolean;
-  }
-
-  function parseTasks(content: string): {
-    tasks: ParsedTask[];
-    updatedContent: string;
-  } {
-    const taskRegex = /^- \[([ x])\] (.+)$/gm;
-    const tasks: ParsedTask[] = [];
-    const updatedContent = content.replace(
-      taskRegex,
-      (match, status, taskContent) => {
-        tasks.push({
-          content: taskContent.trim(),
-          isDone: status === "x",
-        });
-        return `[[task-placeholder-${tasks.length - 1}]]`;
-      }
-    );
-    return { tasks, updatedContent };
-  }
-
-  const createNewContent = (
-    file: File,
-    textContent: string,
-    existingItems: Item[]
-  ): { mainContent: Item; taskContents: Item[] } => {
-    const baseTitle = file.name.replace(/\.(md|txt)$/, "");
-    const baseId = baseTitle.toLowerCase().replace(/\s+/g, "-");
-
-    const existingIds = new Set(existingItems.map((item) => item.id));
-
-    const { tasks, updatedContent } = parseTasks(textContent);
-=======
   // Handle URL-based item selection
   useEffect(() => {
     if (itemId) {
@@ -162,7 +98,6 @@ const Index = () => {
       setSelectedItemId(null);
     }
   }, [itemId]);
->>>>>>> 8f7a484d72965af80c69ae67c1163c821ca33ad0
 
   const handleCreateContent = (newContent: Content) => {
     setContent([...content, newContent]);
@@ -229,21 +164,6 @@ const Index = () => {
             activeFilter={activeFilter}
             toggleTypeTag={toggleTypeTag}
           />
-<<<<<<< HEAD
-        ) : showGitHubSync ? (
-          <div>
-            <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-medium">GitHub Sync</h2>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setShowGitHubSync(false)}
-              >
-                Back to items
-              </Button>
-            </div>
-            {/* <GitHubSync items={items} setItems={setItems} /> */}
-=======
           
           {getAllTags().length > 0 && (
             <TagsFilter 
@@ -261,7 +181,6 @@ const Index = () => {
               onCreate={handleCreateContent} 
               onCancel={() => setIsCreatingContent(false)}
             />
->>>>>>> 8f7a484d72965af80c69ae67c1163c821ca33ad0
           </div>
         )}
         
