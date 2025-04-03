@@ -1,3 +1,4 @@
+
 import { Octokit } from '@octokit/core';
 import { Endpoints } from '@octokit/types';
 
@@ -135,21 +136,38 @@ export async function getMarkdownFiles(octokit: Octokit, owner: string, repo: st
     // For each file, get its content
     const filesWithContent = await Promise.all(
       files.map(async (file: any) => {
-        const contentResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-          owner,
-          repo,
-          path: file.path,
-          headers: {
-            'Accept': 'application/vnd.github.v3.raw',
-          },
-        });
+        try {
+          const contentResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+            owner,
+            repo,
+            path: file.path,
+            headers: {
+              'Accept': 'application/vnd.github.v3.raw',
+            },
+          });
 
-        return {
-          ...file,
-          content: typeof contentResponse.data === 'string' 
-            ? contentResponse.data 
-            : Buffer.from(contentResponse.data.content, 'base64').toString('utf-8')
-        };
+          let fileContent: string;
+          
+          // Handle different response types
+          if (typeof contentResponse.data === 'string') {
+            fileContent = contentResponse.data;
+          } else if (contentResponse.data && typeof contentResponse.data.content === 'string') {
+            fileContent = Buffer.from(contentResponse.data.content, 'base64').toString('utf-8');
+          } else {
+            fileContent = 'Error: Could not parse file content';
+          }
+
+          return {
+            ...file,
+            content: fileContent
+          };
+        } catch (error) {
+          console.error(`Error fetching content for ${file.path}:`, error);
+          return {
+            ...file,
+            content: `Error loading content: ${error.message}`
+          };
+        }
       })
     );
 

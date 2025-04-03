@@ -1,11 +1,12 @@
+
 import React from "react";
-import { Content } from "@/lib/content-utils";
+import { Item } from "@/lib/content-utils";
 import { Edit, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 interface ContentFooterProps {
-  item: Content;
-  onUpdate: (updatedItem: Content) => void;
+  item: Item;
+  onUpdate: (updatedItem: Item) => void;
   onDelete: (id: string) => void;
   onEdit: () => void;
 }

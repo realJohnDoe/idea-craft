@@ -1,8 +1,9 @@
+
 import React, { useState, useRef, useEffect, KeyboardEvent } from "react";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { Content } from "@/lib/content-utils";
+import { Item } from "@/lib/content-utils";
 import { cn } from "@/lib/utils";
 
 interface ContentTextareaProps {
@@ -25,11 +26,13 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
     left: number;
   }>({ top: 0, left: 0 });
 
+  // Replace getMockData with a simple query that returns an empty array for now
+  // We'll need to implement proper data fetching elsewhere
   const { data: allItems = [], isLoading } = useQuery({
     queryKey: ["content-items"],
     queryFn: async () => {
-      const { getMockData } = await import("@/lib/content-utils");
-      return getMockData();
+      // Return empty array as a temporary solution
+      return [] as Item[];
     },
   });
 
@@ -147,7 +150,7 @@ const ContentTextarea: React.FC<ContentTextareaProps> = ({
     setCursorPosition(e.target.selectionStart);
   };
 
-  const handleSelectSuggestion = (item: Content) => {
+  const handleSelectSuggestion = (item: Item) => {
     if (cursorPosition === null) return;
 
     const textBeforeCursor = value.substring(0, cursorPosition);
