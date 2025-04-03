@@ -263,11 +263,3 @@ export const exampleContentItems: Item[] = [
     done: true,
   }
 ];
-
-// Process all items to ensure they have proper YAML
-export const processedExampleItems = exampleContentItems.map(item => {
-  return {
-    ...item,
-    yaml: generateYaml(item)
-  };
-});

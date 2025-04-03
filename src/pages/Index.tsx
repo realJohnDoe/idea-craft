@@ -11,40 +11,7 @@ import { useIsMobile } from "@/hooks/use-mobile";
 import SelectedItemView from "@/components/content/SelectedItemView";
 import ExportMarkdown from "@/components/ExportMarkdown";
 import { toast } from "sonner";
-
-// Convert example content to Items
-const processedExampleItems: Item[] = [
-  {
-    id: "note-welcome-guide",
-    title: "Welcome to IdeaCraft",
-    content:
-      "Welcome to your personal knowledge and task management system! IdeaCraft helps you organize your thoughts, tasks, events, and communications in one place.\n\n## Getting Started\n\n- Create your first item using the '+' button\n- Choose from different types: notes, tasks, events, or email drafts\n- Link between items using [[double brackets]]\n\n## Tips\n\n- Use tags to organize content\n- Filter by type or tags\n- Export your content as markdown files\n\nEnjoy organizing your digital life!",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    tags: ["guide", "help"],
-  },
-  {
-    id: "task-demo-task",
-    title: "Try out the task feature",
-    content:
-      "- [x] Create my first task\n- [ ] Add a due date\n- [ ] Link to a note\n- [ ] Complete this task",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    tags: ["demo"],
-    done: false,
-  },
-  {
-    id: "event-sample-event",
-    title: "Team meeting",
-    content:
-      "Discuss project progress and next steps.\n\nAgenda:\n1. Project updates\n2. Timeline review\n3. Task assignments\n4. Open discussion",
-    createdAt: new Date(),
-    updatedAt: new Date(),
-    tags: ["work", "meeting"],
-    date: new Date(new Date().setDate(new Date().getDate() + 2)),
-    location: "Conference Room B",
-  },
-];
+import { exampleContentItems } from "@/lib/example-content";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -87,6 +54,7 @@ const Index = () => {
     return allTags.sort();
   }, [items]);
 
+  localStorage.clear();
   // Initialize with example items if no content exists
   useEffect(() => {
     const storedContent = localStorage.getItem("ideaCraft_content");
@@ -102,11 +70,11 @@ const Index = () => {
         setItems(parsedItems);
       } catch (e) {
         console.error("Error parsing stored content:", e);
-        setItems(processedExampleItems);
+        setItems(exampleContentItems);
       }
     } else {
       // Use example items when no content exists
-      setItems(processedExampleItems);
+      setItems(exampleContentItems);
       setShowWelcome(true);
     }
   }, []);
@@ -195,7 +163,6 @@ const Index = () => {
         {/* Top section with filters and export button */}
         <div className="mb-6">
           <div className="flex justify-between items-center mb-4">
-            <h1 className="text-2xl font-medium">Your Content</h1>
             <div className="flex gap-2">
               <ExportMarkdown items={items} />
             </div>
@@ -255,24 +222,23 @@ const Index = () => {
 
           {/* Selected item view */}
           {selectedItem && (
-            <div
-              className={`${
-                isMobile
-                  ? "fixed inset-0 bg-background/80 backdrop-blur-sm z-50 overflow-y-auto"
-                  : "lg:col-span-1"
-              }`}
-            >
-              <SelectedItemView
-                item={selectedItem}
-                onUpdate={handleUpdateContent}
-                onDelete={handleDeleteContent}
-                onClose={() => {
-                  setSelectedItemId(null);
-                  navigate("/");
-                }}
-                allItems={items}
-                isMobile={isMobile}
-              />
+            <div className="fixed inset-0 z-10">
+              {/* Left side blur */}
+              <div className="fixed inset-0 right-[720px] bg-background/50 backdrop-blur-sm" />
+
+              {/* Selected item view */}
+              <div className="absolute right-0 top-0 w-full bg-background max-w-[720px] h-full border-l border-border shadow-lg">
+                <div className="overflow-y-auto h-full">
+                  <SelectedItemView
+                    item={selectedItem}
+                    onUpdate={handleUpdateContent}
+                    onDelete={handleDeleteContent}
+                    onClose={() => navigate("/")}
+                    allItems={items}
+                    isMobile={isMobile}
+                  />
+                </div>
+              </div>
             </div>
           )}
         </div>
