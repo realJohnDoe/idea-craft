@@ -151,8 +151,8 @@ export async function getMarkdownFiles(octokit: Octokit, owner: string, repo: st
           // Handle different response types
           if (typeof contentResponse.data === 'string') {
             fileContent = contentResponse.data;
-          } else if (contentResponse.data && typeof contentResponse.data.content === 'string') {
-            fileContent = Buffer.from(contentResponse.data.content, 'base64').toString('utf-8');
+          } else if (contentResponse.data && typeof (contentResponse.data as any).content === 'string') {
+            fileContent = Buffer.from((contentResponse.data as any).content, 'base64').toString('utf-8');
           } else {
             fileContent = 'Error: Could not parse file content';
           }

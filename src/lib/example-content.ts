@@ -12,18 +12,18 @@ const generateYaml = (content: Partial<Item>): string => {
   // This is a simplified version - the real function has more logic
   const parts = [];
 
-  if (content.hasTaskAttributes && content.done !== undefined) {
+  if (content.done !== undefined) {
     parts.push(`task:\n  done: ${content.done}`);
   }
 
-  if (content.hasEventAttributes && content.date) {
+  if (content.date) {
     parts.push(`event:\n  date: ${content.date.toISOString().split('T')[0]}`);
     if (content.location) {
       parts.push(`  location: ${content.location}`);
     }
   }
 
-  if (content.hasMailAttributes && content.from) {
+  if (content.from) {
     parts.push(`mail:\n  from: ${content.from}`);
     if (content.to && content.to.length > 0) {
       parts.push(`  to:\n    - ${content.to.join('\n    - ')}`);
