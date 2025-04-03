@@ -1,4 +1,3 @@
-
 import yaml from 'yaml';
 
 // Content types become attributes that can be combined
@@ -57,7 +56,7 @@ export function contentToItem(content: Content): Item {
   return {
     id: content.id,
     title: content.title,
-    tags: content.tags || [],
+    tags: content.tags,
     content: content.content,
     createdAt: content.createdAt,
     updatedAt: content.updatedAt,
@@ -114,11 +113,6 @@ export function generateYamlFromItem(item: Item): string {
       delete yamlObj.mail;
     }
   }
-  
-  // Add tags if present
-  if (item.tags && item.tags.length > 0) {
-    yamlObj.tags = item.tags;
-  }
 
   // If the YAML object is empty, return an empty string
   if (Object.keys(yamlObj).length === 0) {
@@ -133,11 +127,11 @@ export function hasTaskAttributes(item: Item): boolean {
 }
 
 export function hasEventAttributes(item: Item): boolean {
-  return item.date != undefined || item.location != undefined;
+  return item.date != undefined;
 }
 
 export function hasMailAttributes(item: Item): boolean {
-  return item.from != undefined || item.to != undefined;
+  return item.from != undefined && item.to != undefined;
 }
 
 export function hasNoteAttributes(item: Item): boolean {
@@ -147,37 +141,27 @@ export function hasNoteAttributes(item: Item): boolean {
 
 
 export function itemToContent(item: Item): Content {
-  const isNote = hasNoteAttributes(item);
-  const isTask = hasTaskAttributes(item);
-  const isEvent = hasEventAttributes(item);
-  const isMail = hasMailAttributes(item);
-
-  const content: Content = {
+  return {
     id: item.id,
     title: item.title,
-    tags: item.tags || [],
+    tags: item.tags,
     content: item.content,
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
-    hasTaskAttributes: isTask,
-    taskDone: item.done,
-    hasEventAttributes: isEvent,
-    eventDate: item.date,
-    eventEndDate: undefined,
-    eventLocation: item.location,
-    hasMailAttributes: isMail,
-    mailFrom: item.from,
-    mailTo: item.to,
-    mailSubject: undefined,
-    mailAttachments: [],
-    hasNoteAttributes: isNote || (!isTask && !isEvent && !isMail),
-    yaml: ''
+    hasTaskAttributes: hasTaskAttributes(item), // Derived from the presence of done
+    taskDone: item.done, // Map done to taskDone
+    hasEventAttributes: item.date !== undefined || item.location !== undefined, // Derived from date or location
+    eventDate: item.date || null, // Map date to eventDate
+    eventEndDate: null, // No equivalent in Item; set to null
+    eventLocation: item.location || null, // Map location to eventLocation
+    hasMailAttributes: item.from !== undefined || item.to !== undefined, // Derived from from or to
+    mailFrom: item.from || null, // Map from to mailFrom
+    mailTo: item.to || null,
+    mailSubject: null, // No equivalent in Item; set to null
+    mailAttachments: [], // No equivalent in Item; set as empty array
+    hasNoteAttributes: true, // Default for Content objects
+    yaml: generateYamlFromItem(item), // YAML is generated dynamically; leave empty here
   };
-
-  // Generate YAML
-  content.yaml = generateYaml(content);
-
-  return content;
 }
 
 // Parse the YAML frontmatter from the content
@@ -371,7 +355,7 @@ export function formatContentWithYaml(content: Content): string {
 }
 
 // Function to process content text and transform links
-export function processContentLinks(content: string, allItems: any[]): string {
+export function processContentLinks(content: string, allItems: Item[]): string {
   // Match [[title]] pattern
   const linkRegex = /\[\[(.*?)\]\]/g;
   
@@ -398,8 +382,85 @@ export function getPrimaryContentType(content: Content): ContentAttributeType {
   return 'note';
 }
 
-// Mock data function stub - will be replaced by our example content
+// Get mock data for initial display
 export function getMockData(): Content[] {
-  // This function will now be provided by example-content.ts
-  return [];
+  return [
+    {
+      id: '1',
+      title: 'Complete project proposal',
+      content: 'Need to finish the proposal for the new client project by Friday.',
+      createdAt: new Date('2023-06-01'),
+      updatedAt: new Date('2023-06-01'),
+      hasTaskAttributes: true,
+      hasEventAttributes: true,
+      hasMailAttributes: false,
+      hasNoteAttributes: false,
+      taskDone: false,
+      tags: ['proposal', 'client'],
+      eventDate: new Date('2023-06-05'),
+      yaml: 'task:\n  done: false\nevent:\n  date: 2023-06-05\ntags:\n  - proposal\n  - client'
+    },
+    {
+      id: '2',
+      title: 'Team meeting',
+      content: 'Weekly team sync to discuss project progress and roadblocks.\n\n[[Write Meeting Minutes]]',
+      createdAt: new Date('2023-06-02'),
+      updatedAt: new Date('2023-06-02'),
+      hasTaskAttributes: false,
+      hasEventAttributes: true,
+      hasMailAttributes: false,
+      hasNoteAttributes: false,
+      tags: ['meeting', 'weekly'],
+      eventDate: new Date('2023-06-05'),
+      eventLocation: 'Conference Room A',
+      yaml: 'event:\n  date: 2023-06-05\n  location: Conference Room A\ntags:\n  - meeting\n  - weekly'
+    },
+    {
+      id: 'ideas-for-new-feature',
+      title: 'Ideas for new feature',
+      content: 'The new dashboard should include:\n- User activity metrics\n- Conversion rates\n- Custom date ranges',
+      createdAt: new Date('2023-06-03'),
+      updatedAt: new Date('2023-06-03'),
+      hasTaskAttributes: false,
+      hasEventAttributes: false,
+      hasMailAttributes: false,
+      hasNoteAttributes: true,
+      tags: ['feature', 'dashboard'],
+      yaml: 'tags:\n  - feature\n  - dashboard'
+    },
+    {
+      id: '4',
+      title: 'Meeting follow-up',
+      content: 'Thank you for joining our meeting yesterday. As discussed, I\'m sharing the resources we talked about. Check the [[Ideas for new feature]] for details.',
+      createdAt: new Date('2023-06-04'),
+      updatedAt: new Date('2023-06-04'),
+      hasTaskAttributes: true,
+      hasEventAttributes: false,
+      hasMailAttributes: true,
+      hasNoteAttributes: false,
+      taskDone: true,
+      tags: ['follow-up', 'resources'],
+      mailFrom: 'john.doe@example.com',
+      mailTo: ['jane.smith@example.com'],
+      yaml: 'task:\n  done: true\nmail:\n  from: john.doe@example.com\n  to:\n    - jane.smith@example.com\ntags:\n  - follow-up\n  - resources'
+    },
+    {
+      id: 'write-meeting-minutes',
+      title: 'Write Meeting Minutes',
+      content: 'Thank you for joining our meeting yesterday. As discussed, I\'m sharing the resources we talked about. Check the [[Ideas for new feature]] for details.',
+      createdAt: new Date('2023-06-04'),
+      updatedAt: new Date('2023-06-04'),
+      hasTaskAttributes: true,
+      hasEventAttributes: false,
+      hasMailAttributes: false,
+      hasNoteAttributes: false,
+      taskDone: true,
+      tags: ['follow-up', 'resources'],
+      yaml: 'task:\n  done: true\nmail:\n  from: john.doe@example.com\n  to:\n    - jane.smith@example.com\ntags:\n  - follow-up\n  - resources'
+    }
+  ];
+}
+
+export function getMockItems(): Item[] {
+  return getMockData().map(item => contentToItem(item));
 }
