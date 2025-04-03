@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Item, itemToContent, processContentLinks } from "@/lib/content-utils";
 import { Button } from "@/components/ui/button";
@@ -72,7 +73,6 @@ const SelectedItemView = ({
         referencingItem.content.includes(`[[${item.title}]]`) ||
         referencingItem.content.includes(`[[${item.title}|`)
     );
-    console.log(referencingItems);
     return referencingItems;
   };
 

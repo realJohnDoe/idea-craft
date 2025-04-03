@@ -23,3 +23,15 @@ export function createSafeFilename(title: string): string {
     .replace(/[\s_-]+/g, "-") // Replace spaces with dashes
     .replace(/^-+|-+$/g, ""); // Trim dashes
 }
+
+/**
+ * Creates a meaningful ID from a title
+ * @param title The original title
+ * @param prefix Optional prefix for the ID (e.g., "note", "task")
+ * @returns A URL-friendly ID based on the title
+ */
+export function createMeaningfulId(title: string, prefix?: string): string {
+  const safeTitle = createSafeFilename(title);
+  const randomSuffix = Math.floor(Math.random() * 1000); // Add a random suffix to avoid collisions
+  return prefix ? `${prefix}-${safeTitle}-${randomSuffix}` : `${safeTitle}-${randomSuffix}`;
+}
