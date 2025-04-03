@@ -11,7 +11,7 @@ interface ContentRendererProps {
   content: string;
   allItems?: Item[];
   handleWikiLinkClick: (wikilinkId: string) => void;
-  onTaskToggle?: (item: Item, isDone: boolean) => void; // New prop for task toggling
+  onTaskToggle?: (item: Item, isDone: boolean) => void;
 }
 
 const ContentRenderer: React.FC<ContentRendererProps> = ({
@@ -87,11 +87,11 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
 
   const CustomList = ({ ordered, children }: any) => {
     const ListTag = ordered ? "ol" : "ul";
-    return <ListTag className="list-inside ml-4 my-2">{children}</ListTag>;
+    return <ListTag className={`${ordered ? "list-decimal" : "list-disc"} pl-6 my-2`}>{children}</ListTag>;
   };
 
   const CustomListItem = ({ children }: any) => {
-    return <li className="list-disc my-1">{children}</li>;
+    return <li className="my-1">{children}</li>;
   };
 
   return (
@@ -103,6 +103,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
           p: ({ children }) => <div className="my-1">{children}</div>,
           a: CustomLink,
           ul: CustomList,
+          ol: CustomList,
           li: CustomListItem,
           h1: ({ children }) => (
             <h1 className="text-2xl font-bold my-4">{children}</h1>

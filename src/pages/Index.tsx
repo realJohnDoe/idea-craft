@@ -14,6 +14,7 @@ import SelectedItemView from "@/components/content/SelectedItemView";
 import { processedExampleItems } from "@/lib/example-content";
 import ExportMarkdown from "@/components/ExportMarkdown";
 import { toast } from "sonner";
+import { createMeaningfulId } from "@/lib/id-utils";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -100,7 +101,19 @@ const Index = () => {
   }, [itemId]);
 
   const handleCreateContent = (newContent: Content) => {
-    setContent([...content, newContent]);
+    // Create a meaningful ID based on the title
+    const prefix = newContent.hasTaskAttributes 
+      ? "task" 
+      : newContent.hasEventAttributes 
+        ? "event" 
+        : newContent.hasMailAttributes 
+          ? "mail" 
+          : "note";
+    
+    const meaningfulId = createMeaningfulId(newContent.title, prefix);
+    const contentWithId = { ...newContent, id: meaningfulId };
+    
+    setContent([...content, contentWithId]);
     setIsCreatingContent(false);
     toast.success("Content created successfully!");
   };
@@ -210,7 +223,7 @@ const Index = () => {
           
           {/* Selected item view */}
           {selectedItem && (
-            <div className={`${isMobile ? "fixed inset-0 bg-background z-50 overflow-y-auto" : "lg:col-span-1"}`}>
+            <div className={`${isMobile ? "fixed inset-0 bg-background/80 backdrop-blur-md z-50 overflow-y-auto" : "lg:col-span-1"}`}>
               <SelectedItemView 
                 item={contentToItem(selectedItem)}
                 onUpdate={handleUpdateContent}

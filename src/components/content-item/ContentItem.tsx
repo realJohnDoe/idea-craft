@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from "react";
 import {
   Content,
@@ -9,8 +10,6 @@ import {
 import ContentEditor from "../content-editor/ContentEditor";
 import { cn } from "@/lib/utils";
 import ContentTypeTags from "./ContentTypeTags";
-import { Calendar } from "lucide-react";
-import { format } from "date-fns";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 import { Card } from "../ui/card";
 import { useNavigate } from "react-router-dom";
@@ -28,6 +27,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
 }) => {
   const [processedContent, setProcessedContent] = useState(item.content);
   const [isEditing, setIsEditing] = useState(false);
+  const itemAsItem = contentToItem(item);
 
   useEffect(() => {
     if (allItems.length > 0) {
@@ -35,8 +35,8 @@ const ContentItem: React.FC<ContentItemProps> = ({
     }
   }, [item.content, allItems]);
 
-  const handleEditorUpdate = (updatedItem: Content) => {
-    onUpdate(updatedItem);
+  const handleEditorUpdate = (updatedContent: Content) => {
+    onUpdate(contentToItem(updatedContent));
     setIsEditing(false);
   };
 
@@ -56,7 +56,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
 
   const handleTaskToggle = (checked: boolean) => {
     const updatedItem = {
-      ...contentToItem(item),
+      ...itemAsItem,
       done: checked,
     };
     onUpdate(updatedItem);
@@ -72,7 +72,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
         }
       >
         <div className="flex items-center">
-          {hasTaskAttributes(contentToItem(item)) && (
+          {hasTaskAttributes(itemAsItem) && (
             <div className="flex items-center">
               <IdeaCraftCheckbox
                 checked={item.taskDone}
@@ -83,7 +83,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
           <h3
             className={cn(
               "text-sm font-medium cursor-pointer hover:underline",
-              item.hasTaskAttributes &&
+              hasTaskAttributes(itemAsItem) &&
                 item.taskDone &&
                 "line-through text-muted-foreground"
             )}
@@ -97,7 +97,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
         </div>
 
         <div className="flex gap-2 items-center mt-1">
-          <ContentTypeTags item={contentToItem(item)} />
+          <ContentTypeTags item={itemAsItem} />
         </div>
       </Card>
     </div>
