@@ -1,4 +1,3 @@
-
 import { Octokit } from '@octokit/core';
 import { Endpoints } from '@octokit/types';
 
@@ -110,62 +109,5 @@ export class GitHubService {
     return files.filter((file): file is FileData =>
       file.type === 'file' && file.name.toLowerCase().endsWith('.md')
     );
-  }
-}
-
-// Helper function to get markdown files from a repository
-export async function getMarkdownFiles(octokit: Octokit, owner: string, repo: string, path: string = ''): Promise<{name: string, content: string}[]> {
-  try {
-    // List all files in the repository at the given path
-    const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-      owner,
-      repo,
-      path,
-      headers: {
-        'Accept': 'application/vnd.github.v3+json',
-      },
-    });
-
-    if (!Array.isArray(response.data)) {
-      throw new Error(`Path does not point to a directory: ${path}`);
-    }
-
-    const files = response.data as FileData[];
-    
-    // Filter for markdown files only
-    const markdownFiles = files.filter(file => 
-      file.type === 'file' && file.name.toLowerCase().endsWith('.md')
-    );
-
-    // Fetch the content of each markdown file
-    const markdownContents = await Promise.all(
-      markdownFiles.map(async (file) => {
-        const contentResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-          owner,
-          repo,
-          path: file.path,
-          headers: {
-            'Accept': 'application/vnd.github.v3+json',
-          },
-        });
-
-        if (Array.isArray(contentResponse.data)) {
-          throw new Error(`Expected file but got directory: ${file.path}`);
-        }
-
-        const fileData = contentResponse.data as FileData;
-        const content = Buffer.from(fileData.content, 'base64').toString();
-
-        return {
-          name: file.name,
-          content
-        };
-      })
-    );
-
-    return markdownContents;
-  } catch (error) {
-    console.error("Error fetching markdown files:", error);
-    throw error;
   }
 }

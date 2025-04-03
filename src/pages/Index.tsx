@@ -1,14 +1,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
-import { 
-  Item, 
-  Content, 
-  itemToContent, 
-  contentToItem,
-  createSafeIdFromTitle,
-  processWikilinks
-} from "@/lib/content-utils";
+import { Item, Content, itemToContent, contentToItem } from "@/lib/content-utils";
 import { useNavigate, useParams } from "react-router-dom";
 import TypeFilter from "@/components/filters/TypeFilter";
 import TagsFilter from "@/components/filters/TagsFilter";
@@ -65,29 +58,6 @@ const Index = () => {
     return allTags.sort();
   }, [content]);
 
-  // Process wikilinks in all content when content changes
-  const processContentWikilinks = useCallback(() => {
-    if (content.length === 0) return;
-
-    const updatedContent = content.map(item => {
-      // Process wikilinks in the content to ensure they have proper IDs
-      const processedContent = processWikilinks(item.content, content);
-      
-      // Only update if the content changed
-      if (processedContent !== item.content) {
-        return { ...item, content: processedContent };
-      }
-      
-      return item;
-    });
-
-    // Update content if any changes were made
-    const hasChanges = updatedContent.some((item, index) => item.content !== content[index].content);
-    if (hasChanges) {
-      setContent(updatedContent);
-    }
-  }, [content]);
-
   // Initialize with example items if no content exists
   useEffect(() => {
     const storedContent = localStorage.getItem("ideaCraft_content");
@@ -113,11 +83,6 @@ const Index = () => {
     }
   }, []);
 
-  // Process wikilinks after content is loaded or changed
-  useEffect(() => {
-    processContentWikilinks();
-  }, [processContentWikilinks]);
-
   // Save content to localStorage when it changes
   useEffect(() => {
     if (content.length > 0) {
@@ -135,38 +100,20 @@ const Index = () => {
   }, [itemId]);
 
   const handleCreateContent = (newContent: Content) => {
-    // Process any wikilinks in the new content before adding
-    const processedContent = { 
-      ...newContent,
-      content: processWikilinks(newContent.content, content)
-    };
-    
-    setContent([...content, processedContent]);
+    setContent([...content, newContent]);
     setIsCreatingContent(false);
     toast.success("Content created successfully!");
   };
 
   const handleUpdateContent = (updatedContent: Content | Item) => {
     // Convert Item to Content if needed
-    let contentToUpdate = 'hasNoteAttributes' in updatedContent 
+    const contentToUpdate = 'hasNoteAttributes' in updatedContent 
       ? updatedContent as Content
       : itemToContent(updatedContent as Item);
-    
-    // Process any wikilinks in the updated content
-    contentToUpdate = {
-      ...contentToUpdate,
-      content: processWikilinks(contentToUpdate.content, content)
-    };
     
     setContent(content.map(item => 
       item.id === contentToUpdate.id ? contentToUpdate : item
     ));
-    
-    // If we're updating the currently selected item, update the URL with the ID
-    if (selectedItemId === contentToUpdate.id) {
-      navigate(`/item/${contentToUpdate.id}`);
-    }
-    
     toast.success("Content updated successfully!");
   };
 
@@ -198,11 +145,6 @@ const Index = () => {
   const selectedItem = selectedItemId 
     ? content.find(item => item.id === selectedItemId) 
     : null;
-
-  // Get a className for the list container based on whether an item is selected
-  const listContainerClass = selectedItem 
-    ? "relative filter blur-[0px] md:blur-[1px] transition-all" 
-    : "";
 
   return (
     <div className="flex flex-col min-h-screen">
@@ -243,24 +185,44 @@ const Index = () => {
         )}
         
         {/* Main content area */}
-        <div className={listContainerClass}>
-          {filteredContent.length === 0 && (
-            <EmptyState 
-              message={
-                content.length === 0 
-                  ? "You don't have any content yet. Create your first item!"
-                  : "No items match your search criteria."
-              }
-              onCreateNew={() => setIsCreatingContent(true)}
-            />
-          )}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {/* Content list column */}
+          <div className={`${selectedItem && !isMobile ? "lg:col-span-2" : "lg:col-span-3"}`}>
+            {filteredContent.length === 0 && (
+              <EmptyState 
+                message={
+                  content.length === 0 
+                    ? "You don't have any content yet. Create your first item!"
+                    : "No items match your search criteria."
+                }
+                onCreateNew={() => setIsCreatingContent(true)}
+              />
+            )}
+            
+            {filteredContent.length > 0 && (
+              <ContentList 
+                items={filteredContent} 
+                onUpdate={handleUpdateContent}
+                allItems={content}
+              />
+            )}
+          </div>
           
-          {filteredContent.length > 0 && (
-            <ContentList 
-              items={filteredContent} 
-              onUpdate={handleUpdateContent}
-              allItems={content}
-            />
+          {/* Selected item view */}
+          {selectedItem && (
+            <div className={`${isMobile ? "fixed inset-0 bg-background z-50 overflow-y-auto" : "lg:col-span-1"}`}>
+              <SelectedItemView 
+                item={contentToItem(selectedItem)}
+                onUpdate={handleUpdateContent}
+                onDelete={handleDeleteContent}
+                onClose={() => {
+                  setSelectedItemId(null);
+                  navigate("/");
+                }}
+                allItems={content.map(contentToItem)}
+                isMobile={isMobile}
+              />
+            </div>
           )}
         </div>
       </main>
@@ -268,21 +230,6 @@ const Index = () => {
       {/* Welcome message */}
       {showWelcome && (
         <WelcomeNote onDismiss={() => setShowWelcome(false)} />
-      )}
-      
-      {/* Selected item view */}
-      {selectedItem && (
-        <SelectedItemView 
-          item={contentToItem(selectedItem)}
-          onUpdate={handleUpdateContent}
-          onDelete={handleDeleteContent}
-          onClose={() => {
-            setSelectedItemId(null);
-            navigate("/");
-          }}
-          allItems={content.map(contentToItem)}
-          isMobile={isMobile}
-        />
       )}
     </div>
   );

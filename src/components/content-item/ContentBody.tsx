@@ -8,8 +8,6 @@ import {
   hasMailAttributes,
   hasTaskAttributes,
   Item,
-  toggleContentAttribute,
-  ContentAttributeType,
 } from "@/lib/content-utils";
 import { format } from "date-fns";
 import ContentRenderer from "./ContentRenderer";
@@ -17,17 +15,7 @@ import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 import { Input } from "../ui/input";
 import { toast } from "sonner";
 import { Card } from "../ui/card";
-import { 
-  Calendar, 
-  Mail, 
-  MapPin, 
-  Pencil, 
-  Tag, 
-  X, 
-  CheckSquare, 
-  FileText, 
-  Plus
-} from "lucide-react";
+import { Calendar, Mail, MapPin, Pencil, Tag, X } from "lucide-react";
 import { Button } from "../ui/button";
 import { Calendar as CalendarComponent } from "../ui/calendar";
 import {
@@ -167,11 +155,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     onUpdate(updatedItem);
   };
 
-  const toggleAttribute = (attributeType: ContentAttributeType) => {
-    const updatedContent = toggleContentAttribute(item, attributeType);
-    onUpdate(contentToItem(updatedContent));
-  };
-
   useEffect(() => {
     setTitle(item.title);
     setContent(item.content);
@@ -205,46 +188,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             onBlur={handleBlur}
             className="text-lg font-medium"
           />
-        </div>
-        
-        {/* Type toggles */}
-        <div className="flex items-center gap-1 px-3 py-1 border-t">
-          <Button 
-            variant={item.hasTaskAttributes ? "default" : "outline"}
-            size="sm"
-            className={`h-7 ${item.hasTaskAttributes ? 'bg-emerald-600 hover:bg-emerald-700' : ''}`}
-            onClick={() => toggleAttribute('task')}
-          >
-            <CheckSquare className="mr-1 h-3 w-3" />
-            <span className="text-xs">Task</span>
-          </Button>
-          <Button 
-            variant={item.hasEventAttributes ? "default" : "outline"}
-            size="sm"
-            className={`h-7 ${item.hasEventAttributes ? 'bg-blue-600 hover:bg-blue-700' : ''}`}
-            onClick={() => toggleAttribute('event')}
-          >
-            <Calendar className="mr-1 h-3 w-3" />
-            <span className="text-xs">Event</span>
-          </Button>
-          <Button 
-            variant={item.hasMailAttributes ? "default" : "outline"}
-            size="sm"
-            className={`h-7 ${item.hasMailAttributes ? 'bg-amber-600 hover:bg-amber-700' : ''}`}
-            onClick={() => toggleAttribute('mail')}
-          >
-            <Mail className="mr-1 h-3 w-3" />
-            <span className="text-xs">Mail</span>
-          </Button>
-          <Button 
-            variant={item.hasNoteAttributes ? "default" : "outline"}
-            size="sm"
-            className={`h-7 ${item.hasNoteAttributes ? 'bg-purple-600 hover:bg-purple-700' : ''}`}
-            onClick={() => toggleAttribute('note')}
-          >
-            <FileText className="mr-1 h-3 w-3" />
-            <span className="text-xs">Note</span>
-          </Button>
         </div>
         
         {/* Task attributes */}
@@ -359,19 +302,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 )}
               </div>
             )}
-
-            {/* Add location button when not already set */}
-            {!item.eventLocation && !isEditingLocation && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center text-sm text-muted-foreground"
-                onClick={() => setIsEditingLocation(true)}
-              >
-                <Plus className="mr-1 h-3 w-3" />
-                Add location
-              </Button>
-            )}
           </div>
         )}
 
@@ -485,19 +415,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 )}
               </div>
             )}
-
-            {/* Add To button when not set */}
-            {(!item.mailTo || item.mailTo.length === 0) && (
-              <Button
-                variant="ghost"
-                size="sm"
-                className="flex items-center text-sm text-muted-foreground"
-                onClick={() => setIsEditingMailTo(true)}
-              >
-                <Plus className="mr-1 h-3 w-3" />
-                Add recipients
-              </Button>
-            )}
           </div>
         )}
         
@@ -562,7 +479,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   <BaseIdeaCraftChip
                     key={tag}
                     label={tag}
-                    className="bg-muted text-muted-foreground border border-muted-foreground/20"
+                    className="bg-muted text-muted-foreground"
                     suffixIcon={
                       <X 
                         className="size-3" 
@@ -577,21 +494,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 ))}
               </div>
             )}
-          </div>
-        )}
-
-        {/* Add tags button when no tags */}
-        {item.tags.length === 0 && !isEditingTags && (
-          <div className="px-3 py-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="flex items-center text-xs text-muted-foreground"
-              onClick={() => setIsEditingTags(true)}
-            >
-              <Plus className="mr-1 h-3 w-3" />
-              Add tags
-            </Button>
           </div>
         )}
       </Card>

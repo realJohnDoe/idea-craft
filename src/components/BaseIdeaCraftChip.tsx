@@ -1,43 +1,29 @@
-
 import React from "react";
-import { cn } from "@/lib/utils";
 
-interface BaseIdeaCraftChipProps {
+interface IdeaCraftChipProps {
+  prefixIcon?: React.ReactNode;
   label: string;
-  className?: string;
   suffixIcon?: React.ReactNode;
-  type?: "task" | "event" | "mail" | "note" | "tag";
+  className: string;
   onClick: () => void;
 }
 
-const BaseIdeaCraftChip: React.FC<BaseIdeaCraftChipProps> = ({
+const BaseIdeaCraftChip: React.FC<IdeaCraftChipProps> = ({
+  prefixIcon,
   label,
-  className,
   suffixIcon,
-  type,
+  className,
   onClick,
 }) => {
-  // Determine border styles based on type
-  const getBorderStyle = () => {
-    // If it's a tag or non-specific type, add a border
-    if (!type || type === "tag") {
-      return "border border-muted-foreground/20";
-    }
-    return "";
-  };
-
   return (
-    <div
-      className={cn(
-        "flex items-center h-5 px-2 rounded-full text-xs font-medium hover:bg-opacity-90 cursor-pointer",
-        getBorderStyle(),
-        className
-      )}
+    <button
       onClick={onClick}
+      className={`flex items-center gap-2 px-2 py-0.5 rounded ${className} transition-colors`}
     >
-      <span>{label}</span>
-      {suffixIcon && <span className="ml-1">{suffixIcon}</span>}
-    </div>
+      {prefixIcon}
+      <span className="text-xs">{label}</span>
+      {suffixIcon}
+    </button>
   );
 };
 
