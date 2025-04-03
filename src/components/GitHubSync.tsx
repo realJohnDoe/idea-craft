@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,8 +28,8 @@ const GitHubSync: React.FC<GitHubSyncProps> = ({ items, onUpdate, allItems }) =>
   const [isSyncing, setIsSyncing] = useState(false);
 
   const handleSyncWithGitHub = async () => {
-    if (!repoOwner || !repoName || !repoPath) {
-      toast.error("Please provide repository details.");
+    if (!repoOwner || !repoName) {
+      toast.error("Please provide repository owner and name.");
       return;
     }
 
@@ -47,6 +48,8 @@ const GitHubSync: React.FC<GitHubSyncProps> = ({ items, onUpdate, allItems }) =>
         toast.error("No Markdown files found in the repository.");
         return;
       }
+
+      toast.info(`Found ${files.length} markdown files. Processing...`);
 
       for (const file of files) {
         try {
@@ -130,7 +133,7 @@ const GitHubSync: React.FC<GitHubSyncProps> = ({ items, onUpdate, allItems }) =>
         />
       </div>
       <div>
-        <Label htmlFor="repo-path">Repository Path</Label>
+        <Label htmlFor="repo-path">Repository Path (optional)</Label>
         <Input
           type="text"
           id="repo-path"
