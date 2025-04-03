@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import {
   Item,
@@ -60,6 +59,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
   };
 
   const navigate = useNavigate();
+  console.log(item);
 
   return (
     <div id={`content-item-${item.id}`}>
@@ -80,7 +80,9 @@ const ContentItem: React.FC<ContentItemProps> = ({
           <h3
             className={cn(
               "text-sm font-medium cursor-pointer hover:underline",
-              hasTaskAttributes(item) && item.done && "line-through text-muted-foreground"
+              hasTaskAttributes(item) &&
+                item.done &&
+                "line-through text-muted-foreground"
             )}
             onClick={(e) => {
               e.preventDefault();

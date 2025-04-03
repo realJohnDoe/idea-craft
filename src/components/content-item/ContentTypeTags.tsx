@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   hasEventAttributes,
@@ -21,47 +20,21 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
     const tags = [];
 
     if (hasTaskAttributes(item)) {
-      tags.push(
-        <ColoredIdeaCraftChip
-          key="task"
-          type="task"
-          toggled={false}
-          onClick={() => {}}
-        />
-      );
+      tags.push(<ColoredIdeaCraftChip key="task" type="task" toggled={true} />);
     }
 
     if (hasEventAttributes(item)) {
       tags.push(
-        <ColoredIdeaCraftChip
-          key="event"
-          type="event"
-          toggled={false}
-          onClick={() => {}}
-        />
+        <ColoredIdeaCraftChip key="event" type="event" toggled={true} />
       );
     }
 
     if (hasMailAttributes(item)) {
-      tags.push(
-        <ColoredIdeaCraftChip
-          key="mail"
-          type="mail"
-          toggled={false}
-          onClick={() => {}}
-        />
-      );
+      tags.push(<ColoredIdeaCraftChip key="mail" type="mail" toggled={true} />);
     }
 
     if (hasNoteAttributes(item)) {
-      tags.push(
-        <ColoredIdeaCraftChip
-          key="note"
-          type="note"
-          toggled={false}
-          onClick={() => {}}
-        />
-      );
+      tags.push(<ColoredIdeaCraftChip key="note" type="note" toggled={true} />);
     }
 
     // Add user tags if present
