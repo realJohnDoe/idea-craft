@@ -1,7 +1,7 @@
 
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, FileDown, CheckCircle, X } from "lucide-react";
+import { Loader2, FileDown } from "lucide-react";
 import { Content, formatContentWithYaml } from "@/lib/content-utils";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
