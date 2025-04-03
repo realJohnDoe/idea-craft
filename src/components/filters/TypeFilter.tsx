@@ -1,3 +1,4 @@
+
 import ColoredIdeaCraftChip from "../ColoredIdeaCraftChip";
 
 interface TypeFilterProps {
@@ -6,7 +7,7 @@ interface TypeFilterProps {
 }
 
 const TypeFilter = ({ activeFilter, toggleTypeTag }: TypeFilterProps) => {
-  const types = ["note", "task", "event", "mail"];
+  const types = ["note", "task", "event", "mail"] as const;
 
   return (
     <div className="mb-4">

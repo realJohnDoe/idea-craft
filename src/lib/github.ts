@@ -111,3 +111,51 @@ export class GitHubService {
     );
   }
 }
+
+// Function to get markdown files from a GitHub repository
+export async function getMarkdownFiles(octokit: Octokit, owner: string, repo: string, path: string = '') {
+  try {
+    const response = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+      owner,
+      repo,
+      path,
+      headers: {
+        'Accept': 'application/vnd.github.v3+json',
+      },
+    });
+
+    if (!Array.isArray(response.data)) {
+      throw new Error(`Path points to a file, not a directory: ${path}`);
+    }
+
+    const files = response.data.filter((file: any) => 
+      file.type === 'file' && file.name.toLowerCase().endsWith('.md')
+    );
+
+    // For each file, get its content
+    const filesWithContent = await Promise.all(
+      files.map(async (file: any) => {
+        const contentResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+          owner,
+          repo,
+          path: file.path,
+          headers: {
+            'Accept': 'application/vnd.github.v3.raw',
+          },
+        });
+
+        return {
+          ...file,
+          content: typeof contentResponse.data === 'string' 
+            ? contentResponse.data 
+            : Buffer.from(contentResponse.data.content, 'base64').toString('utf-8')
+        };
+      })
+    );
+
+    return filesWithContent;
+  } catch (error) {
+    console.error("Error fetching Markdown files:", error);
+    throw error;
+  }
+}

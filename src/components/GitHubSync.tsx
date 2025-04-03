@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,7 +12,7 @@ import {
   parseYamlToItem,
 } from "@/lib/content-utils";
 import { generateUniqueId } from "@/lib/id-utils";
-import { authenticateWithGitHub, getOctokit } from "@/lib/github-auth";
+import { authenticateWithGitHub } from "@/lib/github-auth";
 import { getMarkdownFiles } from "@/lib/github";
 
 interface GitHubSyncProps {
