@@ -1,16 +1,17 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import { hasTaskAttributes, Item } from "@/lib/content-utils";
+import { hasTaskAttributes, Item, createSafeIdFromTitle, findItemById } from "@/lib/content-utils";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 
 interface ContentRendererProps {
   content: string;
   allItems?: Item[];
   handleWikiLinkClick: (wikilinkId: string) => void;
-  onTaskToggle?: (item: Item, isDone: boolean) => void; // New prop for task toggling
+  onTaskToggle?: (item: Item, isDone: boolean) => void; 
 }
 
 const ContentRenderer: React.FC<ContentRendererProps> = ({
@@ -19,11 +20,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
   handleWikiLinkClick,
   onTaskToggle,
 }) => {
+  // Process wikilinks to ensure they have proper IDs
   const processWikilinks = (markdown: string) => {
     const regex = /\[\[(.*?)\]\]/g;
     return markdown.replace(regex, (match, content) => {
       const [title, id] = content.split("|");
-      const linkId = id || content.replace(/\s+/g, "-").toLowerCase();
+      const linkId = id || createSafeIdFromTitle(title.trim()); 
       return `[${title || content}](#${linkId})`;
     });
   };
@@ -34,7 +36,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
 
     if (href.startsWith("#")) {
       const itemId = href.slice(1);
-      const linkedItem = allItems.find((item) => item.id === itemId);
+      const linkedItem = findItemById(allItems, itemId);
 
       if (!linkedItem) {
         return <span className="text-red-500">[[Invalid Link]]</span>;
@@ -42,7 +44,6 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
 
       // Render as checkable task
       if (hasTaskAttributes(linkedItem)) {
-        console.log("Linked Item:", linkedItem);
         return (
           <div className="flex border items-center bg-card w-full rounded-lg py-1 px-2">
             <IdeaCraftCheckbox

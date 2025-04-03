@@ -1,3 +1,4 @@
+
 import { useEffect, useState } from "react";
 import { Item, itemToContent, processContentLinks } from "@/lib/content-utils";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,6 @@ import { X } from "lucide-react";
 import ContentFooter from "../content-item/ContentFooter";
 import ContentBody from "../content-item/ContentBody";
 import ContentEditor from "../content-editor/ContentEditor";
-import ContentList from "./ContentList";
 
 interface SelectedItemViewProps {
   item: Item;
@@ -72,63 +72,68 @@ const SelectedItemView = ({
         referencingItem.content.includes(`[[${item.title}]]`) ||
         referencingItem.content.includes(`[[${item.title}|`)
     );
-    console.log(referencingItems);
     return referencingItems;
   };
 
   return (
-    <div className={"p-4"}>
-      <div className="flex justify-between items-center mb-2">
-        <h2 className="text-lg font-medium">Selected Item</h2>
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <X className="size-4" />
-        </Button>
-      </div>
+    <div className={`fixed inset-y-0 right-0 w-full md:w-1/2 lg:w-1/3 z-50 bg-background shadow-lg overflow-y-auto border-l ${isMobile ? "" : "backdrop-blur-sm"}`}>
+      <div className="p-4">
+        <div className="flex justify-between items-center mb-4">
+          <h2 className="text-lg font-medium">Item Details</h2>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="size-4" />
+          </Button>
+        </div>
 
-      <div
-        id={`content-item-${item.id}`}
-        className={"rounded-lg border shadow-sm content-item"}
-      >
-        {/* If editing, show the editor instead of the item */}
-        {isEditing && (
-          <ContentEditor
-            item={itemToContent(item)}
-            onUpdate={handleEditorUpdate}
-            onCancel={handleEditorCancel}
-          />
-        )}
-        {!isEditing && (
-          <div>
-            <ContentBody
+        <div
+          id={`content-item-${item.id}`}
+          className="rounded-lg border shadow-sm content-item"
+        >
+          {/* If editing, show the editor instead of the item */}
+          {isEditing && (
+            <ContentEditor
               item={itemToContent(item)}
-              onUpdate={onUpdate}
-              processedContent={processedContent}
-              handleWikiLinkClick={handleUpdateSelectedItem}
-              allItems={allItems}
+              onUpdate={handleEditorUpdate}
+              onCancel={handleEditorCancel}
             />
+          )}
+          {!isEditing && (
+            <div>
+              <ContentBody
+                item={itemToContent(item)}
+                onUpdate={onUpdate}
+                processedContent={processedContent}
+                handleWikiLinkClick={handleUpdateSelectedItem}
+                allItems={allItems}
+              />
 
-            <ContentFooter
-              item={itemToContent(item)}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-              onEdit={handleEditClick}
-            />
+              <ContentFooter
+                item={itemToContent(item)}
+                onUpdate={onUpdate}
+                onDelete={onDelete}
+                onEdit={handleEditClick}
+              />
+            </div>
+          )}
+        </div>
+
+        {getReferencingItems().length > 0 && (
+          <div className="mt-4">
+            <h3 className="mb-2 font-medium text-md">Referenced By</h3>
+            <div className="border rounded-lg overflow-hidden shadow-sm">
+              {getReferencingItems().map((refItem) => (
+                <div 
+                  key={refItem.id} 
+                  className="p-3 border-b last:border-b-0 hover:bg-muted/50 cursor-pointer"
+                  onClick={() => {
+                    onUpdate(refItem);
+                  }}
+                >
+                  <p className="font-medium">{refItem.title}</p>
+                </div>
+              ))}
+            </div>
           </div>
-        )}
-      </div>
-
-      <div className="mt-4">
-        <h3 className="mb-2 font-medium text-md">Referenced By</h3>
-        {getReferencingItems().length > 0 ? (
-          <ContentList
-            items={getReferencingItems().map((item) => itemToContent(item))}
-            onUpdate={onUpdate}
-            allItems={allItems.map((item) => itemToContent(item))}
-          />
-        ) : (
-          <p className="text-sm text-muted-foreground">
-            No other items reference this content yet.
-          </p>
         )}
       </div>
     </div>

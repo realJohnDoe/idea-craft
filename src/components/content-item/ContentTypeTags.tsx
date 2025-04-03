@@ -1,87 +1,75 @@
-import React from "react";
-import {
-  hasEventAttributes,
-  hasMailAttributes,
-  hasNoteAttributes,
-  hasTaskAttributes,
-  Item,
-} from "@/lib/content-utils";
 
-import ColoredIdeaCraftChip from "../ColoredIdeaCraftChip";
+import React from "react";
+import { Calendar, Mail, CheckSquare, FileText } from "lucide-react";
+import { Item } from "@/lib/content-utils";
+import ColoredIdeaCraftChip from "@/components/ColoredIdeaCraftChip";
 import BaseIdeaCraftChip from "../BaseIdeaCraftChip";
 
 interface ContentTypeTagsProps {
   item: Item;
+  onClick?: (type: string) => void;
 }
 
-const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
-  // Get content type tag elements
-  const getTypeTags = () => {
-    const tags = [];
+const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
+  item,
+  onClick = () => {},
+}) => {
+  const { done, date, from, to } = item;
 
-    if (hasTaskAttributes(item)) {
-      tags.push(
+  const isTask = done !== undefined;
+  const isEvent = date !== undefined;
+  const isMail = from !== undefined || to !== undefined;
+  const isNote = !isTask && !isEvent && !isMail;
+
+  return (
+    <div className="flex flex-wrap gap-1">
+      {isTask && (
         <ColoredIdeaCraftChip
-          key="task"
-          type={"task"}
-          toggled={false}
-          onClick={() => {}}
+          label="Task"
+          icon={<CheckSquare className="size-3" />}
+          type="task"
+          onClick={() => onClick("task")}
         />
-      );
-    }
+      )}
 
-    if (hasEventAttributes(item)) {
-      tags.push(
+      {isEvent && (
         <ColoredIdeaCraftChip
-          key="event"
-          type={"event"}
-          toggled={false}
-          onClick={() => {}}
+          label="Event"
+          icon={<Calendar className="size-3" />}
+          type="event"
+          onClick={() => onClick("event")}
         />
-      );
-    }
+      )}
 
-    if (hasMailAttributes(item)) {
-      tags.push(
+      {isMail && (
         <ColoredIdeaCraftChip
-          key="mail"
-          type={"mail"}
-          toggled={false}
-          onClick={() => {}}
+          label="Mail"
+          icon={<Mail className="size-3" />}
+          type="mail"
+          onClick={() => onClick("mail")}
         />
-      );
-    }
+      )}
 
-    if (hasNoteAttributes(item)) {
-      tags.push(
+      {isNote && (
         <ColoredIdeaCraftChip
-          key={"note"}
-          type={"note"}
-          toggled={false}
-          onClick={() => {}}
+          label="Note"
+          icon={<FileText className="size-3" />}
+          type="note"
+          onClick={() => onClick("note")}
         />
-      );
-    }
+      )}
 
-    // Add user tags if present
-    if (item.tags && item.tags.length > 0) {
-      item.tags.forEach((tag, idx) => {
-        tags.push(
+      {item.tags && item.tags.length > 0 && 
+        item.tags.map((tag) => (
           <BaseIdeaCraftChip
             key={tag}
             label={tag}
-            className="bg-muted text-muted-foreground"
-            onClick={() => {}}
+            type="tag"
+            className="bg-muted text-muted-foreground border border-muted-foreground/20"
+            onClick={() => onClick("tag")}
           />
-        );
-      });
-    }
-
-    return tags;
-  };
-
-  return (
-    <div className="flex flex-wrap gap-1 items-center">{getTypeTags()}</div>
+        ))}
+    </div>
   );
 };
 

@@ -1,4 +1,3 @@
-
 import yaml from 'yaml';
 
 // Content types become attributes that can be combined
@@ -145,6 +144,29 @@ export function hasNoteAttributes(item: Item): boolean {
   return !hasTaskAttributes(item) && !hasEventAttributes(item) && !hasMailAttributes(item);  
 }
 
+
+// Create a safe filename and ID from a title
+export function createSafeIdFromTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/[^\w\s-]/g, "") // Remove special chars
+    .replace(/[\s_-]+/g, "-") // Replace spaces with dashes
+    .replace(/^-+|-+$/g, ""); // Trim dashes
+}
+
+// Find item by ID or title-based ID
+export function findItemById(items: Item[] | Content[], idOrTitle: string): Item | Content | undefined {
+  // First try direct ID match
+  let item = items.find(item => item.id === idOrTitle);
+  
+  // If not found, try to find by title-based ID
+  if (!item) {
+    const titleBasedId = createSafeIdFromTitle(idOrTitle);
+    item = items.find(item => createSafeIdFromTitle(item.title) === titleBasedId);
+  }
+  
+  return item;
+}
 
 export function itemToContent(item: Item): Content {
   const isNote = hasNoteAttributes(item);
@@ -357,6 +379,28 @@ export function toggleContentAttribute(content: Content, attributeType: ContentA
   updatedContent.yaml = generateYaml(updatedContent);
   
   return updatedContent;
+}
+
+// Process wikilinks to use title-based IDs
+export function processWikilinks(content: string, allItems: Item[] | Content[]): string {
+  // Match [[title]] pattern
+  const linkRegex = /\[\[(.*?)\]\]/g;
+  
+  return content.replace(linkRegex, (match, linkTitle) => {
+    // Extract title and optional ID if format is [[title|id]]
+    const [title, explicitId] = linkTitle.split('|').map(s => s.trim());
+    
+    // Look for an item with this title or ID
+    const linkedItem = findItemById(allItems, explicitId || title);
+    
+    if (linkedItem) {
+      // Return the link with the item ID
+      return `[[${title}|${linkedItem.id}]]`;
+    }
+    
+    // If no match, return original link format
+    return match;
+  });
 }
 
 // Format the content display string with the YAML
