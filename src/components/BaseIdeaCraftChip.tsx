@@ -1,19 +1,20 @@
+
 import React from "react";
 
-interface IdeaCraftChipProps {
+export interface BaseIdeaCraftChipProps {
   prefixIcon?: React.ReactNode;
   label: string;
   suffixIcon?: React.ReactNode;
-  className: string;
-  onClick: () => void;
+  className?: string;
+  onClick?: () => void;
 }
 
-const BaseIdeaCraftChip: React.FC<IdeaCraftChipProps> = ({
+const BaseIdeaCraftChip: React.FC<BaseIdeaCraftChipProps> = ({
   prefixIcon,
   label,
   suffixIcon,
-  className,
-  onClick,
+  className = "",
+  onClick = () => {},
 }) => {
   return (
     <button

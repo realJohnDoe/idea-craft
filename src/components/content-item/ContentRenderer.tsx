@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -42,11 +43,10 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
 
       // Render as checkable task
       if (hasTaskAttributes(linkedItem)) {
-        console.log("Linked Item:", linkedItem);
         return (
           <div className="flex border items-center bg-card w-full rounded-lg py-1 px-2">
             <IdeaCraftCheckbox
-              checked={linkedItem.done}
+              checked={linkedItem.done !== undefined ? linkedItem.done : false}
               onToggle={(checked) => onTaskToggle?.(linkedItem, checked)}
             />
             <label

@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   hasEventAttributes,
@@ -23,7 +24,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
       tags.push(
         <ColoredIdeaCraftChip
           key="task"
-          type={"task"}
+          type="task"
           toggled={false}
           onClick={() => {}}
         />
@@ -34,7 +35,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
       tags.push(
         <ColoredIdeaCraftChip
           key="event"
-          type={"event"}
+          type="event"
           toggled={false}
           onClick={() => {}}
         />
@@ -45,7 +46,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
       tags.push(
         <ColoredIdeaCraftChip
           key="mail"
-          type={"mail"}
+          type="mail"
           toggled={false}
           onClick={() => {}}
         />
@@ -55,8 +56,8 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
     if (hasNoteAttributes(item)) {
       tags.push(
         <ColoredIdeaCraftChip
-          key={"note"}
-          type={"note"}
+          key="note"
+          type="note"
           toggled={false}
           onClick={() => {}}
         />
@@ -65,12 +66,12 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
 
     // Add user tags if present
     if (item.tags && item.tags.length > 0) {
-      item.tags.forEach((tag, idx) => {
+      item.tags.forEach((tag) => {
         tags.push(
           <BaseIdeaCraftChip
             key={tag}
             label={tag}
-            className="bg-muted text-muted-foreground"
+            className="bg-muted text-muted-foreground border border-muted-foreground/20"
             onClick={() => {}}
           />
         );
