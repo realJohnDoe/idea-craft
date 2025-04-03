@@ -21,20 +21,42 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
   onTaskToggle,
 }) => {
   const processWikilinks = (markdown: string) => {
+    // Process links in the format [[title|id]] or just [[title]]
     const regex = /\[\[(.*?)\]\]/g;
     return markdown.replace(regex, (match, content) => {
-      const [title, id] = content.split("|");
-      const linkId = id || content.replace(/\s+/g, "-").toLowerCase();
-      return `[${title || content}](#${linkId})`;
+      const parts = content.split('|');
+      const title = parts[0].trim();
+      const id = parts[1] ? parts[1].trim() : null;
+      
+      // If we have an id, use that
+      if (id) {
+        return `[${title}](#${id})`;
+      }
+      
+      // Try to find by title if no id is provided
+      const linkedItem = allItems.find(item => 
+        item.title.toLowerCase() === title.toLowerCase());
+      
+      if (linkedItem) {
+        return `[${title}](#${linkedItem.id})`;
+      }
+      
+      return `[${title}](#unknown)`;
     });
   };
+  
   const processedContent = processWikilinks(content);
 
-  const CustomLink = ({ href }) => {
+  const CustomLink = ({ href, children }) => {
     const navigate = useNavigate();
 
-    if (href.startsWith("#")) {
+    if (href.startsWith('#')) {
       const itemId = href.slice(1);
+      
+      if (itemId === 'unknown') {
+        return <span className="text-red-500">{children}</span>;
+      }
+      
       const linkedItem = allItems.find((item) => item.id === itemId);
 
       if (!linkedItem) {
@@ -80,7 +102,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
     // External link
     return (
       <a href={href} className="text-blue-600 hover:underline">
-        {href}
+        {children}
       </a>
     );
   };

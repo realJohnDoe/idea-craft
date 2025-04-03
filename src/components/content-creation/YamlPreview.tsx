@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Item, generateYaml } from '@/lib/content-utils';
+import { Item, generateYamlFromItem } from '@/lib/content-utils';
 
 interface YamlPreviewProps {
   content: Partial<Item>;
@@ -28,7 +28,7 @@ const YamlPreview: React.FC<YamlPreviewProps> = ({ content }) => {
       to: content.to,
     };
     
-    return generateYaml(previewItem);
+    return generateYamlFromItem(previewItem);
   };
 
   return (

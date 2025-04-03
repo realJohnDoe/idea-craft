@@ -6,6 +6,8 @@ import {
   hasEventAttributes,
   hasMailAttributes,
   hasTaskAttributes,
+  toggleItemAttribute,
+  ContentAttributeType
 } from "@/lib/content-utils";
 import { format } from "date-fns";
 import ContentRenderer from "./ContentRenderer";
@@ -13,7 +15,7 @@ import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 import { Input } from "../ui/input";
 import { toast } from "sonner";
 import { Card } from "../ui/card";
-import { Calendar, Mail, MapPin, Pencil, Tag, X } from "lucide-react";
+import { Calendar, Mail, MapPin, Pencil, Tag, X, CheckCircle } from "lucide-react";
 import { Button } from "../ui/button";
 import { Calendar as CalendarComponent } from "../ui/calendar";
 import {
@@ -23,6 +25,7 @@ import {
 } from "@/components/ui/popover";
 import BaseIdeaCraftChip from "../BaseIdeaCraftChip";
 import ContentTextarea from "../content-editor/ContentTextarea";
+import ColoredIdeaCraftChip from "../ColoredIdeaCraftChip";
 
 interface ContentBodyProps {
   item: Item;
@@ -153,6 +156,14 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     onUpdate(updatedItem);
   };
 
+  const handleToggleAttribute = (type: ContentAttributeType) => {
+    const updatedItem = toggleItemAttribute(item, type);
+    onUpdate({
+      ...updatedItem,
+      updatedAt: new Date()
+    });
+  };
+
   useEffect(() => {
     setTitle(item.title);
     setContent(item.content);
@@ -185,6 +196,25 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             onChange={(e) => setTitle(e.target.value)}
             onBlur={handleBlur}
             className="text-lg font-medium"
+          />
+        </div>
+        
+        {/* Attribute type toggles */}
+        <div className="p-3 flex flex-wrap gap-2 border-t">
+          <ColoredIdeaCraftChip
+            type="task"
+            toggled={hasTaskAttributes(item)}
+            onClick={() => handleToggleAttribute('task')}
+          />
+          <ColoredIdeaCraftChip
+            type="event"
+            toggled={hasEventAttributes(item)}
+            onClick={() => handleToggleAttribute('event')}
+          />
+          <ColoredIdeaCraftChip
+            type="mail"
+            toggled={hasMailAttributes(item)}
+            onClick={() => handleToggleAttribute('mail')}
           />
         </div>
         

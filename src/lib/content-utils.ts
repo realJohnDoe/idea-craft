@@ -17,7 +17,6 @@ export interface Item {
   location?: string;       // Event attribute
   from?: string;           // Mail attribute
   to?: string[];           // Mail attribute
-  yaml?: string;           // YAML representation
 }
 
 export function hasTaskAttributes(item: Item): boolean {
@@ -199,9 +198,6 @@ export function toggleItemAttribute(item: Item, attributeType: ContentAttributeT
       break;
   }
   
-  // Generate YAML
-  updatedItem.yaml = generateYaml(updatedItem);
-  
   return updatedItem;
 }
 
@@ -221,10 +217,20 @@ export function processContentLinks(content: string, allItems: Item[]): string {
   // Match [[title]] pattern
   const linkRegex = /\[\[(.*?)\]\]/g;
   
-  return content.replace(linkRegex, (match, linkTitle) => {
-    // Look for an item with this title
+  return content.replace(linkRegex, (match, linkContent) => {
+    // Parse the link content to see if it contains a title|id format
+    const parts = linkContent.split('|');
+    const title = parts[0];
+    const id = parts[1] || title;
+    
+    // Look for an item with this id or title
     const linkedItem = allItems.find(item => 
-      item.title.toLowerCase() === linkTitle.toLowerCase());
+      item.id === id || item.title.toLowerCase() === title.toLowerCase());
+    
+    if (linkedItem) {
+      // Return the original match which will be processed by ContentRenderer
+      return `[[${title}|${linkedItem.id}]]`;
+    }
     
     return match;
   });
