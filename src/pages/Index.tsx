@@ -9,6 +9,7 @@ import {
   hasNoteAttributes,
   hasMailAttributes,
   itemToContent,
+  generateUniqueId,
 } from "@/lib/content-utils";
 import { toast } from "sonner";
 import ContentCreator from "@/components/ContentCreator";
@@ -152,19 +153,6 @@ const Index = () => {
     setItems((prevItems) => [newItem, ...prevItems]);
     setShowCreator(false);
     toast.success("Item created successfully");
-  };
-
-  const generateUniqueId = (
-    baseId: string,
-    existingIds: Set<string>
-  ): string => {
-    let newId = baseId;
-    let counter = 0;
-    while (existingIds.has(newId)) {
-      counter++;
-      newId = `${baseId}-${counter}`;
-    }
-    return newId;
   };
 
   interface ParsedTask {
@@ -347,7 +335,7 @@ const Index = () => {
                 Back to items
               </Button>
             </div>
-            <GitHubSync items={items.map(itemToContent)} />
+            {/* <GitHubSync items={items} setItems={setItems} /> */}
           </div>
         ) : (
           <div className="flex flex-col gap-6 md:flex-row">

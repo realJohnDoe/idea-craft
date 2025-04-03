@@ -464,3 +464,16 @@ export function getMockData(): Content[] {
 export function getMockItems(): Item[] {
   return getMockData().map(item => contentToItem(item));
 }
+
+export const generateUniqueId = (
+  baseId: string,
+  existingIds: Set<string>
+): string => {
+  let newId = baseId;
+  let counter = 0;
+  while (existingIds.has(newId)) {
+    counter++;
+    newId = `${baseId}-${counter}`;
+  }
+  return newId;
+};

@@ -9,7 +9,7 @@ export interface GitHubConfig {
 
 // Type definitions for GitHub API responses
 type ContentsResponse = Endpoints['GET /repos/{owner}/{repo}/contents/{path}']['response'];
-type FileData = Extract<ContentsResponse['data'], { type: 'file' }>;
+export type FileData = Extract<ContentsResponse['data'], { type: 'file' }>;
 type DirectoryData = Extract<ContentsResponse['data'], any[]>;
 
 export class GitHubService {
