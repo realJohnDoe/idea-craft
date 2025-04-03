@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Item } from "@/lib/content-utils";
 import { Edit, Trash2 } from "lucide-react";
@@ -19,7 +18,7 @@ const ContentFooter: React.FC<ContentFooterProps> = ({
   return (
     <div className="p-2 content-item-footer">
       <span className="text-xs text-muted-foreground">
-        {format(item.updatedAt, "PPP")}
+        {format(item.updatedAt, "PPPP")}
       </span>
 
       <div className="flex space-x-1 transition-opacity">

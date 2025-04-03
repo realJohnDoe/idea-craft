@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import {
   Item,
-  formatContentWithYaml,
   hasEventAttributes,
   hasMailAttributes,
   hasTaskAttributes,
@@ -269,7 +268,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                       className="h-8 pl-3 text-left font-normal w-[200px]"
                     >
                       {item.date
-                        ? format(new Date(item.date), "PPP")
+                        ? format(new Date(item.date), "PPPP")
                         : "Select date"}
                       <Calendar className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
