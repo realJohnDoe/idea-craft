@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -24,39 +23,40 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
     // Process links in the format [[title|id]] or just [[title]]
     const regex = /\[\[(.*?)\]\]/g;
     return markdown.replace(regex, (match, content) => {
-      const parts = content.split('|');
+      const parts = content.split("|");
       const title = parts[0].trim();
       const id = parts[1] ? parts[1].trim() : null;
-      
+
       // If we have an id, use that
       if (id) {
         return `[${title}](#${id})`;
       }
-      
+
       // Try to find by title if no id is provided
-      const linkedItem = allItems.find(item => 
-        item.title.toLowerCase() === title.toLowerCase());
-      
+      const linkedItem = allItems.find(
+        (item) => item.title.toLowerCase() === title.toLowerCase()
+      );
+
       if (linkedItem) {
         return `[${title}](#${linkedItem.id})`;
       }
-      
+
       return `[${title}](#unknown)`;
     });
   };
-  
+
   const processedContent = processWikilinks(content);
 
   const CustomLink = ({ href, children }) => {
     const navigate = useNavigate();
 
-    if (href.startsWith('#')) {
+    if (href.startsWith("#")) {
       const itemId = href.slice(1);
-      
-      if (itemId === 'unknown') {
+
+      if (itemId === "unknown") {
         return <span className="text-red-500">{children}</span>;
       }
-      
+
       const linkedItem = allItems.find((item) => item.id === itemId);
 
       if (!linkedItem) {
@@ -108,13 +108,19 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
   };
 
   const CustomList = ({ ordered, children }: any) => {
+    console.log("ordered", ordered);
     const ListTag = ordered ? "ol" : "ul";
-    return <ListTag className="list-inside ml-4 my-2">{children}</ListTag>;
+    return (
+      <ListTag
+        className={`list-inside ml-4 my-2 ${
+          ordered ? "list-decimal" : "list-disc"
+        }`}
+      >
+        {children}
+      </ListTag>
+    );
   };
-
-  const CustomListItem = ({ children }: any) => {
-    return <li className="list-disc my-1">{children}</li>;
-  };
+  console.log("processedContent", processedContent);
 
   return (
     <div>
@@ -124,8 +130,8 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
         components={{
           p: ({ children }) => <div className="my-1">{children}</div>,
           a: CustomLink,
+          ol: CustomList,
           ul: CustomList,
-          li: CustomListItem,
           h1: ({ children }) => (
             <h1 className="text-2xl font-bold my-4">{children}</h1>
           ),

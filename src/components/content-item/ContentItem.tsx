@@ -59,7 +59,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
   };
 
   const navigate = useNavigate();
-  console.log(item);
 
   return (
     <div id={`content-item-${item.id}`}>

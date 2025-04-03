@@ -256,7 +256,9 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   className="flex items-center group cursor-pointer"
                   onClick={() => setIsEditingDate(true)}
                 >
-                  <span>{item.date && format(new Date(item.date), "PPP")}</span>
+                  <span>
+                    {item.date && format(new Date(item.date), "PPPP")}
+                  </span>
                   <Pencil className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
                 </div>
               ) : (

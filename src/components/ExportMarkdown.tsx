@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, FileDown } from "lucide-react";
@@ -20,34 +19,34 @@ const ExportMarkdown: React.FC<ExportMarkdownProps> = ({ items }) => {
       toast.error("No items to export");
       return;
     }
-    
+
     setIsExporting(true);
-    
+
     try {
       // Create a new JSZip instance
       const zip = new JSZip();
-      
+
       // Create a folder for the markdown files
       const markdownFolder = zip.folder("ideacraft-export");
-      
+
       // Add each item as a markdown file
       items.forEach((item) => {
         // Convert title to valid filename
         const fileName = createSafeFilename(item.title) + ".md";
-        
+
         // Format the content with YAML frontmatter
         const markdownContent = formatContentWithYaml(item);
-        
+
         // Add the file to the folder
         markdownFolder.file(fileName, markdownContent);
       });
-      
+
       // Generate the zip file
       const zipBlob = await zip.generateAsync({ type: "blob" });
-      
+
       // Save the zip file
       saveAs(zipBlob, "ideacraft-export.zip");
-      
+
       toast.success(`Successfully exported ${items.length} items`);
     } catch (error) {
       console.error("Error exporting markdown:", error);
