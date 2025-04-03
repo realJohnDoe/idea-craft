@@ -1,4 +1,3 @@
-
 import { Octokit } from '@octokit/core';
 import { Endpoints } from '@octokit/types';
 
@@ -136,45 +135,21 @@ export async function getMarkdownFiles(octokit: Octokit, owner: string, repo: st
     // For each file, get its content
     const filesWithContent = await Promise.all(
       files.map(async (file: any) => {
-        try {
-          // Make a separate request to get each file's content
-          const contentResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
-            owner,
-            repo,
-            path: file.path,
-            headers: {
-              'Accept': 'application/vnd.github.v3.raw',
-            },
-          });
+        const contentResponse = await octokit.request('GET /repos/{owner}/{repo}/contents/{path}', {
+          owner,
+          repo,
+          path: file.path,
+          headers: {
+            'Accept': 'application/vnd.github.v3.raw',
+          },
+        });
 
-          // Handle different response formats from GitHub API
-          let fileContent: string;
-          
-          // If the response is a string, use it directly
-          if (typeof contentResponse.data === 'string') {
-            fileContent = contentResponse.data;
-          } 
-          // If the response has a content property that's base64 encoded
-          else if (contentResponse.data && typeof contentResponse.data === 'object' && 'content' in contentResponse.data) {
-            fileContent = Buffer.from(contentResponse.data.content, 'base64').toString('utf-8');
-          } 
-          // Fallback if content isn't available
-          else {
-            console.warn(`No content found for file: ${file.path}`);
-            fileContent = '';
-          }
-
-          return {
-            ...file,
-            content: fileContent
-          };
-        } catch (error) {
-          console.error(`Error fetching content for ${file.path}:`, error);
-          return {
-            ...file,
-            content: `Error fetching content: ${error.message}`
-          };
-        }
+        return {
+          ...file,
+          content: typeof contentResponse.data === 'string' 
+            ? contentResponse.data 
+            : Buffer.from(contentResponse.data.content, 'base64').toString('utf-8')
+        };
       })
     );
 
