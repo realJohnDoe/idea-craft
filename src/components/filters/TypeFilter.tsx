@@ -1,6 +1,5 @@
 
 import ColoredIdeaCraftChip from "../ColoredIdeaCraftChip";
-import { ContentAttributeType } from "@/lib/content-utils";
 
 interface TypeFilterProps {
   activeFilter: string;
@@ -8,7 +7,7 @@ interface TypeFilterProps {
 }
 
 const TypeFilter = ({ activeFilter, toggleTypeTag }: TypeFilterProps) => {
-  const types: ContentAttributeType[] = ["note", "task", "event", "mail"];
+  const types = ["note", "task", "event", "mail"] as const;
 
   return (
     <div className="mb-4">
