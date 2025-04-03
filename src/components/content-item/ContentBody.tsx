@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   Item,
@@ -7,7 +6,7 @@ import {
   hasMailAttributes,
   hasTaskAttributes,
   toggleItemAttribute,
-  ContentAttributeType
+  ContentAttributeType,
 } from "@/lib/content-utils";
 import { format } from "date-fns";
 import ContentRenderer from "./ContentRenderer";
@@ -15,7 +14,15 @@ import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 import { Input } from "../ui/input";
 import { toast } from "sonner";
 import { Card } from "../ui/card";
-import { Calendar, Mail, MapPin, Pencil, Tag, X, CheckCircle } from "lucide-react";
+import {
+  Calendar,
+  Mail,
+  MapPin,
+  Pencil,
+  Tag,
+  X,
+  CheckCircle,
+} from "lucide-react";
 import { Button } from "../ui/button";
 import { Calendar as CalendarComponent } from "../ui/calendar";
 import {
@@ -55,7 +62,9 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   const [mailTo, setMailTo] = useState<string>(
     item.to ? item.to.join(", ") : ""
   );
-  const [tagInput, setTagInput] = useState(item.tags ? item.tags.join(", ") : "");
+  const [tagInput, setTagInput] = useState(
+    item.tags ? item.tags.join(", ") : ""
+  );
 
   const handleTitleChanged = (title: string) => {
     if (!title.trim()) {
@@ -136,7 +145,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
       .split(",")
       .map((tag) => tag.trim())
       .filter((tag) => tag !== "");
-    
+
     const updatedItem = {
       ...item,
       tags,
@@ -147,7 +156,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   };
 
   const removeTag = (tagToRemove: string) => {
-    const updatedTags = item.tags.filter(tag => tag !== tagToRemove);
+    const updatedTags = item.tags.filter((tag) => tag !== tagToRemove);
     const updatedItem = {
       ...item,
       tags: updatedTags,
@@ -160,7 +169,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     const updatedItem = toggleItemAttribute(item, type);
     onUpdate({
       ...updatedItem,
-      updatedAt: new Date()
+      updatedAt: new Date(),
     });
   };
 
@@ -171,7 +180,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     setMailFrom(item.from || "");
     setMailTo(item.to ? item.to.join(", ") : "");
     setTagInput(item.tags ? item.tags.join(", ") : "");
-    
+
     // Reset all editing states when item changes
     setIsEditingDate(false);
     setIsEditingLocation(false);
@@ -198,34 +207,32 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             className="text-lg font-medium"
           />
         </div>
-        
+
         {/* Attribute type toggles */}
-        <div className="p-3 flex flex-wrap gap-2 border-t">
+        <div className="px-3 py-1 flex flex-wrap gap-2">
           <ColoredIdeaCraftChip
             type="task"
             toggled={hasTaskAttributes(item)}
-            onClick={() => handleToggleAttribute('task')}
+            onClick={() => handleToggleAttribute("task")}
           />
           <ColoredIdeaCraftChip
             type="event"
             toggled={hasEventAttributes(item)}
-            onClick={() => handleToggleAttribute('event')}
+            onClick={() => handleToggleAttribute("event")}
           />
           <ColoredIdeaCraftChip
             type="mail"
             toggled={hasMailAttributes(item)}
-            onClick={() => handleToggleAttribute('mail')}
+            onClick={() => handleToggleAttribute("mail")}
           />
         </div>
-        
+
         {/* Task attributes */}
         {hasTaskAttributes(item) && (
           <div className="flex items-center px-3 py-1">
             <IdeaCraftCheckbox
               checked={item.done}
-              onToggle={(checked) =>
-                handleTaskToggle(item, checked)
-              }
+              onToggle={(checked) => handleTaskToggle(item, checked)}
             />
             <label
               htmlFor={`task-${item.id}`}
@@ -245,7 +252,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             <div className="flex items-center text-sm text-event">
               <Calendar className="mr-1 w-4 h-4" />
               {!isEditingDate ? (
-                <div 
+                <div
                   className="flex items-center group cursor-pointer"
                   onClick={() => setIsEditingDate(true)}
                 >
@@ -255,11 +262,13 @@ const ContentBody: React.FC<ContentBodyProps> = ({
               ) : (
                 <Popover open={isEditingDate} onOpenChange={setIsEditingDate}>
                   <PopoverTrigger asChild>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       className="h-8 pl-3 text-left font-normal w-[200px]"
                     >
-                      {item.date ? format(new Date(item.date), "PPP") : "Select date"}
+                      {item.date
+                        ? format(new Date(item.date), "PPP")
+                        : "Select date"}
                       <Calendar className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </PopoverTrigger>
@@ -281,7 +290,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
               <div className="flex items-center text-sm text-event">
                 <MapPin className="mr-1 w-4 h-4" />
                 {!isEditingLocation ? (
-                  <div 
+                  <div
                     className="flex items-center group cursor-pointer"
                     onClick={() => setIsEditingLocation(true)}
                   >
@@ -290,14 +299,14 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2 w-full">
-                    <Input 
+                    <Input
                       value={location}
                       onChange={(e) => setLocation(e.target.value)}
                       className="h-7 py-1"
                       placeholder="Enter location"
                       autoFocus
                     />
-                    <Button 
+                    <Button
                       variant="ghost"
                       size="sm"
                       className="h-7 w-7 p-0"
@@ -305,22 +314,22 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                     >
                       <X className="h-4 w-4" />
                     </Button>
-                    <Button 
+                    <Button
                       variant="ghost"
                       size="sm"
                       className="h-7 w-7 p-0 text-green-600"
                       onClick={handleLocationChange}
                     >
                       <span className="sr-only">Save</span>
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="16" 
-                        height="16" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -340,7 +349,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             <div className="flex items-center">
               <span className="font-medium mr-1">From:</span>
               {!isEditingMailFrom ? (
-                <div 
+                <div
                   className="flex items-center group cursor-pointer"
                   onClick={() => setIsEditingMailFrom(true)}
                 >
@@ -349,14 +358,14 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 </div>
               ) : (
                 <div className="flex items-center space-x-2 flex-1">
-                  <Input 
+                  <Input
                     value={mailFrom}
                     onChange={(e) => setMailFrom(e.target.value)}
                     className="h-7 py-1"
                     placeholder="Enter email"
                     autoFocus
                   />
-                  <Button 
+                  <Button
                     variant="ghost"
                     size="sm"
                     className="h-7 w-7 p-0"
@@ -364,22 +373,22 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   >
                     <X className="h-4 w-4" />
                   </Button>
-                  <Button 
+                  <Button
                     variant="ghost"
                     size="sm"
                     className="h-7 w-7 p-0 text-green-600"
                     onClick={handleMailFromChange}
                   >
                     <span className="sr-only">Save</span>
-                    <svg 
-                      xmlns="http://www.w3.org/2000/svg" 
-                      width="16" 
-                      height="16" 
-                      viewBox="0 0 24 24" 
-                      fill="none" 
-                      stroke="currentColor" 
-                      strokeWidth="2" 
-                      strokeLinecap="round" 
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="16"
+                      height="16"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2"
+                      strokeLinecap="round"
                       strokeLinejoin="round"
                     >
                       <polyline points="20 6 9 17 4 12"></polyline>
@@ -390,11 +399,11 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             </div>
 
             {/* To editor */}
-            {(item.to && item.to.length > 0) && (
+            {item.to && item.to.length > 0 && (
               <div className="flex items-center">
                 <span className="font-medium mr-1">To:</span>
                 {!isEditingMailTo ? (
-                  <div 
+                  <div
                     className="flex items-center group cursor-pointer"
                     onClick={() => setIsEditingMailTo(true)}
                   >
@@ -403,14 +412,14 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2 flex-1">
-                    <Input 
+                    <Input
                       value={mailTo}
                       onChange={(e) => setMailTo(e.target.value)}
                       className="h-7 py-1"
                       placeholder="Enter emails (comma-separated)"
                       autoFocus
                     />
-                    <Button 
+                    <Button
                       variant="ghost"
                       size="sm"
                       className="h-7 w-7 p-0"
@@ -418,22 +427,22 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                     >
                       <X className="h-4 w-4" />
                     </Button>
-                    <Button 
+                    <Button
                       variant="ghost"
                       size="sm"
                       className="h-7 w-7 p-0 text-green-600"
                       onClick={handleMailToChange}
                     >
                       <span className="sr-only">Save</span>
-                      <svg 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        width="16" 
-                        height="16" 
-                        viewBox="0 0 24 24" 
-                        fill="none" 
-                        stroke="currentColor" 
-                        strokeWidth="2" 
-                        strokeLinecap="round" 
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
                         strokeLinejoin="round"
                       >
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -445,7 +454,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             )}
           </div>
         )}
-        
+
         {/* Tags section */}
         {(item.tags.length > 0 || isEditingTags) && (
           <div className="px-3 py-2">
@@ -461,17 +470,17 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 <Pencil className="h-3 w-3" />
               </Button>
             </div>
-            
+
             {isEditingTags ? (
               <div className="flex items-center space-x-2">
-                <Input 
+                <Input
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
                   className="h-7 py-1 text-xs"
                   placeholder="Enter tags (comma-separated)"
                   autoFocus
                 />
-                <Button 
+                <Button
                   variant="ghost"
                   size="sm"
                   className="h-7 w-7 p-0"
@@ -479,22 +488,22 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 >
                   <X className="h-4 w-4" />
                 </Button>
-                <Button 
+                <Button
                   variant="ghost"
                   size="sm"
                   className="h-7 w-7 p-0 text-green-600"
                   onClick={handleTagsChange}
                 >
                   <span className="sr-only">Save</span>
-                  <svg 
-                    xmlns="http://www.w3.org/2000/svg" 
-                    width="16" 
-                    height="16" 
-                    viewBox="0 0 24 24" 
-                    fill="none" 
-                    stroke="currentColor" 
-                    strokeWidth="2" 
-                    strokeLinecap="round" 
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
                     strokeLinejoin="round"
                   >
                     <polyline points="20 6 9 17 4 12"></polyline>
@@ -507,10 +516,10 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   <BaseIdeaCraftChip
                     key={tag}
                     label={tag}
-                    className="bg-muted text-muted-foreground"
+                    className="bg-muted text-muted-foreground border"
                     suffixIcon={
-                      <X 
-                        className="size-3" 
+                      <X
+                        className="size-3"
                         onClick={(e) => {
                           e.stopPropagation();
                           removeTag(tag);
@@ -540,7 +549,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 <Pencil className="h-3 w-3" />
               </Button>
             </div>
-            
+
             <div className="px-3 py-1 content-item-body">
               <div className="max-w-none prose prose-sm dark:prose-invert">
                 <ContentRenderer
@@ -558,7 +567,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
               <ContentTextarea value={content} onChange={setContent} />
             </div>
             <div className="flex justify-end space-x-2">
-              <Button 
+              <Button
                 variant="outline"
                 size="sm"
                 onClick={() => {
@@ -568,11 +577,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
               >
                 Cancel
               </Button>
-              <Button 
-                variant="default"
-                size="sm"
-                onClick={handleContentChange}
-              >
+              <Button variant="default" size="sm" onClick={handleContentChange}>
                 Save
               </Button>
             </div>

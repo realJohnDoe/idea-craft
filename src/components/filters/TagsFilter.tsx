@@ -28,25 +28,8 @@ const TagsFilter = ({
                 ? "bg-red text-red-foreground hover:bg-red/80"
                 : "bg-muted text-muted-foreground hover:bg-muted/80"
             }
-            suffixIcon={
-              selectedTags.includes(tag) && (
-                <X className="size-3" onClick={() => toggleTag(tag)} />
-              )
-            }
             onClick={() => toggleTag(tag)}
           />
-          // <button
-          //   key={tag}
-          //   className={`text-xs px-2 py-1 rounded-full flex items-center gap-1 ${
-          //     selectedTags.includes(tag)
-          //       ? "bg-red text-primary-foreground"
-          //       : "bg-muted text-muted-foreground hover:bg-muted/80"
-          //   }`}
-          //   onClick={() => toggleTag(tag)}
-          // >
-          //   {tag}
-          //   {selectedTags.includes(tag) && <X className="size-3" />}
-          // </button>
         ))}
       </div>
     </div>
