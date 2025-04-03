@@ -1,45 +1,34 @@
 
 import React from 'react';
-import { Content, generateYaml } from '@/lib/content-utils';
+import { Item, generateYaml } from '@/lib/content-utils';
 
 interface YamlPreviewProps {
-  content: Partial<Content>;
+  content: Partial<Item>;
 }
 
 const YamlPreview: React.FC<YamlPreviewProps> = ({ content }) => {
   const getYamlPreview = () => {
-    const previewContent: Content = {
+    const previewItem: Item = {
       id: 'preview',
       title: '',
       content: '',
       createdAt: new Date(),
       updatedAt: new Date(),
-      
-      // Attribute flags
-      hasTaskAttributes: content.hasTaskAttributes || false,
-      hasEventAttributes: content.hasEventAttributes || false,
-      hasMailAttributes: content.hasMailAttributes || false,
-      hasNoteAttributes: content.hasNoteAttributes || false,
-      
-      // Centralized tags
       tags: content.tags || [],
       
       // Task attributes
-      taskDone: content.hasTaskAttributes ? content.taskDone : undefined,
+      done: content.done,
       
       // Event attributes
-      eventDate: content.hasEventAttributes ? content.eventDate : undefined,
-      eventLocation: content.hasEventAttributes ? content.eventLocation || undefined : undefined,
+      date: content.date,
+      location: content.location,
       
       // Mail attributes
-      mailFrom: content.hasMailAttributes ? content.mailFrom : undefined,
-      mailTo: content.hasMailAttributes && content.mailTo ? 
-        (Array.isArray(content.mailTo) ? content.mailTo : []) : undefined,
-      
-      yaml: ''
+      from: content.from,
+      to: content.to,
     };
     
-    return generateYaml(previewContent);
+    return generateYaml(previewItem);
   };
 
   return (

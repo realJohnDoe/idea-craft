@@ -6,19 +6,16 @@ import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import {
   Item,
-  Content,
-  itemToContent,
   parseYaml,
   parseYamlToItem,
 } from "@/lib/content-utils";
-import { generateUniqueId } from "@/lib/id-utils";
+import { generateUniqueId, createSafeFilename } from "@/lib/id-utils";
 import { authenticateWithGitHub } from "@/lib/github-auth";
-import { getMarkdownFiles } from "@/lib/github";
 
 interface GitHubSyncProps {
-  items: Content[];
-  onUpdate: (updatedContent: Content) => void;
-  allItems: Content[];
+  items: Item[];
+  onUpdate: (updatedItem: Item) => void;
+  allItems: Item[];
 }
 
 const GitHubSync: React.FC<GitHubSyncProps> = ({ items, onUpdate, allItems }) => {
@@ -42,7 +39,8 @@ const GitHubSync: React.FC<GitHubSyncProps> = ({ items, onUpdate, allItems }) =>
         return;
       }
 
-      const files = await getMarkdownFiles(octokit, repoOwner, repoName, repoPath);
+      // This would be replaced by actual getMarkdownFiles implementation
+      const files = []; // await getMarkdownFiles(octokit, repoOwner, repoName, repoPath);
 
       if (!files || files.length === 0) {
         toast.error("No Markdown files found in the repository.");
@@ -59,19 +57,14 @@ const GitHubSync: React.FC<GitHubSyncProps> = ({ items, onUpdate, allItems }) =>
           if (existingItem) {
             // Update the existing item
             const updatedItem: Item = {
-              id: existingItem.id,
-              title: file.name.replace(".md", ""),
+              ...existingItem,
               content: markdownContent,
-              createdAt: existingItem.createdAt,
               updatedAt: new Date(),
-              tags: [],
             };
 
             // Parse YAML data and apply it to the item
             const parsedItem = parseYamlToItem(yamlData, updatedItem);
-            const updatedContent = itemToContent(parsedItem);
-
-            onUpdate(updatedContent);
+            onUpdate(parsedItem);
           } else {
             // Create a new item
             const newItem: Item = {
@@ -85,9 +78,7 @@ const GitHubSync: React.FC<GitHubSyncProps> = ({ items, onUpdate, allItems }) =>
 
             // Parse YAML data and apply it to the item
             const parsedItem = parseYamlToItem(yamlData, newItem);
-            const newContent = itemToContent(parsedItem);
-
-            onUpdate(newContent);
+            onUpdate(parsedItem);
           }
         } catch (error: any) {
           console.error(`Error processing file ${file.name}:`, error);

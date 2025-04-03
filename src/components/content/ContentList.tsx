@@ -1,10 +1,11 @@
-import { Content } from "@/lib/content-utils";
+
+import { Item } from "@/lib/content-utils";
 import ContentItem from "@/components/content-item";
 
 interface ContentListProps {
-  items: Content[];
-  onUpdate: (updatedItem: Content) => void;
-  allItems: Content[];
+  items: Item[];
+  onUpdate: (updatedItem: Item) => void;
+  allItems: Item[];
 }
 
 const ContentList = ({ items, onUpdate, allItems }: ContentListProps) => {

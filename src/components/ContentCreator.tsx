@@ -1,9 +1,15 @@
+
 import React, { useState } from "react";
 import {
-  Content,
+  Item,
   generateYaml,
   ContentAttributeType,
+  hasTaskAttributes,
+  hasEventAttributes,
+  hasMailAttributes,
+  hasNoteAttributes,
 } from "@/lib/content-utils";
+import { generateUniqueId, createSafeFilename } from "@/lib/id-utils";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -20,7 +26,7 @@ import TagsEditor from "./content-creation/TagsEditor";
 import YamlPreview from "./content-creation/YamlPreview";
 
 interface ContentCreatorProps {
-  onCreate: (content: Content) => void;
+  onCreate: (item: Item) => void;
   onCancel: () => void;
 }
 
@@ -31,10 +37,10 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
-  // Attribute toggles - note is now automatic based on other attributes
-  const [hasTaskAttributes, setHasTaskAttributes] = useState(false);
-  const [hasEventAttributes, setHasEventAttributes] = useState(false);
-  const [hasMailAttributes, setHasMailAttributes] = useState(false);
+  // Attribute toggles
+  const [hasTaskAttr, setHasTaskAttr] = useState(false);
+  const [hasEventAttr, setHasEventAttr] = useState(false);
+  const [hasMailAttr, setHasMailAttr] = useState(false);
 
   // Centralized tags
   const [tags, setTags] = useState<string[]>([]);
@@ -54,13 +60,13 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({
   const toggleAttribute = (type: ContentAttributeType) => {
     switch (type) {
       case "task":
-        setHasTaskAttributes(!hasTaskAttributes);
+        setHasTaskAttr(!hasTaskAttr);
         break;
       case "event":
-        setHasEventAttributes(!hasEventAttributes);
+        setHasEventAttr(!hasEventAttr);
         break;
       case "mail":
-        setHasMailAttributes(!hasMailAttributes);
+        setHasMailAttr(!hasMailAttr);
         break;
       case "note":
         // Note is now automatic - it's active if no other attributes are active
@@ -68,19 +74,8 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({
     }
   };
 
-  // Get active attributes count
-  const getActiveAttributesCount = () => {
-    let count = 0;
-    if (hasTaskAttributes) count++;
-    if (hasEventAttributes) count++;
-    if (hasMailAttributes) count++;
-    return count;
-  };
-
   // Calculate if notes should be the default
-  const calculateHasNoteAttributes = () => {
-    return getActiveAttributesCount() === 0;
-  };
+  const showNoteAttributes = !hasTaskAttr && !hasEventAttr && !hasMailAttr;
 
   const handleCreate = () => {
     if (!title.trim()) {
@@ -89,68 +84,57 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({
     }
 
     // Validate required fields for active attribute types
-    if (hasEventAttributes && !eventDate) {
+    if (hasEventAttr && !eventDate) {
       toast.error("Date is required for events");
       return;
     }
 
-    if (hasMailAttributes && (!mailFrom || mailTo.length === 0)) {
+    if (hasMailAttr && (!mailFrom || mailTo.length === 0)) {
       toast.error("From and To fields are required for emails");
       return;
     }
 
-    // Create content object
-    const id = Math.random().toString(36).substring(2, 9);
+    // Create item with a unique ID based on the title
+    const safeTitle = createSafeFilename(title);
+    const id = `${getPrimaryType()}-${safeTitle}-${generateUniqueId().substring(0, 8)}`;
     const now = new Date();
 
-    // Calculate if we should be a note - always true if no other attributes
-    const isNote = calculateHasNoteAttributes();
-
-    const newContent: Content = {
+    const newItem: Item = {
       id,
       title,
       content,
       createdAt: now,
       updatedAt: now,
-
-      // Attribute flags
-      hasTaskAttributes,
-      hasEventAttributes,
-      hasMailAttributes,
-      hasNoteAttributes: isNote, // Automatic based on other attributes
-
-      // Centralized tags
       tags,
-
-      // Task attributes
-      taskDone: hasTaskAttributes ? taskDone : undefined,
-
-      // Event attributes
-      eventDate: hasEventAttributes ? eventDate : undefined,
-      eventLocation: hasEventAttributes
-        ? eventLocation || undefined
-        : undefined,
-
-      // Mail attributes
-      mailFrom: hasMailAttributes ? mailFrom : undefined,
-      mailTo: hasMailAttributes ? mailTo : undefined,
-
-      // Generate YAML
-      yaml: "",
     };
 
-    // Generate YAML and update
-    newContent.yaml = generateYaml(newContent);
+    // Add attributes based on the selected types
+    if (hasTaskAttr) {
+      newItem.done = taskDone;
+    }
+
+    if (hasEventAttr) {
+      newItem.date = eventDate;
+      newItem.location = eventLocation || undefined;
+    }
+
+    if (hasMailAttr) {
+      newItem.from = mailFrom;
+      newItem.to = mailTo;
+    }
+
+    // Generate YAML
+    newItem.yaml = generateYaml(newItem);
 
     // Create and reset form
-    onCreate(newContent);
+    onCreate(newItem);
 
     // Reset form
     setTitle("");
     setContent("");
-    setHasTaskAttributes(false);
-    setHasEventAttributes(false);
-    setHasMailAttributes(false);
+    setHasTaskAttr(false);
+    setHasEventAttr(false);
+    setHasMailAttr(false);
     setTags([]);
     setTaskDone(false);
     setEventDate(new Date());
@@ -159,8 +143,13 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({
     setMailTo([]);
   };
 
-  // Calculate if we should be showing note attributes
-  const showNoteAttributes = calculateHasNoteAttributes();
+  // Get the primary type for the ID
+  const getPrimaryType = (): string => {
+    if (hasTaskAttr) return 'task';
+    if (hasEventAttr) return 'event';
+    if (hasMailAttr) return 'mail';
+    return 'note';
+  };
 
   return (
     <div className="border rounded-xl p-6 shadow-sm bg-card animate-fade-in space-y-4">
@@ -185,20 +174,20 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({
 
         {/* Content attributes selection */}
         <AttributeTypeSelector
-          hasTaskAttributes={hasTaskAttributes}
-          hasEventAttributes={hasEventAttributes}
-          hasMailAttributes={hasMailAttributes}
+          hasTaskAttributes={hasTaskAttr}
+          hasEventAttributes={hasEventAttr}
+          hasMailAttributes={hasMailAttr}
           hasNoteAttributes={showNoteAttributes}
           toggleAttribute={toggleAttribute}
         />
 
         {/* Task specific fields */}
-        {hasTaskAttributes && (
+        {hasTaskAttr && (
           <TaskAttributeEditor taskDone={taskDone} setTaskDone={setTaskDone} />
         )}
 
         {/* Event specific fields */}
-        {hasEventAttributes && (
+        {hasEventAttr && (
           <EventAttributeEditor
             eventDate={eventDate}
             setEventDate={setEventDate}
@@ -208,7 +197,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({
         )}
 
         {/* Mail specific fields */}
-        {hasMailAttributes && (
+        {hasMailAttr && (
           <MailAttributeEditor
             mailFrom={mailFrom}
             setMailFrom={setMailFrom}
@@ -236,16 +225,12 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({
         {/* YAML Preview */}
         <YamlPreview
           content={{
-            hasTaskAttributes,
-            hasEventAttributes,
-            hasMailAttributes,
-            hasNoteAttributes: showNoteAttributes,
-            tags,
-            taskDone,
-            eventDate,
-            eventLocation,
-            mailFrom,
-            mailTo,
+            done: hasTaskAttr ? taskDone : undefined,
+            date: hasEventAttr ? eventDate : undefined,
+            location: hasEventAttr ? eventLocation : undefined,
+            from: hasMailAttr ? mailFrom : undefined,
+            to: hasMailAttr ? mailTo : undefined,
+            tags
           }}
         />
 

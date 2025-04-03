@@ -23,3 +23,15 @@ export function createSafeFilename(title: string): string {
     .replace(/[\s_-]+/g, "-") // Replace spaces with dashes
     .replace(/^-+|-+$/g, ""); // Trim dashes
 }
+
+/**
+ * Creates a meaningful slug ID from a title and item type
+ * @param title The item title
+ * @param type The item type (task, note, event, mail)
+ * @returns A slugified ID combining type and title
+ */
+export function createMeaningfulId(title: string, type: string = 'note'): string {
+  const safeTitle = createSafeFilename(title);
+  const shortId = generateUniqueId().substring(0, 8);
+  return `${type}-${safeTitle}-${shortId}`;
+}

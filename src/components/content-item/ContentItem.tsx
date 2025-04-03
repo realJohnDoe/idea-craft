@@ -1,24 +1,21 @@
+
 import React, { useState, useEffect } from "react";
 import {
-  Content,
-  processContentLinks,
-  contentToItem,
-  hasTaskAttributes,
   Item,
+  processContentLinks,
+  hasTaskAttributes,
 } from "@/lib/content-utils";
 import ContentEditor from "../content-editor/ContentEditor";
 import { cn } from "@/lib/utils";
 import ContentTypeTags from "./ContentTypeTags";
-import { Calendar } from "lucide-react";
-import { format } from "date-fns";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
 import { Card } from "../ui/card";
 import { useNavigate } from "react-router-dom";
 
 interface ContentItemProps {
-  item: Content;
+  item: Item;
   onUpdate: (updatedItem: Item) => void;
-  allItems?: Content[];
+  allItems?: Item[];
 }
 
 const ContentItem: React.FC<ContentItemProps> = ({
@@ -35,7 +32,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
     }
   }, [item.content, allItems]);
 
-  const handleEditorUpdate = (updatedItem: Content) => {
+  const handleEditorUpdate = (updatedItem: Item) => {
     onUpdate(updatedItem);
     setIsEditing(false);
   };
@@ -56,7 +53,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
 
   const handleTaskToggle = (checked: boolean) => {
     const updatedItem = {
-      ...contentToItem(item),
+      ...item,
       done: checked,
     };
     onUpdate(updatedItem);
@@ -72,10 +69,10 @@ const ContentItem: React.FC<ContentItemProps> = ({
         }
       >
         <div className="flex items-center">
-          {hasTaskAttributes(contentToItem(item)) && (
+          {hasTaskAttributes(item) && (
             <div className="flex items-center">
               <IdeaCraftCheckbox
-                checked={item.taskDone}
+                checked={item.done}
                 onToggle={handleTaskToggle}
               />
             </div>
@@ -83,9 +80,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
           <h3
             className={cn(
               "text-sm font-medium cursor-pointer hover:underline",
-              item.hasTaskAttributes &&
-                item.taskDone &&
-                "line-through text-muted-foreground"
+              hasTaskAttributes(item) && item.done && "line-through text-muted-foreground"
             )}
             onClick={(e) => {
               e.preventDefault();
@@ -97,7 +92,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
         </div>
 
         <div className="flex gap-2 items-center mt-1">
-          <ContentTypeTags item={contentToItem(item)} />
+          <ContentTypeTags item={item} />
         </div>
       </Card>
     </div>

@@ -1,5 +1,6 @@
+
 import { useEffect, useState } from "react";
-import { Item, itemToContent, processContentLinks } from "@/lib/content-utils";
+import { Item, processContentLinks } from "@/lib/content-utils";
 import { Button } from "@/components/ui/button";
 import { X } from "lucide-react";
 import ContentFooter from "../content-item/ContentFooter";
@@ -72,7 +73,6 @@ const SelectedItemView = ({
         referencingItem.content.includes(`[[${item.title}]]`) ||
         referencingItem.content.includes(`[[${item.title}|`)
     );
-    console.log(referencingItems);
     return referencingItems;
   };
 
@@ -92,7 +92,7 @@ const SelectedItemView = ({
         {/* If editing, show the editor instead of the item */}
         {isEditing && (
           <ContentEditor
-            item={itemToContent(item)}
+            item={item}
             onUpdate={handleEditorUpdate}
             onCancel={handleEditorCancel}
           />
@@ -100,7 +100,7 @@ const SelectedItemView = ({
         {!isEditing && (
           <div>
             <ContentBody
-              item={itemToContent(item)}
+              item={item}
               onUpdate={onUpdate}
               processedContent={processedContent}
               handleWikiLinkClick={handleUpdateSelectedItem}
@@ -108,7 +108,7 @@ const SelectedItemView = ({
             />
 
             <ContentFooter
-              item={itemToContent(item)}
+              item={item}
               onUpdate={onUpdate}
               onDelete={onDelete}
               onEdit={handleEditClick}
@@ -121,9 +121,9 @@ const SelectedItemView = ({
         <h3 className="mb-2 font-medium text-md">Referenced By</h3>
         {getReferencingItems().length > 0 ? (
           <ContentList
-            items={getReferencingItems().map((item) => itemToContent(item))}
+            items={getReferencingItems()}
             onUpdate={onUpdate}
-            allItems={allItems.map((item) => itemToContent(item))}
+            allItems={allItems}
           />
         ) : (
           <p className="text-sm text-muted-foreground">

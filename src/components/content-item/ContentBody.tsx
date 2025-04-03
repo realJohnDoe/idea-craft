@@ -1,13 +1,11 @@
 
 import React, { useEffect, useState } from "react";
 import {
-  Content,
-  contentToItem,
+  Item,
   formatContentWithYaml,
   hasEventAttributes,
   hasMailAttributes,
   hasTaskAttributes,
-  Item,
 } from "@/lib/content-utils";
 import { format } from "date-fns";
 import ContentRenderer from "./ContentRenderer";
@@ -27,7 +25,7 @@ import BaseIdeaCraftChip from "../BaseIdeaCraftChip";
 import ContentTextarea from "../content-editor/ContentTextarea";
 
 interface ContentBodyProps {
-  item: Content;
+  item: Item;
   onUpdate: (updatedItem: Item) => void;
   processedContent: string;
   handleWikiLinkClick?: (wikilinkId: string) => void;
@@ -49,10 +47,10 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   const [isEditingMailFrom, setIsEditingMailFrom] = useState(false);
   const [isEditingMailTo, setIsEditingMailTo] = useState(false);
   const [content, setContent] = useState(item.content);
-  const [location, setLocation] = useState(item.eventLocation || "");
-  const [mailFrom, setMailFrom] = useState(item.mailFrom || "");
+  const [location, setLocation] = useState(item.location || "");
+  const [mailFrom, setMailFrom] = useState(item.from || "");
   const [mailTo, setMailTo] = useState<string>(
-    item.mailTo ? item.mailTo.join(", ") : ""
+    item.to ? item.to.join(", ") : ""
   );
   const [tagInput, setTagInput] = useState(item.tags ? item.tags.join(", ") : "");
 
@@ -62,12 +60,12 @@ const ContentBody: React.FC<ContentBodyProps> = ({
       return;
     }
 
-    const updatedContent: Item = {
-      ...contentToItem(item),
+    const updatedItem: Item = {
+      ...item,
       title,
       updatedAt: new Date(),
     };
-    onUpdate(updatedContent);
+    onUpdate(updatedItem);
   };
 
   const handleTaskToggle = (itemToUpdate: Item, checked: boolean) => {
@@ -82,7 +80,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     if (!date) return;
 
     const updatedItem = {
-      ...contentToItem(item),
+      ...item,
       date,
       updatedAt: new Date(),
     };
@@ -92,7 +90,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 
   const handleLocationChange = () => {
     const updatedItem = {
-      ...contentToItem(item),
+      ...item,
       location,
       updatedAt: new Date(),
     };
@@ -102,7 +100,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 
   const handleMailFromChange = () => {
     const updatedItem = {
-      ...contentToItem(item),
+      ...item,
       from: mailFrom,
       updatedAt: new Date(),
     };
@@ -112,7 +110,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 
   const handleMailToChange = () => {
     const updatedItem = {
-      ...contentToItem(item),
+      ...item,
       to: mailTo.split(",").map((email) => email.trim()),
       updatedAt: new Date(),
     };
@@ -122,7 +120,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 
   const handleContentChange = () => {
     const updatedItem = {
-      ...contentToItem(item),
+      ...item,
       content,
       updatedAt: new Date(),
     };
@@ -137,7 +135,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
       .filter((tag) => tag !== "");
     
     const updatedItem = {
-      ...contentToItem(item),
+      ...item,
       tags,
       updatedAt: new Date(),
     };
@@ -148,7 +146,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   const removeTag = (tagToRemove: string) => {
     const updatedTags = item.tags.filter(tag => tag !== tagToRemove);
     const updatedItem = {
-      ...contentToItem(item),
+      ...item,
       tags: updatedTags,
       updatedAt: new Date(),
     };
@@ -158,9 +156,9 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   useEffect(() => {
     setTitle(item.title);
     setContent(item.content);
-    setLocation(item.eventLocation || "");
-    setMailFrom(item.mailFrom || "");
-    setMailTo(item.mailTo ? item.mailTo.join(", ") : "");
+    setLocation(item.location || "");
+    setMailFrom(item.from || "");
+    setMailTo(item.to ? item.to.join(", ") : "");
     setTagInput(item.tags ? item.tags.join(", ") : "");
     
     // Reset all editing states when item changes
@@ -191,18 +189,18 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         </div>
         
         {/* Task attributes */}
-        {hasTaskAttributes(contentToItem(item)) && (
+        {hasTaskAttributes(item) && (
           <div className="flex items-center px-3 py-1">
             <IdeaCraftCheckbox
-              checked={item.taskDone}
+              checked={item.done}
               onToggle={(checked) =>
-                handleTaskToggle(contentToItem(item), checked)
+                handleTaskToggle(item, checked)
               }
             />
             <label
               htmlFor={`task-${item.id}`}
               className={`text-sm ${
-                item.taskDone ? "line-through text-muted-foreground" : ""
+                item.done ? "line-through text-muted-foreground" : ""
               }`}
             >
               Mark as done
@@ -211,7 +209,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         )}
 
         {/* Event attributes */}
-        {hasEventAttributes(contentToItem(item)) && (
+        {hasEventAttributes(item) && (
           <div className="px-3 py-1 space-y-1">
             {/* Date editor */}
             <div className="flex items-center text-sm text-event">
@@ -221,7 +219,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   className="flex items-center group cursor-pointer"
                   onClick={() => setIsEditingDate(true)}
                 >
-                  <span>{format(new Date(item.eventDate), "PPP")}</span>
+                  <span>{item.date && format(new Date(item.date), "PPP")}</span>
                   <Pencil className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
                 </div>
               ) : (
@@ -231,14 +229,14 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                       variant="outline" 
                       className="h-8 pl-3 text-left font-normal w-[200px]"
                     >
-                      {item.eventDate ? format(new Date(item.eventDate), "PPP") : "Select date"}
+                      {item.date ? format(new Date(item.date), "PPP") : "Select date"}
                       <Calendar className="ml-auto h-4 w-4 opacity-50" />
                     </Button>
                   </PopoverTrigger>
                   <PopoverContent className="w-auto p-0">
                     <CalendarComponent
                       mode="single"
-                      selected={new Date(item.eventDate)}
+                      selected={item.date ? new Date(item.date) : undefined}
                       onSelect={handleDateChange}
                       initialFocus
                       className="p-3 pointer-events-auto"
@@ -249,7 +247,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             </div>
 
             {/* Location editor */}
-            {(item.eventLocation || isEditingLocation) && (
+            {(item.location || isEditingLocation) && (
               <div className="flex items-center text-sm text-event">
                 <MapPin className="mr-1 w-4 h-4" />
                 {!isEditingLocation ? (
@@ -257,7 +255,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                     className="flex items-center group cursor-pointer"
                     onClick={() => setIsEditingLocation(true)}
                   >
-                    <span>{item.eventLocation}</span>
+                    <span>{item.location}</span>
                     <Pencil className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
                   </div>
                 ) : (
@@ -306,7 +304,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         )}
 
         {/* Mail attributes */}
-        {hasMailAttributes(contentToItem(item)) && (
+        {hasMailAttributes(item) && (
           <div className="px-3 py-1 space-y-1 text-sm text-mail">
             {/* From editor */}
             <div className="flex items-center">
@@ -316,7 +314,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   className="flex items-center group cursor-pointer"
                   onClick={() => setIsEditingMailFrom(true)}
                 >
-                  <span>{item.mailFrom}</span>
+                  <span>{item.from}</span>
                   <Pencil className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
                 </div>
               ) : (
@@ -362,7 +360,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             </div>
 
             {/* To editor */}
-            {(item.mailTo && item.mailTo.length > 0) && (
+            {(item.to && item.to.length > 0) && (
               <div className="flex items-center">
                 <span className="font-medium mr-1">To:</span>
                 {!isEditingMailTo ? (
@@ -370,7 +368,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                     className="flex items-center group cursor-pointer"
                     onClick={() => setIsEditingMailTo(true)}
                   >
-                    <span>{item.mailTo.join(", ")}</span>
+                    <span>{item.to.join(", ")}</span>
                     <Pencil className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
                   </div>
                 ) : (

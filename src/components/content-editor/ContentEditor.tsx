@@ -1,8 +1,13 @@
+
 import React, { useState } from "react";
 import {
-  Content,
+  Item,
   generateYaml,
   ContentAttributeType,
+  hasTaskAttributes,
+  hasEventAttributes,
+  hasMailAttributes,
+  hasNoteAttributes,
 } from "@/lib/content-utils";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -20,8 +25,8 @@ import YamlPreview from "../content-creation/YamlPreview";
 import ContentTextarea from "./ContentTextarea";
 
 interface ContentEditorProps {
-  item: Content;
-  onUpdate: (content: Content) => void;
+  item: Item;
+  onUpdate: (item: Item) => void;
   onCancel: () => void;
 }
 
@@ -33,62 +38,75 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
   const [title, setTitle] = useState(item.title);
   const [content, setContent] = useState(item.content);
 
-  // Attribute toggles
-  const [hasTaskAttributes, setHasTaskAttributes] = useState(
-    item.hasTaskAttributes
-  );
-  const [hasEventAttributes, setHasEventAttributes] = useState(
-    item.hasEventAttributes
-  );
-  const [hasMailAttributes, setHasMailAttributes] = useState(
-    item.hasMailAttributes
-  );
-
   // Centralized tags
   const [tags, setTags] = useState<string[]>(item.tags || []);
 
   // Task specific state
-  const [taskDone, setTaskDone] = useState(item.taskDone || false);
+  const [taskDone, setTaskDone] = useState(item.done || false);
 
   // Event specific state
-  const [eventDate, setEventDate] = useState<Date | undefined>(item.eventDate);
-  const [eventLocation, setEventLocation] = useState(item.eventLocation || "");
+  const [eventDate, setEventDate] = useState<Date | undefined>(item.date);
+  const [eventLocation, setEventLocation] = useState(item.location || "");
 
   // Mail specific state
-  const [mailFrom, setMailFrom] = useState(item.mailFrom || "");
-  const [mailTo, setMailTo] = useState<string[]>(item.mailTo || []);
+  const [mailFrom, setMailFrom] = useState(item.from || "");
+  const [mailTo, setMailTo] = useState<string[]>(item.to || []);
+
+  // Calculate attribute flags
+  const hasTaskAttr = hasTaskAttributes(item);
+  const hasEventAttr = hasEventAttributes(item);
+  const hasMailAttr = hasMailAttributes(item);
+  const hasNoteAttr = hasNoteAttributes(item);
 
   // Toggle attribute sections
   const toggleAttribute = (type: ContentAttributeType) => {
+    let updatedItem = { ...item };
+    
     switch (type) {
       case "task":
-        setHasTaskAttributes(!hasTaskAttributes);
+        if (hasTaskAttr) {
+          delete updatedItem.done;
+        } else {
+          updatedItem.done = false;
+        }
         break;
       case "event":
-        setHasEventAttributes(!hasEventAttributes);
+        if (hasEventAttr) {
+          delete updatedItem.date;
+          delete updatedItem.location;
+        } else {
+          updatedItem.date = new Date();
+          updatedItem.location = "";
+        }
         break;
       case "mail":
-        setHasMailAttributes(!hasMailAttributes);
+        if (hasMailAttr) {
+          delete updatedItem.from;
+          delete updatedItem.to;
+        } else {
+          updatedItem.from = "";
+          updatedItem.to = [];
+        }
         break;
       case "note":
         // Note is now automatic - it's active if no other attributes are active
         break;
     }
+    
+    // Update state based on new item state
+    if (type === 'task') setTaskDone(updatedItem.done || false);
+    if (type === 'event') {
+      setEventDate(updatedItem.date);
+      setEventLocation(updatedItem.location || "");
+    }
+    if (type === 'mail') {
+      setMailFrom(updatedItem.from || "");
+      setMailTo(updatedItem.to || []);
+    }
   };
 
-  // Get active attributes count
-  const getActiveAttributesCount = () => {
-    let count = 0;
-    if (hasTaskAttributes) count++;
-    if (hasEventAttributes) count++;
-    if (hasMailAttributes) count++;
-    return count;
-  };
-
-  // Calculate if notes should be the default
-  const calculateHasNoteAttributes = () => {
-    return getActiveAttributesCount() === 0;
-  };
+  // Calculate if we should be showing note attributes
+  const showNoteAttributes = !hasTaskAttr && !hasEventAttr && !hasMailAttr;
 
   const handleUpdate = () => {
     if (!title.trim()) {
@@ -97,57 +115,55 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
     }
 
     // Validate required fields for active attribute types
-    if (hasEventAttributes && !eventDate) {
+    if (hasEventAttr && !eventDate) {
       toast.error("Date is required for events");
       return;
     }
 
-    if (hasMailAttributes && (!mailFrom || mailTo.length === 0)) {
+    if (hasMailAttr && (!mailFrom || mailTo.length === 0)) {
       toast.error("From and To fields are required for emails");
       return;
     }
 
-    // Calculate if we should be a note - always true if no other attributes
-    const isNote = calculateHasNoteAttributes();
-
-    const updatedContent: Content = {
+    const updatedItem: Item = {
       ...item,
       title,
       content,
       updatedAt: new Date(),
-
-      // Attribute flags
-      hasTaskAttributes,
-      hasEventAttributes,
-      hasMailAttributes,
-      hasNoteAttributes: isNote,
-
-      // Centralized tags
       tags,
-
-      // Task attributes
-      taskDone: hasTaskAttributes ? taskDone : undefined,
-
-      // Event attributes
-      eventDate: hasEventAttributes ? eventDate : undefined,
-      eventLocation: hasEventAttributes
-        ? eventLocation || undefined
-        : undefined,
-
-      // Mail attributes
-      mailFrom: hasMailAttributes ? mailFrom : undefined,
-      mailTo: hasMailAttributes ? mailTo : undefined,
     };
 
-    // Generate YAML and update
-    updatedContent.yaml = generateYaml(updatedContent);
+    // Add task attributes if needed
+    if (hasTaskAttr) {
+      updatedItem.done = taskDone;
+    } else {
+      delete updatedItem.done;
+    }
+
+    // Add event attributes if needed
+    if (hasEventAttr) {
+      updatedItem.date = eventDate;
+      updatedItem.location = eventLocation || undefined;
+    } else {
+      delete updatedItem.date;
+      delete updatedItem.location;
+    }
+
+    // Add mail attributes if needed
+    if (hasMailAttr) {
+      updatedItem.from = mailFrom;
+      updatedItem.to = mailTo;
+    } else {
+      delete updatedItem.from;
+      delete updatedItem.to;
+    }
+
+    // Generate YAML
+    updatedItem.yaml = generateYaml(updatedItem);
 
     // Update and close editor
-    onUpdate(updatedContent);
+    onUpdate(updatedItem);
   };
-
-  // Calculate if we should be showing note attributes
-  const showNoteAttributes = calculateHasNoteAttributes();
 
   return (
     <div className="rounded-xl p-2 shadow-sm animate-fade-in">
@@ -172,20 +188,20 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
 
         {/* Content attributes selection */}
         <AttributeTypeSelector
-          hasTaskAttributes={hasTaskAttributes}
-          hasEventAttributes={hasEventAttributes}
-          hasMailAttributes={hasMailAttributes}
+          hasTaskAttributes={hasTaskAttr}
+          hasEventAttributes={hasEventAttr}
+          hasMailAttributes={hasMailAttr}
           hasNoteAttributes={showNoteAttributes}
           toggleAttribute={toggleAttribute}
         />
 
         {/* Task specific fields */}
-        {hasTaskAttributes && (
+        {hasTaskAttr && (
           <TaskAttributeEditor taskDone={taskDone} setTaskDone={setTaskDone} />
         )}
 
         {/* Event specific fields */}
-        {hasEventAttributes && (
+        {hasEventAttr && (
           <EventAttributeEditor
             eventDate={eventDate}
             setEventDate={setEventDate}
@@ -195,7 +211,7 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
         )}
 
         {/* Mail specific fields */}
-        {hasMailAttributes && (
+        {hasMailAttr && (
           <MailAttributeEditor
             mailFrom={mailFrom}
             setMailFrom={setMailFrom}
@@ -219,16 +235,12 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
         {/* YAML Preview */}
         <YamlPreview
           content={{
-            hasTaskAttributes,
-            hasEventAttributes,
-            hasMailAttributes,
-            hasNoteAttributes: showNoteAttributes,
-            tags,
-            taskDone,
-            eventDate,
-            eventLocation,
-            mailFrom,
-            mailTo,
+            done: taskDone,
+            date: eventDate,
+            location: eventLocation,
+            from: mailFrom,
+            to: mailTo,
+            tags
           }}
         />
 

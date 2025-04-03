@@ -1,7 +1,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
-import { Item, Content, itemToContent, contentToItem } from "@/lib/content-utils";
+import { Item } from "@/lib/content-utils";
 import { useNavigate, useParams } from "react-router-dom";
 import TypeFilter from "@/components/filters/TypeFilter";
 import TagsFilter from "@/components/filters/TagsFilter";
@@ -11,9 +11,40 @@ import EmptyState from "@/components/content/EmptyState";
 import ContentList from "@/components/content/ContentList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import SelectedItemView from "@/components/content/SelectedItemView";
-import { processedExampleItems } from "@/lib/example-content";
 import ExportMarkdown from "@/components/ExportMarkdown";
 import { toast } from "sonner";
+import { createSafeFilename, generateUniqueId } from "@/lib/id-utils";
+
+// Convert example content to Items
+const processedExampleItems: Item[] = [
+  {
+    id: "note-welcome-guide",
+    title: "Welcome to IdeaCraft",
+    content: "Welcome to your personal knowledge and task management system! IdeaCraft helps you organize your thoughts, tasks, events, and communications in one place.\n\n## Getting Started\n\n- Create your first item using the '+' button\n- Choose from different types: notes, tasks, events, or email drafts\n- Link between items using [[double brackets]]\n\n## Tips\n\n- Use tags to organize content\n- Filter by type or tags\n- Export your content as markdown files\n\nEnjoy organizing your digital life!",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    tags: ["guide", "help"]
+  },
+  {
+    id: "task-demo-task",
+    title: "Try out the task feature",
+    content: "- [x] Create my first task\n- [ ] Add a due date\n- [ ] Link to a note\n- [ ] Complete this task",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    tags: ["demo"],
+    done: false
+  },
+  {
+    id: "event-sample-event",
+    title: "Team meeting",
+    content: "Discuss project progress and next steps.\n\nAgenda:\n1. Project updates\n2. Timeline review\n3. Task assignments\n4. Open discussion",
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    tags: ["work", "meeting"],
+    date: new Date(new Date().setDate(new Date().getDate() + 2)),
+    location: "Conference Room B"
+  }
+];
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -22,7 +53,7 @@ const Index = () => {
   const [selectedItemId, setSelectedItemId] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<string>("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [content, setContent] = useState<Content[]>([]);
+  const [items, setItems] = useState<Item[]>([]);
   const { itemId } = useParams();
   const isMobile = useIsMobile();
   const navigate = useNavigate();
@@ -44,7 +75,7 @@ const Index = () => {
   };
 
   const getAllTags = useCallback(() => {
-    const allTags = content.reduce((acc, item) => {
+    const allTags = items.reduce((acc, item) => {
       if (item.tags && item.tags.length > 0) {
         item.tags.forEach((tag) => {
           if (!acc.includes(tag)) {
@@ -56,7 +87,7 @@ const Index = () => {
     }, [] as string[]);
     
     return allTags.sort();
-  }, [content]);
+  }, [items]);
 
   // Initialize with example items if no content exists
   useEffect(() => {
@@ -64,31 +95,30 @@ const Index = () => {
     
     if (storedContent) {
       try {
-        const parsedContent = JSON.parse(storedContent).map((item: any) => ({
+        const parsedItems = JSON.parse(storedContent).map((item: any) => ({
           ...item,
           createdAt: new Date(item.createdAt),
           updatedAt: new Date(item.updatedAt),
-          eventDate: item.eventDate ? new Date(item.eventDate) : undefined,
-          eventEndDate: item.eventEndDate ? new Date(item.eventEndDate) : undefined,
+          date: item.date ? new Date(item.date) : undefined,
         }));
-        setContent(parsedContent);
+        setItems(parsedItems);
       } catch (e) {
         console.error("Error parsing stored content:", e);
-        setContent(processedExampleItems);
+        setItems(processedExampleItems);
       }
     } else {
       // Use example items when no content exists
-      setContent(processedExampleItems);
+      setItems(processedExampleItems);
       setShowWelcome(true);
     }
   }, []);
 
   // Save content to localStorage when it changes
   useEffect(() => {
-    if (content.length > 0) {
-      localStorage.setItem("ideaCraft_content", JSON.stringify(content));
+    if (items.length > 0) {
+      localStorage.setItem("ideaCraft_content", JSON.stringify(items));
     }
-  }, [content]);
+  }, [items]);
 
   // Handle URL-based item selection
   useEffect(() => {
@@ -99,41 +129,46 @@ const Index = () => {
     }
   }, [itemId]);
 
-  const handleCreateContent = (newContent: Content) => {
-    setContent([...content, newContent]);
+  const handleCreateContent = (newItem: Item) => {
+    setItems([...items, newItem]);
     setIsCreatingContent(false);
     toast.success("Content created successfully!");
   };
 
-  const handleUpdateContent = (updatedContent: Content | Item) => {
-    // Convert Item to Content if needed
-    const contentToUpdate = 'hasNoteAttributes' in updatedContent 
-      ? updatedContent as Content
-      : itemToContent(updatedContent as Item);
-    
-    setContent(content.map(item => 
-      item.id === contentToUpdate.id ? contentToUpdate : item
+  const handleUpdateContent = (updatedItem: Item) => {
+    setItems(items.map(item => 
+      item.id === updatedItem.id ? updatedItem : item
     ));
     toast.success("Content updated successfully!");
   };
 
   const handleDeleteContent = (id: string) => {
-    setContent(content.filter(item => item.id !== id));
+    setItems(items.filter(item => item.id !== id));
     setSelectedItemId(null);
     navigate("/");
     toast.success("Content deleted successfully!");
   };
 
-  const filteredContent = content.filter(item => {
+  const filteredContent = items.filter(item => {
     const matchesSearch = searchQuery === "" || 
       item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       item.content.toLowerCase().includes(searchQuery.toLowerCase());
     
-    const matchesType = activeFilter === "" || 
-      (activeFilter === "note" && item.hasNoteAttributes) || 
-      (activeFilter === "task" && item.hasTaskAttributes) || 
-      (activeFilter === "event" && item.hasEventAttributes) || 
-      (activeFilter === "mail" && item.hasMailAttributes);
+    // Apply content type filter
+    let matchesType = true;
+    if (activeFilter !== "") {
+      if (activeFilter === "task") matchesType = item.done !== undefined;
+      else if (activeFilter === "event") matchesType = item.date !== undefined || item.location !== undefined;
+      else if (activeFilter === "mail") matchesType = item.from !== undefined || item.to !== undefined;
+      else if (activeFilter === "note") {
+        // Note if no other attributes are present
+        matchesType = item.done === undefined && 
+                      item.date === undefined && 
+                      item.location === undefined && 
+                      item.from === undefined && 
+                      item.to === undefined;
+      }
+    }
     
     const matchesTags = selectedTags.length === 0 || 
       selectedTags.every(tag => item.tags?.includes(tag));
@@ -143,7 +178,7 @@ const Index = () => {
 
   // Get the selected item (if any)
   const selectedItem = selectedItemId 
-    ? content.find(item => item.id === selectedItemId) 
+    ? items.find(item => item.id === selectedItemId) 
     : null;
 
   return (
@@ -156,7 +191,7 @@ const Index = () => {
           <div className="flex justify-between items-center mb-4">
             <h1 className="text-2xl font-medium">Your Content</h1>
             <div className="flex gap-2">
-              <ExportMarkdown items={content} />
+              <ExportMarkdown items={items} />
             </div>
           </div>
           
@@ -191,7 +226,7 @@ const Index = () => {
             {filteredContent.length === 0 && (
               <EmptyState 
                 message={
-                  content.length === 0 
+                  items.length === 0 
                     ? "You don't have any content yet. Create your first item!"
                     : "No items match your search criteria."
                 }
@@ -203,23 +238,23 @@ const Index = () => {
               <ContentList 
                 items={filteredContent} 
                 onUpdate={handleUpdateContent}
-                allItems={content}
+                allItems={items}
               />
             )}
           </div>
           
           {/* Selected item view */}
           {selectedItem && (
-            <div className={`${isMobile ? "fixed inset-0 bg-background z-50 overflow-y-auto" : "lg:col-span-1"}`}>
+            <div className={`${isMobile ? "fixed inset-0 bg-background/80 backdrop-blur-sm z-50 overflow-y-auto" : "lg:col-span-1"}`}>
               <SelectedItemView 
-                item={contentToItem(selectedItem)}
+                item={selectedItem}
                 onUpdate={handleUpdateContent}
                 onDelete={handleDeleteContent}
                 onClose={() => {
                   setSelectedItemId(null);
                   navigate("/");
                 }}
-                allItems={content.map(contentToItem)}
+                allItems={items}
                 isMobile={isMobile}
               />
             </div>

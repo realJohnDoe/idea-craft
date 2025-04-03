@@ -2,13 +2,14 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, FileDown } from "lucide-react";
-import { Content, formatContentWithYaml } from "@/lib/content-utils";
+import { Item, formatContentWithYaml } from "@/lib/content-utils";
 import JSZip from "jszip";
 import { saveAs } from "file-saver";
 import { toast } from "sonner";
+import { createSafeFilename } from "@/lib/id-utils";
 
 interface ExportMarkdownProps {
-  items: Content[];
+  items: Item[];
 }
 
 const ExportMarkdown: React.FC<ExportMarkdownProps> = ({ items }) => {
@@ -32,12 +33,7 @@ const ExportMarkdown: React.FC<ExportMarkdownProps> = ({ items }) => {
       // Add each item as a markdown file
       items.forEach((item) => {
         // Convert title to valid filename
-        const fileName = item.title
-          .toLowerCase()
-          .replace(/[^\w\s-]/g, "") // Remove special chars
-          .replace(/[\s_-]+/g, "-") // Replace spaces with dashes
-          .replace(/^-+|-+$/g, "") // Trim dashes
-          + ".md";
+        const fileName = createSafeFilename(item.title) + ".md";
         
         // Format the content with YAML frontmatter
         const markdownContent = formatContentWithYaml(item);
