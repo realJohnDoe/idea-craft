@@ -116,7 +116,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
         components={{
           p: ({ children }) => <div className="my-1">{children}</div>,
           a: CustomLink,
-          ol: ({ children, ordered, ...props }) => (
+          ol: ({ children, ...props }) => (
             <ol className="list-decimal list-inside ml-4 my-2" {...props}>
               {children}
             </ol>
