@@ -7,9 +7,11 @@ import react from "@vitejs/plugin-react";
 export default defineConfig({
   plugins: [react()],
   server: {
+    port: 8080,
     allowedHosts: [
       // Allow all hosts with a subdomain ending with lovableproject.com
-      /.*\.lovableproject\.com$/,
+      'fef6ecf6-ba69-4bce-9ac5-d13267729f85.lovableproject.com',
+      '*.lovableproject.com'
     ],
   },
   resolve: {

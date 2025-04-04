@@ -35,3 +35,11 @@ export function createMeaningfulId(title: string, type: string = 'note'): string
   const shortId = generateUniqueId().substring(0, 8);
   return `${type}-${safeTitle}-${shortId}`;
 }
+
+/**
+ * Generate a nano ID for quick identification
+ * @returns A short unique string ID
+ */
+export function nanoid(): string {
+  return 'new-' + Math.random().toString(36).substring(2, 10);
+}

@@ -32,6 +32,7 @@ const SelectedItemView = ({
   const [processedContent, setProcessedContent] = useState(item.content);
   const [showYaml, setShowYaml] = useState(false);
   const [yaml, setYaml] = useState("");
+  const [isEditing, setIsEditing] = useState(false);
 
   useEffect(() => {
     if (allItems.length > 0) {
@@ -108,6 +109,7 @@ const SelectedItemView = ({
           item={item}
           onUpdate={onUpdate}
           onDelete={onDelete}
+          onEdit={() => setIsEditing(true)}
         />
       </div>
 

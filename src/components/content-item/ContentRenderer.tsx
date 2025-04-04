@@ -1,3 +1,4 @@
+
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -107,37 +108,34 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
     );
   };
 
-  // Proper handling of ordered and unordered lists
-  const components = {
-    p: ({ children }) => <div className="my-1">{children}</div>,
-    a: CustomLink,
-    ol: ({ children, ordered, ...props }) => (
-      <ol className="list-decimal list-inside ml-4 my-2" {...props}>
-        {children}
-      </ol>
-    ),
-    ul: ({ children, ...props }) => (
-      <ul className="list-disc list-inside ml-4 my-2" {...props}>
-        {children}
-      </ul>
-    ),
-    h1: ({ children }) => (
-      <h1 className="text-2xl font-bold my-4">{children}</h1>
-    ),
-    h2: ({ children }) => (
-      <h2 className="text-xl font-bold my-3">{children}</h2>
-    ),
-    h3: ({ children }) => (
-      <h3 className="text-lg font-bold my-2">{children}</h3>
-    ),
-  };
-
   return (
     <div>
       <ReactMarkdown
         rehypePlugins={[rehypeRaw]}
         remarkPlugins={[remarkGfm]}
-        components={components}
+        components={{
+          p: ({ children }) => <div className="my-1">{children}</div>,
+          a: CustomLink,
+          ol: ({ children, ordered, ...props }) => (
+            <ol className="list-decimal list-inside ml-4 my-2" {...props}>
+              {children}
+            </ol>
+          ),
+          ul: ({ children, ...props }) => (
+            <ul className="list-disc list-inside ml-4 my-2" {...props}>
+              {children}
+            </ul>
+          ),
+          h1: ({ children }) => (
+            <h1 className="text-2xl font-bold my-4">{children}</h1>
+          ),
+          h2: ({ children }) => (
+            <h2 className="text-xl font-bold my-3">{children}</h2>
+          ),
+          h3: ({ children }) => (
+            <h3 className="text-lg font-bold my-2">{children}</h3>
+          ),
+        }}
       >
         {processedContent}
       </ReactMarkdown>

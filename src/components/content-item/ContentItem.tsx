@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from "react";
+
+import React, { useState } from "react";
 import {
   Item,
   processContentLinks,
   hasTaskAttributes,
 } from "@/lib/content-utils";
-import ContentEditor from "../content-editor/ContentEditor";
 import { cn } from "@/lib/utils";
 import ContentTypeTags from "./ContentTypeTags";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
@@ -22,33 +22,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
   onUpdate,
   allItems = [],
 }) => {
-  const [processedContent, setProcessedContent] = useState(item.content);
-  const [isEditing, setIsEditing] = useState(false);
-
-  useEffect(() => {
-    if (allItems.length > 0) {
-      setProcessedContent(processContentLinks(item.content, allItems));
-    }
-  }, [item.content, allItems]);
-
-  const handleEditorUpdate = (updatedItem: Item) => {
-    onUpdate(updatedItem);
-    setIsEditing(false);
-  };
-
-  const handleEditorCancel = () => {
-    setIsEditing(false);
-  };
-
-  if (isEditing) {
-    return (
-      <ContentEditor
-        item={item}
-        onUpdate={handleEditorUpdate}
-        onCancel={handleEditorCancel}
-      />
-    );
-  }
+  const navigate = useNavigate();
 
   const handleTaskToggle = (checked: boolean) => {
     const updatedItem = {
@@ -57,8 +31,6 @@ const ContentItem: React.FC<ContentItemProps> = ({
     };
     onUpdate(updatedItem);
   };
-
-  const navigate = useNavigate();
 
   return (
     <div id={`content-item-${item.id}`}>
