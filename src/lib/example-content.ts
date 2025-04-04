@@ -37,7 +37,7 @@ export const simplifiedExampleContentItems: Item[] = [
     createdAt: new Date(),
     updatedAt: new Date(),
     from: "sender@example.com",
-    to: "recipient@example.com",
+    to: ["recipient@example.com"],  // Fixed: Changed from string to string[]
     tags: ["example"],
   },
 ];
