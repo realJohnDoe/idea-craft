@@ -1,3 +1,4 @@
+
 import React from "react";
 import { FileText, CheckCircle, Calendar, Mail } from "lucide-react";
 import BaseIdeaCraftChip from "./BaseIdeaCraftChip";
@@ -56,13 +57,13 @@ const ColoredIdeaCraftChip: React.FC<ColoredIdeaCraftChipProps> = ({
   if (toggled) {
     const bgClass =
       type === "note"
-        ? "bg-note text-black"
+        ? "bg-note text-note-foreground"
         : type === "task"
-        ? "bg-task text-black"
+        ? "bg-task text-task-foreground"
         : type === "event"
-        ? "bg-event text-black"
-        : "bg-mail text-black";
-    finalClassName += ` ${bgClass} text-white`;
+        ? "bg-event text-event-foreground"
+        : "bg-mail text-mail-foreground";
+    finalClassName += ` ${bgClass}`;
   } else {
     const textClass =
       type === "note"

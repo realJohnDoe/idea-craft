@@ -1,4 +1,3 @@
-
 import yaml from 'yaml';
 
 // Content types become attributes that can be combined
@@ -51,7 +50,9 @@ export function generateYamlFromItem(item: Item): string {
     yamlObj.event = {};
 
     if (item.date) {
-      yamlObj.event.date = item.date.toISOString().split('T')[0];
+      // Fix: Use direct date formatting without timezone conversion
+      const date = new Date(item.date);
+      yamlObj.event.date = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
     }
 
     if (item.location) {

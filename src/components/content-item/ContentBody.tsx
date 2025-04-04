@@ -510,14 +510,26 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             </div>
 
             <div className="px-3 py-1 content-item-body">
-              <div className="max-w-none prose prose-sm dark:prose-invert">
-                <ContentRenderer
-                  content={processedContent}
-                  allItems={allItems}
-                  handleWikiLinkClick={handleUpdateSelectedItem}
-                  onTaskToggle={handleTaskToggle}
-                />
-              </div>
+              {item.content ? (
+                <div className="max-w-none prose prose-sm dark:prose-invert">
+                  <ContentRenderer
+                    content={processedContent}
+                    allItems={allItems}
+                    handleWikiLinkClick={handleUpdateSelectedItem}
+                    onTaskToggle={handleTaskToggle}
+                  />
+                </div>
+              ) : (
+                <div className="flex justify-center py-4">
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => setIsEditingContent(true)}
+                  >
+                    Add Content
+                  </Button>
+                </div>
+              )}
             </div>
           </>
         ) : (
