@@ -1,4 +1,3 @@
-
 import React from "react";
 import { FileText, CheckCircle, Calendar, Mail } from "lucide-react";
 import BaseIdeaCraftChip from "./BaseIdeaCraftChip";
@@ -18,46 +17,64 @@ const ColoredIdeaCraftChip: React.FC<ColoredIdeaCraftChipProps> = ({
     note: {
       label: "Note",
       icon: <FileText className="size-3" />,
-      className: "border-blue-400 text-blue-500"
+      className: "border-note",
     },
     task: {
       label: "Task",
       icon: <CheckCircle className="size-3" />,
-      className: "border-green-400 text-green-500"
+      className: "border-task",
     },
     event: {
       label: "Event",
       icon: <Calendar className="size-3" />,
-      className: "border-orange-400 text-orange-500"
+      className: "border-event",
     },
     mail: {
       label: "Email",
       icon: <Mail className="size-3" />,
-      className: "border-purple-400 text-purple-500"
+      className: "border-mail",
     },
   };
 
   const { label, icon, className } = typeFilterTags[type];
   let finalClassName = `border ${className}`;
-  
+
   if (onClick !== undefined) {
-    const hoverClass = type === 'note' ? 'hover:bg-blue-500' : 
-                       type === 'task' ? 'hover:bg-green-500' :
-                       type === 'event' ? 'hover:bg-orange-500' : 
-                       'hover:bg-purple-500';
-    finalClassName += ` ${hoverClass} hover:text-white`;
+    const hoverClass =
+      type === "note"
+        ? "hover:text-note hover:bg-note/60 hover:text-note-foreground"
+        : type === "task"
+        ? "hover:text-task hover:bg-task/60 hover:text-task-foreground"
+        : type === "event"
+        ? "hover:text-event hover:bg-event/60 hover:text-event-foreground"
+        : "hover:text-mail hover:bg-mail/60 hover:text-mail-foreground";
+    finalClassName += ` ${hoverClass}`;
   } else {
     finalClassName += " cursor-default";
   }
-  
+
   if (toggled) {
-    const bgClass = type === 'note' ? 'bg-blue-500' : 
-                   type === 'task' ? 'bg-green-500' :
-                   type === 'event' ? 'bg-orange-500' : 
-                   'bg-purple-500';
+    const bgClass =
+      type === "note"
+        ? "bg-note text-note-foreground"
+        : type === "task"
+        ? "bg-task text-task-foreground"
+        : type === "event"
+        ? "bg-event text-event-foreground"
+        : "bg-mail text-mail-foreground";
     finalClassName += ` ${bgClass} text-white`;
+  } else {
+    const textClass =
+      type === "note"
+        ? "text-note"
+        : type === "task"
+        ? "text-task"
+        : type === "event"
+        ? "text-event"
+        : "text-mail";
+    finalClassName += ` ${textClass}`;
   }
-  
+
   return (
     <BaseIdeaCraftChip
       label={label}
