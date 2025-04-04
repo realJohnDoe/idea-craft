@@ -170,38 +170,38 @@ const Index = () => {
       <main className="container px-0">
         <div className={`${selectedItem && "flex flex-col lg:flex-row"}`}>
           {/* Left column: Filters and content list */}
-          <div
-            className={`${selectedItem && "hidden lg:block w-1/3 px-4 my-2"}`}
-          >
-            <TypeFilter
-              activeFilter={activeFilter}
-              toggleTypeTag={toggleTypeTag}
-            />
+          <div className={`${selectedItem && "hidden lg:block w-1/3"}`}>
+            <div className=" px-4 my-2">
+              <TypeFilter
+                activeFilter={activeFilter}
+                toggleTypeTag={toggleTypeTag}
+              />
 
-            {getAllTags().length > 0 && (
-              <TagsFilter
-                selectedTags={selectedTags}
-                toggleTag={toggleTag}
-                getAllTags={getAllTags}
-              />
-            )}
+              {getAllTags().length > 0 && (
+                <TagsFilter
+                  selectedTags={selectedTags}
+                  toggleTag={toggleTag}
+                  getAllTags={getAllTags}
+                />
+              )}
 
-            {filteredContent.length === 0 ? (
-              <EmptyState
-                message={
-                  items.length === 0
-                    ? "You don't have any content yet. Create your first item!"
-                    : "No items match your search criteria."
-                }
-                onCreateNew={() => setIsCreatingContent(true)}
-              />
-            ) : (
-              <ContentList
-                items={filteredContent}
-                onUpdate={handleUpdateContent}
-                allItems={items}
-              />
-            )}
+              {filteredContent.length === 0 ? (
+                <EmptyState
+                  message={
+                    items.length === 0
+                      ? "You don't have any content yet. Create your first item!"
+                      : "No items match your search criteria."
+                  }
+                  onCreateNew={() => setIsCreatingContent(true)}
+                />
+              ) : (
+                <ContentList
+                  items={filteredContent}
+                  onUpdate={handleUpdateContent}
+                  allItems={items}
+                />
+              )}
+            </div>
           </div>
 
           {/* Right column: Selected item */}
