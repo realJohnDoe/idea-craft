@@ -1,35 +1,29 @@
-
 import React from "react";
 
-interface BaseIdeaCraftChipProps {
-  label: string;
+export interface BaseIdeaCraftChipProps {
   prefixIcon?: React.ReactNode;
+  label: string;
   suffixIcon?: React.ReactNode;
   className?: string;
-  style?: React.CSSProperties;
   onClick?: () => void;
 }
 
 const BaseIdeaCraftChip: React.FC<BaseIdeaCraftChipProps> = ({
-  label,
   prefixIcon,
+  label,
   suffixIcon,
   className = "",
-  style = {},
-  onClick,
+  onClick = () => {},
 }) => {
   return (
-    <div
-      className={`inline-flex items-center px-2 py-1 rounded-full text-xs select-none ${
-        onClick ? "cursor-pointer" : ""
-      } ${className}`}
+    <button
       onClick={onClick}
-      style={style}
+      className={`flex items-center gap-2 px-2 py-0.5 rounded ${className} transition-colors`}
     >
-      {prefixIcon && <span className="mr-1">{prefixIcon}</span>}
-      {label}
-      {suffixIcon && <span className="ml-1">{suffixIcon}</span>}
-    </div>
+      {prefixIcon}
+      <span className="text-xs">{label}</span>
+      {suffixIcon}
+    </button>
   );
 };
 

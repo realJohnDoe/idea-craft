@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -13,7 +12,12 @@ interface NavbarProps {
   onImport: (importedItems: Item[]) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onSearch, onCreateNew, items, onImport }) => {
+const Navbar: React.FC<NavbarProps> = ({
+  onSearch,
+  onCreateNew,
+  items,
+  onImport,
+}) => {
   return (
     <header className="sticky top-0 z-10 w-full border-b bg-background/80 backdrop-blur-md">
       <div className="container flex h-16 items-center px-4">
@@ -36,39 +40,37 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onCreateNew, items, onImport 
             />
           </div>
 
-          <div className="hidden sm:flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                // Create a click event for the export button
-                const exportButton = document.getElementById('export-button');
-                if (exportButton) {
-                  exportButton.click();
-                }
-              }}
-              className="flex items-center"
-            >
-              <FileDown className="size-4 mr-1" />
-              <span className="hidden md:inline">Export</span>
-            </Button>
-            
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => {
-                // Create a click event for the import button
-                const importButton = document.getElementById('import-button');
-                if (importButton) {
-                  importButton.click();
-                }
-              }}
-              className="flex items-center"
-            >
-              <FileUp className="size-4 mr-1" />
-              <span className="hidden md:inline">Import</span>
-            </Button>
-          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              // Create a click event for the export button
+              const exportButton = document.getElementById("export-button");
+              if (exportButton) {
+                exportButton.click();
+              }
+            }}
+            className="w-10 h-10 md:w-auto rounded-full flex items-center"
+          >
+            <FileUp className="size-4" />
+            <span className="ms-1 hidden md:inline">Export</span>
+          </Button>
+
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              // Create a click event for the import button
+              const importButton = document.getElementById("import-button");
+              if (importButton) {
+                importButton.click();
+              }
+            }}
+            className="w-10 h-10 md:w-auto rounded-full flex items-center"
+          >
+            <FileDown className="size-4" />
+            <span className="ms-1 hidden md:inline">Import</span>
+          </Button>
 
           <Button
             onClick={onCreateNew}
@@ -80,7 +82,7 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onCreateNew, items, onImport 
           </Button>
         </div>
       </div>
-      
+
       {/* Hidden components to handle export/import functionality */}
       <div className="hidden">
         <div id="export-import-container"></div>

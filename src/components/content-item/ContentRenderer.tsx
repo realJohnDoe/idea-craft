@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -67,7 +66,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       // Render as checkable task
       if (hasTaskAttributes(linkedItem)) {
         return (
-          <div className="flex border items-center bg-card w-full rounded-lg py-1 px-2">
+          <div className="flex border items-center bg-card w-full rounded-lg py-1 my-1 px-2">
             <IdeaCraftCheckbox
               checked={linkedItem.done !== undefined ? linkedItem.done : false}
               onToggle={(checked) => onTaskToggle?.(linkedItem, checked)}
@@ -113,10 +112,14 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
     p: ({ children }) => <div className="my-1">{children}</div>,
     a: CustomLink,
     ol: ({ children, ordered, ...props }) => (
-      <ol className="list-decimal list-inside ml-4 my-2" {...props}>{children}</ol>
+      <ol className="list-decimal list-inside ml-4 my-2" {...props}>
+        {children}
+      </ol>
     ),
     ul: ({ children, ...props }) => (
-      <ul className="list-disc list-inside ml-4 my-2" {...props}>{children}</ul>
+      <ul className="list-disc list-inside ml-4 my-2" {...props}>
+        {children}
+      </ul>
     ),
     h1: ({ children }) => (
       <h1 className="text-2xl font-bold my-4">{children}</h1>

@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Item } from "@/lib/content-utils";
@@ -24,7 +23,6 @@ const Index = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [items, setItems] = useState<Item[]>([]);
   const { itemId } = useParams();
-  const isMobile = useIsMobile();
   const navigate = useNavigate();
 
   const toggleTypeTag = (tag: string) => {
@@ -158,8 +156,6 @@ const Index = () => {
     ? items.find((item) => item.id === selectedItemId)
     : null;
 
-  // Responsive layout logic
-  const showContentList = !selectedItem || !isMobile;
   const showSelectedItem = selectedItem;
 
   return (
@@ -171,16 +167,12 @@ const Index = () => {
         onImport={handleImportItems}
       />
 
-      <main className="flex-1 container px-4 py-6">
-        {/* Hidden components to handle export/import functionality */}
-        <div className="hidden">
-          <ExportMarkdown items={items} id="export-button" />
-          <ImportMarkdown onImport={handleImportItems} id="import-button" />
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-6">
+      <main className="container px-0">
+        <div className={`${selectedItem && "flex flex-col lg:flex-row"}`}>
           {/* Left column: Filters and content list */}
-          <div className={`${!showContentList && 'hidden'} lg:w-1/3 lg:block`}>
+          <div
+            className={`${selectedItem && "hidden lg:block w-1/3 px-4 my-2"}`}
+          >
             <TypeFilter
               activeFilter={activeFilter}
               toggleTypeTag={toggleTypeTag}
@@ -214,14 +206,13 @@ const Index = () => {
 
           {/* Right column: Selected item */}
           {showSelectedItem && (
-            <div className={`${!selectedItem && 'hidden'} lg:w-2/3 bg-background`}>
+            <div className="block bg-background lg:w-2/3">
               <SelectedItemView
                 item={selectedItem}
                 onUpdate={handleUpdateContent}
                 onDelete={handleDeleteContent}
                 onClose={() => navigate("/")}
                 allItems={items}
-                isMobile={isMobile}
               />
             </div>
           )}

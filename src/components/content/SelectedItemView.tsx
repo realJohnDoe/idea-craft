@@ -1,4 +1,3 @@
-
 import { useEffect, useState } from "react";
 import { Item, processContentLinks } from "@/lib/content-utils";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,6 @@ interface SelectedItemViewProps {
   onDelete: (id: string) => void;
   onClose: () => void;
   allItems: Item[];
-  isMobile: boolean;
 }
 
 const SelectedItemView = ({
@@ -24,7 +22,6 @@ const SelectedItemView = ({
   onDelete,
   onClose,
   allItems,
-  isMobile,
 }: SelectedItemViewProps) => {
   const [processedContent, setProcessedContent] = useState(item.content);
   const [isEditing, setIsEditing] = useState(false);
@@ -67,14 +64,6 @@ const SelectedItemView = ({
     setIsEditing(false);
   };
 
-  const handleRemoveTag = (tagToRemove: string) => {
-    const updatedItem = {
-      ...item,
-      tags: item.tags?.filter(tag => tag !== tagToRemove) || []
-    };
-    onUpdate(updatedItem);
-  };
-
   const getReferencingItems = () => {
     const referencingItems = allItems.filter(
       (referencingItem) =>
@@ -86,8 +75,8 @@ const SelectedItemView = ({
   };
 
   return (
-    <div className="p-4 h-full overflow-auto">
-      <div className="flex justify-between items-center mb-4">
+    <div className="px-4 py-1 h-full overflow-auto border-s">
+      <div className="flex justify-between items-center mb-2">
         <h2 className="text-lg font-medium">Selected Item</h2>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="size-4" />
@@ -107,20 +96,13 @@ const SelectedItemView = ({
           />
         ) : (
           <div>
-            <div className="p-4">
-              <h3 className="text-lg font-medium mb-1">{item.title}</h3>
-              <div className="mb-3">
-                <ContentTypeTags item={item} editable={true} onRemoveTag={handleRemoveTag} />
-              </div>
-              
-              <ContentBody
-                item={item}
-                onUpdate={onUpdate}
-                processedContent={processedContent}
-                handleWikiLinkClick={handleUpdateSelectedItem}
-                allItems={allItems}
-              />
-            </div>
+            <ContentBody
+              item={item}
+              onUpdate={onUpdate}
+              processedContent={processedContent}
+              handleWikiLinkClick={handleUpdateSelectedItem}
+              allItems={allItems}
+            />
 
             <ContentFooter
               item={item}

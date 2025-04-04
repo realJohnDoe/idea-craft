@@ -1,4 +1,3 @@
-
 import React from "react";
 import { FileText, CheckCircle, Calendar, Mail } from "lucide-react";
 import BaseIdeaCraftChip from "./BaseIdeaCraftChip";
@@ -18,58 +17,70 @@ const ColoredIdeaCraftChip: React.FC<ColoredIdeaCraftChipProps> = ({
     note: {
       label: "Note",
       icon: <FileText className="size-3" />,
-      color: "var(--note)",
-      bgColor: "var(--note)",
-      textColor: "var(--note-foreground)",
+      className: "border-note",
     },
     task: {
       label: "Task",
       icon: <CheckCircle className="size-3" />,
-      color: "var(--task)",
-      bgColor: "var(--task)",
-      textColor: "var(--task-foreground)",
+      className: "border-task",
     },
     event: {
       label: "Event",
       icon: <Calendar className="size-3" />,
-      color: "var(--event)",
-      bgColor: "var(--event)",
-      textColor: "var(--event-foreground)",
+      className: "border-event",
     },
     mail: {
       label: "Email",
       icon: <Mail className="size-3" />,
-      color: "var(--mail)",
-      bgColor: "var(--mail)",
-      textColor: "var(--mail-foreground)",
+      className: "border-mail",
     },
   };
 
-  const { label, icon, color, bgColor, textColor } = typeFilterTags[type];
-  
-  // Apply styles through style attribute to avoid tailwind class name issues
-  const style: React.CSSProperties = {
-    border: `1px solid ${color}`,
-    color: toggled ? textColor : color,
-    backgroundColor: toggled ? bgColor : 'transparent',
-  };
+  const { label, icon, className } = typeFilterTags[type];
+  let finalClassName = `border ${className}`;
 
-  // Add hover styles if onClick is provided
-  const hoverStyle = onClick ? {
-    transition: 'background-color 0.2s, color 0.2s',
-    cursor: 'pointer',
-  } : { cursor: 'default' };
+  if (onClick !== undefined) {
+    const hoverClass =
+      type === "note"
+        ? "hover:text-note hover:bg-note/60 hover:text-note-foreground"
+        : type === "task"
+        ? "hover:text-task hover:bg-task/60 hover:text-task-foreground"
+        : type === "event"
+        ? "hover:text-event hover:bg-event/60 hover:text-event-foreground"
+        : "hover:text-mail hover:bg-mail/60 hover:text-mail-foreground";
+    finalClassName += ` ${hoverClass}`;
+  } else {
+    finalClassName += " cursor-default";
+  }
 
-  // Combine styles
-  const combinedStyle = { ...style, ...hoverStyle };
+  if (toggled) {
+    const bgClass =
+      type === "note"
+        ? "bg-note text-black"
+        : type === "task"
+        ? "bg-task text-black"
+        : type === "event"
+        ? "bg-event text-black"
+        : "bg-mail text-black";
+    finalClassName += ` ${bgClass} text-white`;
+  } else {
+    const textClass =
+      type === "note"
+        ? "text-note"
+        : type === "task"
+        ? "text-task"
+        : type === "event"
+        ? "text-event"
+        : "text-mail";
+    finalClassName += ` ${textClass}`;
+  }
 
   return (
     <BaseIdeaCraftChip
       label={label}
       prefixIcon={icon}
-      className=""
+      className={finalClassName}
       onClick={onClick}
-      style={combinedStyle}
     />
   );
 };

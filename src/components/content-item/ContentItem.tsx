@@ -64,7 +64,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
     <div id={`content-item-${item.id}`}>
       <Card
         className={
-          "flex flex-col gap-1 px-3 py-2 m-2 rounded-lg border border-b group"
+          "flex flex-col gap-1 px-3 py-2 my-2 rounded-lg border border-b group"
         }
       >
         <div className="flex items-center">

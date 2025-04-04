@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   hasEventAttributes,
@@ -18,10 +17,10 @@ interface ContentTypeTagsProps {
   onRemoveTag?: (tag: string) => void;
 }
 
-const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ 
-  item, 
+const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
+  item,
   editable = false,
-  onRemoveTag
+  onRemoveTag,
 }) => {
   // Get content type tag elements
   const getTypeTags = () => {
@@ -54,10 +53,17 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
             label={tag}
             className="bg-muted cursor-default text-muted-foreground border border-muted-foreground/20"
             onClick={() => {}}
-            suffixIcon={editable && onRemoveTag ? <X className="h-3 w-3" onClick={(e) => {
-              e.stopPropagation();
-              onRemoveTag(tag);
-            }} /> : undefined}
+            suffixIcon={
+              editable && onRemoveTag ? (
+                <X
+                  className="h-3 w-3 cursor-pointer"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onRemoveTag(tag);
+                  }}
+                />
+              ) : undefined
+            }
           />
         );
       });
