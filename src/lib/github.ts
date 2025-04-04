@@ -1,4 +1,5 @@
 
+
 import { Octokit } from '@octokit/core';
 import { Endpoints } from '@octokit/types';
 
@@ -151,7 +152,8 @@ export async function getMarkdownFiles(octokit: Octokit, owner: string, repo: st
           // Handle different response types
           if (typeof contentResponse.data === 'string') {
             fileContent = contentResponse.data;
-          } else if (contentResponse.data && contentResponse.data.content) {
+          } else if (contentResponse.data && 'content' in contentResponse.data) {
+            // Use 'in' operator to check if property exists
             fileContent = Buffer.from(contentResponse.data.content, 'base64').toString('utf-8');
           } else {
             fileContent = 'Error: Could not parse file content';
@@ -177,3 +179,4 @@ export async function getMarkdownFiles(octokit: Octokit, owner: string, repo: st
     throw error;
   }
 }
+

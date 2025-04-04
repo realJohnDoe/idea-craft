@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Item,
@@ -123,10 +122,7 @@ const ContentCreator: React.FC<ContentCreatorProps> = ({
       newItem.to = mailTo;
     }
 
-    // Generate YAML
-    newItem.yaml = generateYaml(newItem);
-
-    // Create and reset form
+    // Generate YAML and create the item
     onCreate(newItem);
 
     // Reset form

@@ -1,4 +1,3 @@
-
 import React, { useState } from "react";
 import {
   Item,
@@ -158,9 +157,8 @@ const ContentEditor: React.FC<ContentEditorProps> = ({
       delete updatedItem.to;
     }
 
-    // Generate YAML
-    updatedItem.yaml = generateYaml(updatedItem);
-
+    // Removed the yaml property assignment
+    
     // Update and close editor
     onUpdate(updatedItem);
   };
