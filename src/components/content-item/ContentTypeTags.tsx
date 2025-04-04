@@ -1,3 +1,4 @@
+
 import React from "react";
 import {
   hasEventAttributes,
@@ -9,12 +10,19 @@ import {
 
 import ColoredIdeaCraftChip from "../ColoredIdeaCraftChip";
 import BaseIdeaCraftChip from "../BaseIdeaCraftChip";
+import { X } from "lucide-react";
 
 interface ContentTypeTagsProps {
   item: Item;
+  editable?: boolean;
+  onRemoveTag?: (tag: string) => void;
 }
 
-const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
+const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ 
+  item, 
+  editable = false,
+  onRemoveTag
+}) => {
   // Get content type tag elements
   const getTypeTags = () => {
     const tags = [];
@@ -46,6 +54,10 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
             label={tag}
             className="bg-muted cursor-default text-muted-foreground border border-muted-foreground/20"
             onClick={() => {}}
+            suffixIcon={editable && onRemoveTag ? <X className="h-3 w-3" onClick={(e) => {
+              e.stopPropagation();
+              onRemoveTag(tag);
+            }} /> : undefined}
           />
         );
       });

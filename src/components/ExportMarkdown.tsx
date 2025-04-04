@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, FileDown } from "lucide-react";
@@ -9,9 +10,10 @@ import { createSafeFilename } from "@/lib/id-utils";
 
 interface ExportMarkdownProps {
   items: Item[];
+  id?: string;
 }
 
-const ExportMarkdown: React.FC<ExportMarkdownProps> = ({ items }) => {
+const ExportMarkdown: React.FC<ExportMarkdownProps> = ({ items, id }) => {
   const [isExporting, setIsExporting] = useState(false);
 
   const exportToMarkdown = async () => {
@@ -58,6 +60,7 @@ const ExportMarkdown: React.FC<ExportMarkdownProps> = ({ items }) => {
 
   return (
     <Button
+      id={id}
       variant="outline"
       onClick={exportToMarkdown}
       disabled={isExporting || items.length === 0}

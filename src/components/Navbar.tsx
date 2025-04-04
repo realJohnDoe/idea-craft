@@ -1,15 +1,19 @@
+
 import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Plus, Search } from "lucide-react";
+import { FileDown, FileUp, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import { Item } from "@/lib/content-utils";
 
 interface NavbarProps {
   onSearch: (query: string) => void;
   onCreateNew: () => void;
+  items: Item[];
+  onImport: (importedItems: Item[]) => void;
 }
 
-const Navbar: React.FC<NavbarProps> = ({ onSearch, onCreateNew }) => {
+const Navbar: React.FC<NavbarProps> = ({ onSearch, onCreateNew, items, onImport }) => {
   return (
     <header className="sticky top-0 z-10 w-full border-b bg-background/80 backdrop-blur-md">
       <div className="container flex h-16 items-center px-4">
@@ -32,6 +36,40 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onCreateNew }) => {
             />
           </div>
 
+          <div className="hidden sm:flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                // Create a click event for the export button
+                const exportButton = document.getElementById('export-button');
+                if (exportButton) {
+                  exportButton.click();
+                }
+              }}
+              className="flex items-center"
+            >
+              <FileDown className="size-4 mr-1" />
+              <span className="hidden md:inline">Export</span>
+            </Button>
+            
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                // Create a click event for the import button
+                const importButton = document.getElementById('import-button');
+                if (importButton) {
+                  importButton.click();
+                }
+              }}
+              className="flex items-center"
+            >
+              <FileUp className="size-4 mr-1" />
+              <span className="hidden md:inline">Import</span>
+            </Button>
+          </div>
+
           <Button
             onClick={onCreateNew}
             size="sm"
@@ -41,6 +79,11 @@ const Navbar: React.FC<NavbarProps> = ({ onSearch, onCreateNew }) => {
             <span className="ms-1 hidden md:inline">Create</span>
           </Button>
         </div>
+      </div>
+      
+      {/* Hidden components to handle export/import functionality */}
+      <div className="hidden">
+        <div id="export-import-container"></div>
       </div>
     </header>
   );

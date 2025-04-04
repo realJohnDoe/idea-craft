@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Item } from "@/lib/content-utils";
@@ -12,7 +13,7 @@ import SelectedItemView from "@/components/content/SelectedItemView";
 import ExportMarkdown from "@/components/ExportMarkdown";
 import ImportMarkdown from "@/components/ImportMarkdown";
 import { toast } from "sonner";
-import { exampleContentItems } from "@/lib/example-content";
+import { simplifiedExampleContentItems } from "@/lib/example-content";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,11 +71,11 @@ const Index = () => {
         setItems(parsedItems);
       } catch (e) {
         console.error("Error parsing stored content:", e);
-        setItems(exampleContentItems);
+        setItems(simplifiedExampleContentItems);
       }
     } else {
       // Use example items when no content exists
-      setItems(exampleContentItems);
+      setItems(simplifiedExampleContentItems);
       setShowWelcome(true);
     }
   }, []);
@@ -157,90 +158,84 @@ const Index = () => {
     ? items.find((item) => item.id === selectedItemId)
     : null;
 
-  // Determine if we should show the content list or the selected item based on screen size
+  // Responsive layout logic
   const showContentList = !selectedItem || !isMobile;
-  const showSelectedItem = selectedItem && (!isMobile || isMobile);
+  const showSelectedItem = selectedItem;
 
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar
         onSearch={setSearchQuery}
         onCreateNew={() => setIsCreatingContent(true)}
+        items={items}
+        onImport={handleImportItems}
       />
 
       <main className="flex-1 container px-4 py-6">
-        {/* Top section with filters and export button */}
-        <div className="mb-6">
-          <div className="flex flex-wrap gap-2 mb-4 justify-between items-center">
-            <div className="flex gap-2">
-              <ExportMarkdown items={items} />
-              <ImportMarkdown onImport={handleImportItems} />
-            </div>
-          </div>
+        {/* Hidden components to handle export/import functionality */}
+        <div className="hidden">
+          <ExportMarkdown items={items} id="export-button" />
+          <ImportMarkdown onImport={handleImportItems} id="import-button" />
+        </div>
 
-          <div className={`${selectedItem && "flex flex-col lg:flex-row"}`}>
-            <div className={`${selectedItem && "hidden lg:block w-1/3"}`}>
-              <TypeFilter
-                activeFilter={activeFilter}
-                toggleTypeTag={toggleTypeTag}
+        <div className="flex flex-col lg:flex-row gap-6">
+          {/* Left column: Filters and content list */}
+          <div className={`${!showContentList && 'hidden'} lg:w-1/3 lg:block`}>
+            <TypeFilter
+              activeFilter={activeFilter}
+              toggleTypeTag={toggleTypeTag}
+            />
+
+            {getAllTags().length > 0 && (
+              <TagsFilter
+                selectedTags={selectedTags}
+                toggleTag={toggleTag}
+                getAllTags={getAllTags}
               />
+            )}
 
-              {getAllTags().length > 0 && (
-                <TagsFilter
-                  selectedTags={selectedTags}
-                  toggleTag={toggleTag}
-                  getAllTags={getAllTags}
-                />
-              )}
-
-              {/* Content creation overlay */}
-              {isCreatingContent && (
-                <div className="bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-                  <ContentCreator
-                    onCreate={handleCreateContent}
-                    onCancel={() => setIsCreatingContent(false)}
-                  />
-                </div>
-              )}
-
-              {/* Content List - Hide on mobile when item is selected */}
-              {showContentList && (
-                <div>
-                  {filteredContent.length === 0 ? (
-                    <EmptyState
-                      message={
-                        items.length === 0
-                          ? "You don't have any content yet. Create your first item!"
-                          : "No items match your search criteria."
-                      }
-                      onCreateNew={() => setIsCreatingContent(true)}
-                    />
-                  ) : (
-                    <ContentList
-                      items={filteredContent}
-                      onUpdate={handleUpdateContent}
-                      allItems={items}
-                    />
-                  )}
-                </div>
-              )}
-            </div>
-
-            {/* Selected Item View - Show as second column on desktop, full screen on mobile */}
-            {showSelectedItem && (
-              <div className="block bg-background lg:w-2/3">
-                <SelectedItemView
-                  item={selectedItem}
-                  onUpdate={handleUpdateContent}
-                  onDelete={handleDeleteContent}
-                  onClose={() => navigate("/")}
-                  allItems={items}
-                  isMobile={isMobile}
-                />
-              </div>
+            {filteredContent.length === 0 ? (
+              <EmptyState
+                message={
+                  items.length === 0
+                    ? "You don't have any content yet. Create your first item!"
+                    : "No items match your search criteria."
+                }
+                onCreateNew={() => setIsCreatingContent(true)}
+              />
+            ) : (
+              <ContentList
+                items={filteredContent}
+                onUpdate={handleUpdateContent}
+                allItems={items}
+              />
             )}
           </div>
+
+          {/* Right column: Selected item */}
+          {showSelectedItem && (
+            <div className={`${!selectedItem && 'hidden'} lg:w-2/3 bg-background`}>
+              <SelectedItemView
+                item={selectedItem}
+                onUpdate={handleUpdateContent}
+                onDelete={handleDeleteContent}
+                onClose={() => navigate("/")}
+                allItems={items}
+                isMobile={isMobile}
+              />
+            </div>
+          )}
         </div>
+
+        {/* Content creation overlay */}
+        {isCreatingContent && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <ContentCreator
+              onCreate={handleCreateContent}
+              onCancel={() => setIsCreatingContent(false)}
+            />
+          </div>
+        )}
       </main>
     </div>
   );

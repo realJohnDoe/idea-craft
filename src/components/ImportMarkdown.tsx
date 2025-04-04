@@ -10,9 +10,10 @@ import yaml from "yaml";
 
 interface ImportMarkdownProps {
   onImport: (items: Item[]) => void;
+  id?: string;
 }
 
-const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport }) => {
+const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
   const [isImporting, setIsImporting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -142,6 +143,7 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport }) => {
         className="hidden"
       />
       <Button
+        id={id}
         variant="outline"
         onClick={handleImportClick}
         disabled={isImporting}

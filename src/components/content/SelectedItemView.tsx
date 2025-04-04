@@ -7,6 +7,7 @@ import ContentFooter from "../content-item/ContentFooter";
 import ContentBody from "../content-item/ContentBody";
 import ContentEditor from "../content-editor/ContentEditor";
 import ContentList from "./ContentList";
+import ContentTypeTags from "../content-item/ContentTypeTags";
 
 interface SelectedItemViewProps {
   item: Item;
@@ -66,6 +67,14 @@ const SelectedItemView = ({
     setIsEditing(false);
   };
 
+  const handleRemoveTag = (tagToRemove: string) => {
+    const updatedItem = {
+      ...item,
+      tags: item.tags?.filter(tag => tag !== tagToRemove) || []
+    };
+    onUpdate(updatedItem);
+  };
+
   const getReferencingItems = () => {
     const referencingItems = allItems.filter(
       (referencingItem) =>
@@ -98,13 +107,20 @@ const SelectedItemView = ({
           />
         ) : (
           <div>
-            <ContentBody
-              item={item}
-              onUpdate={onUpdate}
-              processedContent={processedContent}
-              handleWikiLinkClick={handleUpdateSelectedItem}
-              allItems={allItems}
-            />
+            <div className="p-4">
+              <h3 className="text-lg font-medium mb-1">{item.title}</h3>
+              <div className="mb-3">
+                <ContentTypeTags item={item} editable={true} onRemoveTag={handleRemoveTag} />
+              </div>
+              
+              <ContentBody
+                item={item}
+                onUpdate={onUpdate}
+                processedContent={processedContent}
+                handleWikiLinkClick={handleUpdateSelectedItem}
+                allItems={allItems}
+              />
+            </div>
 
             <ContentFooter
               item={item}
