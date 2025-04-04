@@ -1,18 +1,17 @@
+
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Item } from "@/lib/content-utils";
 import { useNavigate, useParams } from "react-router-dom";
 import TypeFilter from "@/components/filters/TypeFilter";
 import TagsFilter from "@/components/filters/TagsFilter";
-import ContentCreator from "@/components/ContentCreator";
 import EmptyState from "@/components/content/EmptyState";
 import ContentList from "@/components/content/ContentList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import SelectedItemView from "@/components/content/SelectedItemView";
-import ExportMarkdown from "@/components/ExportMarkdown";
-import ImportMarkdown from "@/components/ImportMarkdown";
 import { toast } from "sonner";
 import { simplifiedExampleContentItems } from "@/lib/example-content";
+import { nanoid } from "@/lib/id-utils";
 
 const Index = () => {
   const [searchQuery, setSearchQuery] = useState("");
@@ -94,10 +93,20 @@ const Index = () => {
     }
   }, [itemId]);
 
-  const handleCreateContent = (newItem: Item) => {
+  const handleCreateContent = () => {
+    const newItem: Item = {
+      id: nanoid(),
+      title: "New Item",
+      tags: [],
+      content: "",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    };
+    
     setItems([...items, newItem]);
     setIsCreatingContent(false);
-    toast.success("Content created successfully!");
+    navigate(`/item/${newItem.id}`);
+    toast.success("New item created!");
   };
 
   const handleUpdateContent = (updatedItem: Item) => {
@@ -162,16 +171,16 @@ const Index = () => {
     <div className="flex flex-col min-h-screen">
       <Navbar
         onSearch={setSearchQuery}
-        onCreateNew={() => setIsCreatingContent(true)}
+        onCreateNew={handleCreateContent}
         items={items}
         onImport={handleImportItems}
       />
 
       <main className="container px-0">
-        <div className={`${selectedItem && "flex flex-col lg:flex-row"}`}>
+        <div className={`${selectedItem ? "flex flex-col lg:flex-row" : ""}`}>
           {/* Left column: Filters and content list */}
-          <div className={`${selectedItem && "hidden lg:block w-1/3"}`}>
-            <div className=" px-4 my-2">
+          <div className={`${selectedItem ? "hidden lg:block lg:w-1/3" : ""}`}>
+            <div className="px-4 my-2">
               <TypeFilter
                 activeFilter={activeFilter}
                 toggleTypeTag={toggleTypeTag}
@@ -192,7 +201,7 @@ const Index = () => {
                       ? "You don't have any content yet. Create your first item!"
                       : "No items match your search criteria."
                   }
-                  onCreateNew={() => setIsCreatingContent(true)}
+                  onCreateNew={handleCreateContent}
                 />
               ) : (
                 <ContentList
@@ -217,16 +226,6 @@ const Index = () => {
             </div>
           )}
         </div>
-
-        {/* Content creation overlay */}
-        {isCreatingContent && (
-          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <ContentCreator
-              onCreate={handleCreateContent}
-              onCancel={() => setIsCreatingContent(false)}
-            />
-          </div>
-        )}
       </main>
     </div>
   );

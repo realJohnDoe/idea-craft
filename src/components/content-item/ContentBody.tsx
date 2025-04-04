@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from "react";
 import {
   Item,
@@ -30,8 +31,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import BaseIdeaCraftChip from "../BaseIdeaCraftChip";
-import ContentTextarea from "../content-editor/ContentTextarea";
-import ColoredIdeaCraftChip from "../ColoredIdeaCraftChip";
+import ContentTypeTags from "./ContentTypeTags";
 
 interface ContentBodyProps {
   item: Item;
@@ -193,52 +193,6 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     onUpdate(updatedItem);
   };
 
-  const tags = [];
-  tags.push(
-    <ColoredIdeaCraftChip
-      type="task"
-      toggled={hasTaskAttributes(item)}
-      onClick={() => handleToggleAttribute("task")}
-    />
-  );
-  tags.push(
-    <ColoredIdeaCraftChip
-      type="event"
-      toggled={hasEventAttributes(item)}
-      onClick={() => handleToggleAttribute("event")}
-    />
-  );
-  tags.push(
-    <ColoredIdeaCraftChip
-      type="mail"
-      toggled={hasMailAttributes(item)}
-      onClick={() => handleToggleAttribute("mail")}
-    />
-  );
-
-  // Add user tags if present
-  if (item.tags && item.tags.length > 0) {
-    item.tags.forEach((tag) => {
-      tags.push(
-        <BaseIdeaCraftChip
-          key={tag}
-          label={tag}
-          className="bg-muted cursor-default text-muted-foreground border border-muted-foreground/20"
-          onClick={() => {}}
-          suffixIcon={
-            <X
-              className="h-3 w-3 cursor-pointer"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleRemoveTag(tag);
-              }}
-            />
-          }
-        />
-      );
-    });
-  }
-
   return (
     <div>
       <Card className="rounded-t-lg border-b pb-1">
@@ -251,8 +205,63 @@ const ContentBody: React.FC<ContentBodyProps> = ({
           />
         </div>
 
-        {/* Attribute type toggles */}
-        <div className="px-3 py-1 flex flex-wrap gap-1">{tags}</div>
+        {/* Content type and tag selection */}
+        <div className="px-3 py-1 flex flex-wrap items-center gap-1">
+          <ContentTypeTags 
+            item={item} 
+            editable={true}
+            onRemoveTag={handleRemoveTag}
+            onToggleType={handleToggleAttribute}
+            onEditTags={() => setIsEditingTags(true)}
+          />
+        </div>
+
+        {/* Tag editor */}
+        {isEditingTags && (
+          <div className="px-3 py-1 space-y-1">
+            <div className="flex items-center text-sm">
+              <Tag className="mr-1 w-4 h-4" />
+              <div className="flex items-center space-x-2 w-full">
+                <Input
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  className="h-7 py-1"
+                  placeholder="Enter tags (comma-separated)"
+                  autoFocus
+                />
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0"
+                  onClick={() => setIsEditingTags(false)}
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="h-7 w-7 p-0 text-green-600"
+                  onClick={handleTagsChange}
+                >
+                  <span className="sr-only">Save</span>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polyline points="20 6 9 17 4 12"></polyline>
+                  </svg>
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Task attributes */}
         {hasTaskAttributes(item) && (
@@ -514,7 +523,11 @@ const ContentBody: React.FC<ContentBodyProps> = ({
         ) : (
           <div className="p-3">
             <div className="mb-2">
-              <ContentTextarea value={content} onChange={setContent} />
+              <textarea
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                className="w-full p-2 min-h-[200px] bg-background border rounded-md"
+              />
             </div>
             <div className="flex justify-end space-x-2">
               <Button

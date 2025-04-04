@@ -1,12 +1,18 @@
+
 import { useEffect, useState } from "react";
-import { Item, processContentLinks } from "@/lib/content-utils";
+import { Item, processContentLinks, generateYaml } from "@/lib/content-utils";
 import { Button } from "@/components/ui/button";
-import { X } from "lucide-react";
+import { FileText, X } from "lucide-react";
 import ContentFooter from "../content-item/ContentFooter";
 import ContentBody from "../content-item/ContentBody";
-import ContentEditor from "../content-editor/ContentEditor";
 import ContentList from "./ContentList";
-import ContentTypeTags from "../content-item/ContentTypeTags";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogClose,
+} from "@/components/ui/dialog";
 
 interface SelectedItemViewProps {
   item: Item;
@@ -24,13 +30,17 @@ const SelectedItemView = ({
   allItems,
 }: SelectedItemViewProps) => {
   const [processedContent, setProcessedContent] = useState(item.content);
-  const [isEditing, setIsEditing] = useState(false);
+  const [showYaml, setShowYaml] = useState(false);
+  const [yaml, setYaml] = useState("");
 
   useEffect(() => {
     if (allItems.length > 0) {
       setProcessedContent(processContentLinks(item.content, allItems));
     }
-  }, [item.content, allItems]);
+    
+    // Generate YAML for the dialog
+    setYaml(generateYaml(item));
+  }, [item, allItems]);
 
   const handleUpdateSelectedItem = (wikilinkId: string) => {
     const linkedItem = allItems.find((item) => item.id === wikilinkId);
@@ -51,19 +61,6 @@ const SelectedItemView = ({
     }
   };
 
-  const handleEditClick = () => {
-    setIsEditing(true);
-  };
-
-  const handleEditorUpdate = (updatedItem: Item) => {
-    onUpdate(updatedItem);
-    setIsEditing(false);
-  };
-
-  const handleEditorCancel = () => {
-    setIsEditing(false);
-  };
-
   const getReferencingItems = () => {
     const referencingItems = allItems.filter(
       (referencingItem) =>
@@ -77,41 +74,41 @@ const SelectedItemView = ({
   return (
     <div className="px-4 py-1 h-full overflow-auto border-s">
       <div className="flex justify-between items-center mb-2">
-        <h2 className="text-lg font-medium">Selected Item</h2>
-        <Button variant="ghost" size="icon" onClick={onClose}>
-          <X className="size-4" />
-        </Button>
+        <h2 className="text-lg font-medium">
+          {item.id.includes("new-") ? "New Item" : "Selected Item"}
+        </h2>
+        <div className="flex items-center gap-2">
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={() => setShowYaml(true)}
+          >
+            <FileText className="size-4 mr-1" />
+            YAML
+          </Button>
+          <Button variant="ghost" size="icon" onClick={onClose}>
+            <X className="size-4" />
+          </Button>
+        </div>
       </div>
 
       <div
         id={`content-item-${item.id}`}
         className="rounded-lg border shadow-sm content-item"
       >
-        {/* If editing, show the editor instead of the item */}
-        {isEditing ? (
-          <ContentEditor
-            item={item}
-            onUpdate={handleEditorUpdate}
-            onCancel={handleEditorCancel}
-          />
-        ) : (
-          <div>
-            <ContentBody
-              item={item}
-              onUpdate={onUpdate}
-              processedContent={processedContent}
-              handleWikiLinkClick={handleUpdateSelectedItem}
-              allItems={allItems}
-            />
+        <ContentBody
+          item={item}
+          onUpdate={onUpdate}
+          processedContent={processedContent}
+          handleWikiLinkClick={handleUpdateSelectedItem}
+          allItems={allItems}
+        />
 
-            <ContentFooter
-              item={item}
-              onUpdate={onUpdate}
-              onDelete={onDelete}
-              onEdit={handleEditClick}
-            />
-          </div>
-        )}
+        <ContentFooter
+          item={item}
+          onUpdate={onUpdate}
+          onDelete={onDelete}
+        />
       </div>
 
       <div className="mt-4">
@@ -128,6 +125,21 @@ const SelectedItemView = ({
           </p>
         )}
       </div>
+
+      {/* YAML Dialog */}
+      <Dialog open={showYaml} onOpenChange={setShowYaml}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>YAML Metadata</DialogTitle>
+          </DialogHeader>
+          <pre className="bg-muted p-4 rounded-md text-sm overflow-auto">
+            {yaml || "No metadata available"}
+          </pre>
+          <DialogClose asChild>
+            <Button variant="outline" className="mt-2">Close</Button>
+          </DialogClose>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
