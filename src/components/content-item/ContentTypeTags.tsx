@@ -44,7 +44,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({ item }) => {
           <BaseIdeaCraftChip
             key={tag}
             label={tag}
-            className="bg-muted text-muted-foreground border border-muted-foreground/20"
+            className="bg-muted cursor-default text-muted-foreground border border-muted-foreground/20"
             onClick={() => {}}
           />
         );

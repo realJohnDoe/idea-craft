@@ -1,4 +1,3 @@
-
 import { Item } from "@/lib/content-utils";
 import ContentItem from "@/components/content-item";
 
@@ -10,7 +9,7 @@ interface ContentListProps {
 
 const ContentList = ({ items, onUpdate, allItems }: ContentListProps) => {
   return (
-    <div className="border rounded-lg overflow-hidden shadow-sm">
+    <div>
       {items.map((item) => (
         <ContentItem
           key={item.id}

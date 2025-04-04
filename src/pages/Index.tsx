@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Item } from "@/lib/content-utils";
@@ -179,84 +178,68 @@ const Index = () => {
             </div>
           </div>
 
-          <TypeFilter
-            activeFilter={activeFilter}
-            toggleTypeTag={toggleTypeTag}
-          />
+          <div className={`${selectedItem && "flex flex-col lg:flex-row"}`}>
+            <div className={`${selectedItem && "hidden lg:block w-1/3"}`}>
+              <TypeFilter
+                activeFilter={activeFilter}
+                toggleTypeTag={toggleTypeTag}
+              />
 
-          {getAllTags().length > 0 && (
-            <TagsFilter
-              selectedTags={selectedTags}
-              toggleTag={toggleTag}
-              getAllTags={getAllTags}
-            />
-          )}
-        </div>
-
-        {/* Content creation overlay */}
-        {isCreatingContent && (
-          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <ContentCreator
-              onCreate={handleCreateContent}
-              onCancel={() => setIsCreatingContent(false)}
-            />
-          </div>
-        )}
-
-        {/* Main content area with responsive layout */}
-        <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
-          {/* Content List - Hide on mobile when item is selected */}
-          {showContentList && (
-            <div className={`${selectedItem && !isMobile ? "lg:col-span-1" : "lg:col-span-2"}`}>
-              {filteredContent.length === 0 ? (
-                <EmptyState
-                  message={
-                    items.length === 0
-                      ? "You don't have any content yet. Create your first item!"
-                      : "No items match your search criteria."
-                  }
-                  onCreateNew={() => setIsCreatingContent(true)}
+              {getAllTags().length > 0 && (
+                <TagsFilter
+                  selectedTags={selectedTags}
+                  toggleTag={toggleTag}
+                  getAllTags={getAllTags}
                 />
-              ) : (
-                <ContentList
-                  items={filteredContent}
+              )}
+
+              {/* Content creation overlay */}
+              {isCreatingContent && (
+                <div className="bg-background/80 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+                  <ContentCreator
+                    onCreate={handleCreateContent}
+                    onCancel={() => setIsCreatingContent(false)}
+                  />
+                </div>
+              )}
+
+              {/* Content List - Hide on mobile when item is selected */}
+              {showContentList && (
+                <div>
+                  {filteredContent.length === 0 ? (
+                    <EmptyState
+                      message={
+                        items.length === 0
+                          ? "You don't have any content yet. Create your first item!"
+                          : "No items match your search criteria."
+                      }
+                      onCreateNew={() => setIsCreatingContent(true)}
+                    />
+                  ) : (
+                    <ContentList
+                      items={filteredContent}
+                      onUpdate={handleUpdateContent}
+                      allItems={items}
+                    />
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Selected Item View - Show as second column on desktop, full screen on mobile */}
+            {showSelectedItem && (
+              <div className="block bg-background lg:w-2/3">
+                <SelectedItemView
+                  item={selectedItem}
                   onUpdate={handleUpdateContent}
+                  onDelete={handleDeleteContent}
+                  onClose={() => navigate("/")}
                   allItems={items}
+                  isMobile={isMobile}
                 />
-              )}
-            </div>
-          )}
-
-          {/* Selected Item View - Show as second column on desktop, full screen on mobile */}
-          {showSelectedItem && (
-            <div className={isMobile ? "fixed inset-0 z-10 bg-background" : "lg:col-span-1"}>
-              {isMobile && (
-                <div className="absolute inset-0 bg-background">
-                  <SelectedItemView
-                    item={selectedItem}
-                    onUpdate={handleUpdateContent}
-                    onDelete={handleDeleteContent}
-                    onClose={() => navigate("/")}
-                    allItems={items}
-                    isMobile={isMobile}
-                  />
-                </div>
-              )}
-              
-              {!isMobile && (
-                <div className="h-full border rounded-lg shadow-sm">
-                  <SelectedItemView
-                    item={selectedItem}
-                    onUpdate={handleUpdateContent}
-                    onDelete={handleDeleteContent}
-                    onClose={() => navigate("/")}
-                    allItems={items}
-                    isMobile={isMobile}
-                  />
-                </div>
-              )}
-            </div>
-          )}
+              </div>
+            )}
+          </div>
         </div>
       </main>
     </div>
