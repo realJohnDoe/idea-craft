@@ -1,4 +1,3 @@
-
 import React from "react";
 import {
   hasEventAttributes,
@@ -35,19 +34,21 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
 
     if (hasTaskAttributes(item)) {
       tags.push(
-        <ColoredIdeaCraftChip 
-          key="task" 
-          type="task" 
-          toggled={true} 
-          onClick={editable && onToggleType ? () => onToggleType("task") : undefined}
+        <ColoredIdeaCraftChip
+          key="task"
+          type="task"
+          toggled={true}
+          onClick={
+            editable && onToggleType ? () => onToggleType("task") : undefined
+          }
         />
       );
     } else if (editable && onToggleType) {
       tags.push(
-        <ColoredIdeaCraftChip 
-          key="task" 
-          type="task" 
-          toggled={false} 
+        <ColoredIdeaCraftChip
+          key="task"
+          type="task"
+          toggled={false}
           onClick={() => onToggleType("task")}
         />
       );
@@ -55,19 +56,21 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
 
     if (hasEventAttributes(item)) {
       tags.push(
-        <ColoredIdeaCraftChip 
-          key="event" 
-          type="event" 
-          toggled={true} 
-          onClick={editable && onToggleType ? () => onToggleType("event") : undefined}
+        <ColoredIdeaCraftChip
+          key="event"
+          type="event"
+          toggled={true}
+          onClick={
+            editable && onToggleType ? () => onToggleType("event") : undefined
+          }
         />
       );
     } else if (editable && onToggleType) {
       tags.push(
-        <ColoredIdeaCraftChip 
-          key="event" 
-          type="event" 
-          toggled={false} 
+        <ColoredIdeaCraftChip
+          key="event"
+          type="event"
+          toggled={false}
           onClick={() => onToggleType("event")}
         />
       );
@@ -75,19 +78,21 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
 
     if (hasMailAttributes(item)) {
       tags.push(
-        <ColoredIdeaCraftChip 
-          key="mail" 
-          type="mail" 
-          toggled={true} 
-          onClick={editable && onToggleType ? () => onToggleType("mail") : undefined}
+        <ColoredIdeaCraftChip
+          key="mail"
+          type="mail"
+          toggled={true}
+          onClick={
+            editable && onToggleType ? () => onToggleType("mail") : undefined
+          }
         />
       );
     } else if (editable && onToggleType) {
       tags.push(
-        <ColoredIdeaCraftChip 
-          key="mail" 
-          type="mail" 
-          toggled={false} 
+        <ColoredIdeaCraftChip
+          key="mail"
+          type="mail"
+          toggled={false}
           onClick={() => onToggleType("mail")}
         />
       );
@@ -95,20 +100,20 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
 
     if (hasNoteAttributes(item)) {
       tags.push(
-        <ColoredIdeaCraftChip 
-          key="note" 
-          type="note" 
-          toggled={true} 
-          onClick={editable && onToggleType ? () => onToggleType("note") : undefined}
+        <ColoredIdeaCraftChip
+          key="note"
+          type="note"
+          toggled={true}
+          onClick={undefined}
         />
       );
     } else if (editable && onToggleType) {
       tags.push(
-        <ColoredIdeaCraftChip 
-          key="note" 
-          type="note" 
-          toggled={false} 
-          onClick={() => onToggleType("note")}
+        <ColoredIdeaCraftChip
+          key="note"
+          type="note"
+          toggled={false}
+          onClick={undefined}
         />
       );
     }
@@ -145,7 +150,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
     <div className="flex flex-wrap gap-1 items-center">
       {getTypeTags()}
       {editable && onEditTags && (
-        <div 
+        <div
           className="cursor-pointer ml-1 flex items-center text-muted-foreground hover:text-foreground transition-colors"
           onClick={onEditTags}
         >

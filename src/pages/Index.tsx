@@ -1,4 +1,3 @@
-
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Item } from "@/lib/content-utils";
@@ -102,7 +101,7 @@ const Index = () => {
       createdAt: new Date(),
       updatedAt: new Date(),
     };
-    
+
     setItems([...items, newItem]);
     setIsCreatingContent(false);
     navigate(`/item/${newItem.id}`);
@@ -176,10 +175,10 @@ const Index = () => {
         onImport={handleImportItems}
       />
 
-      <main className="container px-0">
-        <div className={`${selectedItem ? "flex flex-col lg:flex-row" : ""}`}>
-          {/* Left column: Filters and content list */}
-          <div className={`${selectedItem ? "hidden lg:block lg:w-1/3" : ""}`}>
+      <div className="flex flex-col lg:flex-row">
+        {/* Left column: Filters and content list */}
+        <div className="hidden lg:block lg:w-1/3 ">
+          <div className="flex flex-col">
             <div className="px-4 my-2">
               <TypeFilter
                 activeFilter={activeFilter}
@@ -212,21 +211,21 @@ const Index = () => {
               )}
             </div>
           </div>
-
-          {/* Right column: Selected item */}
-          {showSelectedItem && (
-            <div className="block bg-background lg:w-2/3">
-              <SelectedItemView
-                item={selectedItem}
-                onUpdate={handleUpdateContent}
-                onDelete={handleDeleteContent}
-                onClose={() => navigate("/")}
-                allItems={items}
-              />
-            </div>
-          )}
         </div>
-      </main>
+
+        {/* Right column: Selected item */}
+        {showSelectedItem && (
+          <div className="block bg-background lg:w-2/3">
+            <SelectedItemView
+              item={selectedItem}
+              onUpdate={handleUpdateContent}
+              onDelete={handleDeleteContent}
+              onClose={() => navigate("/")}
+              allItems={items}
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 };
