@@ -1,5 +1,6 @@
+
 import React from "react";
-import { FileText, CheckCircle, Calendar, Mail, X } from "lucide-react";
+import { FileText, CheckCircle, Calendar, Mail } from "lucide-react";
 import BaseIdeaCraftChip from "./BaseIdeaCraftChip";
 
 interface ColoredIdeaCraftChipProps {
@@ -17,36 +18,51 @@ const ColoredIdeaCraftChip: React.FC<ColoredIdeaCraftChipProps> = ({
     note: {
       label: "Note",
       icon: <FileText className="size-3" />,
+      className: "border-blue-400 text-blue-500"
     },
     task: {
       label: "Task",
       icon: <CheckCircle className="size-3" />,
+      className: "border-green-400 text-green-500"
     },
     event: {
       label: "Event",
       icon: <Calendar className="size-3" />,
+      className: "border-orange-400 text-orange-500"
     },
     mail: {
       label: "Email",
       icon: <Mail className="size-3" />,
+      className: "border-purple-400 text-purple-500"
     },
   };
 
-  const { label, icon } = typeFilterTags[type];
-  let className = `border border-${type} text-${type}`;
+  const { label, icon, className } = typeFilterTags[type];
+  let finalClassName = `border ${className}`;
+  
   if (onClick !== undefined) {
-    className += ` hover:bg-${type}/80 hover:text-task-foreground`;
+    const hoverClass = type === 'note' ? 'hover:bg-blue-500' : 
+                       type === 'task' ? 'hover:bg-green-500' :
+                       type === 'event' ? 'hover:bg-orange-500' : 
+                       'hover:bg-purple-500';
+    finalClassName += ` ${hoverClass} hover:text-white`;
   } else {
-    className += " cursor-default";
+    finalClassName += " cursor-default";
   }
+  
   if (toggled) {
-    className += ` bg-${type} text-task-foreground`;
+    const bgClass = type === 'note' ? 'bg-blue-500' : 
+                   type === 'task' ? 'bg-green-500' :
+                   type === 'event' ? 'bg-orange-500' : 
+                   'bg-purple-500';
+    finalClassName += ` ${bgClass} text-white`;
   }
+  
   return (
     <BaseIdeaCraftChip
       label={label}
       prefixIcon={icon}
-      className={className}
+      className={finalClassName}
       onClick={onClick}
     />
   );

@@ -77,8 +77,8 @@ const SelectedItemView = ({
   };
 
   return (
-    <div className={"p-4"}>
-      <div className="flex justify-between items-center mb-2">
+    <div className="p-4 h-full overflow-auto">
+      <div className="flex justify-between items-center mb-4">
         <h2 className="text-lg font-medium">Selected Item</h2>
         <Button variant="ghost" size="icon" onClick={onClose}>
           <X className="size-4" />
@@ -87,17 +87,16 @@ const SelectedItemView = ({
 
       <div
         id={`content-item-${item.id}`}
-        className={"rounded-lg border shadow-sm content-item"}
+        className="rounded-lg border shadow-sm content-item"
       >
         {/* If editing, show the editor instead of the item */}
-        {isEditing && (
+        {isEditing ? (
           <ContentEditor
             item={item}
             onUpdate={handleEditorUpdate}
             onCancel={handleEditorCancel}
           />
-        )}
-        {!isEditing && (
+        ) : (
           <div>
             <ContentBody
               item={item}

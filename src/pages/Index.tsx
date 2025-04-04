@@ -1,3 +1,4 @@
+
 import { useCallback, useEffect, useState } from "react";
 import Navbar from "@/components/Navbar";
 import { Item } from "@/lib/content-utils";
@@ -10,6 +11,7 @@ import ContentList from "@/components/content/ContentList";
 import { useIsMobile } from "@/hooks/use-mobile";
 import SelectedItemView from "@/components/content/SelectedItemView";
 import ExportMarkdown from "@/components/ExportMarkdown";
+import ImportMarkdown from "@/components/ImportMarkdown";
 import { toast } from "sonner";
 import { exampleContentItems } from "@/lib/example-content";
 
@@ -54,7 +56,6 @@ const Index = () => {
     return allTags.sort();
   }, [items]);
 
-  localStorage.clear();
   // Initialize with example items if no content exists
   useEffect(() => {
     const storedContent = localStorage.getItem("ideaCraft_content");
@@ -115,6 +116,11 @@ const Index = () => {
     toast.success("Content deleted successfully!");
   };
 
+  const handleImportItems = (importedItems: Item[]) => {
+    setItems((prevItems) => [...prevItems, ...importedItems]);
+    toast.success(`Imported ${importedItems.length} items successfully!`);
+  };
+
   const filteredContent = items.filter((item) => {
     const matchesSearch =
       searchQuery === "" ||
@@ -152,6 +158,10 @@ const Index = () => {
     ? items.find((item) => item.id === selectedItemId)
     : null;
 
+  // Determine if we should show the content list or the selected item based on screen size
+  const showContentList = !selectedItem || !isMobile;
+  const showSelectedItem = selectedItem && (!isMobile || isMobile);
+
   return (
     <div className="flex flex-col min-h-screen">
       <Navbar
@@ -162,9 +172,10 @@ const Index = () => {
       <main className="flex-1 container px-4 py-6">
         {/* Top section with filters and export button */}
         <div className="mb-6">
-          <div className="flex justify-between items-center mb-4">
+          <div className="flex flex-wrap gap-2 mb-4 justify-between items-center">
             <div className="flex gap-2">
               <ExportMarkdown items={items} />
+              <ImportMarkdown onImport={handleImportItems} />
             </div>
           </div>
 
@@ -192,43 +203,35 @@ const Index = () => {
           </div>
         )}
 
-        {/* Main content area */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {/* Content list column */}
-          <div
-            className={`${
-              selectedItem && !isMobile ? "lg:col-span-2" : "lg:col-span-3"
-            }`}
-          >
-            {filteredContent.length === 0 && (
-              <EmptyState
-                message={
-                  items.length === 0
-                    ? "You don't have any content yet. Create your first item!"
-                    : "No items match your search criteria."
-                }
-                onCreateNew={() => setIsCreatingContent(true)}
-              />
-            )}
+        {/* Main content area with responsive layout */}
+        <div className="grid md:grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Content List - Hide on mobile when item is selected */}
+          {showContentList && (
+            <div className={`${selectedItem && !isMobile ? "lg:col-span-1" : "lg:col-span-2"}`}>
+              {filteredContent.length === 0 ? (
+                <EmptyState
+                  message={
+                    items.length === 0
+                      ? "You don't have any content yet. Create your first item!"
+                      : "No items match your search criteria."
+                  }
+                  onCreateNew={() => setIsCreatingContent(true)}
+                />
+              ) : (
+                <ContentList
+                  items={filteredContent}
+                  onUpdate={handleUpdateContent}
+                  allItems={items}
+                />
+              )}
+            </div>
+          )}
 
-            {filteredContent.length > 0 && (
-              <ContentList
-                items={filteredContent}
-                onUpdate={handleUpdateContent}
-                allItems={items}
-              />
-            )}
-          </div>
-
-          {/* Selected item view */}
-          {selectedItem && (
-            <div className="fixed inset-0 z-10">
-              {/* Left side blur */}
-              <div className="fixed inset-0 right-[720px] bg-background/50 backdrop-blur-sm" />
-
-              {/* Selected item view */}
-              <div className="absolute right-0 top-0 w-full bg-background max-w-[720px] h-full border-l border-border shadow-lg">
-                <div className="overflow-y-auto h-full">
+          {/* Selected Item View - Show as second column on desktop, full screen on mobile */}
+          {showSelectedItem && (
+            <div className={isMobile ? "fixed inset-0 z-10 bg-background" : "lg:col-span-1"}>
+              {isMobile && (
+                <div className="absolute inset-0 bg-background">
                   <SelectedItemView
                     item={selectedItem}
                     onUpdate={handleUpdateContent}
@@ -238,13 +241,24 @@ const Index = () => {
                     isMobile={isMobile}
                   />
                 </div>
-              </div>
+              )}
+              
+              {!isMobile && (
+                <div className="h-full border rounded-lg shadow-sm">
+                  <SelectedItemView
+                    item={selectedItem}
+                    onUpdate={handleUpdateContent}
+                    onDelete={handleDeleteContent}
+                    onClose={() => navigate("/")}
+                    allItems={items}
+                    isMobile={isMobile}
+                  />
+                </div>
+              )}
             </div>
           )}
         </div>
       </main>
-
-      {/* Welcome message */}
     </div>
   );
 };
