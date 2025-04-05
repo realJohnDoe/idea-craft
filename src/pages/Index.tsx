@@ -177,7 +177,11 @@ const Index = () => {
 
       <div className="flex flex-col lg:flex-row">
         {/* Left column: Filters and content list */}
-        <div className="hidden lg:block lg:w-1/3 ">
+        <div
+          className={`hidden lg:block ${
+            showSelectedItem ? "lg:w-1/3" : "lg:w-full"
+          }`}
+        >
           <div className="flex flex-col">
             <div className="px-4 my-2">
               <TypeFilter
