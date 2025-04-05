@@ -6,7 +6,6 @@ import TypeFilter from "@/components/filters/TypeFilter";
 import TagsFilter from "@/components/filters/TagsFilter";
 import EmptyState from "@/components/content/EmptyState";
 import ContentList from "@/components/content/ContentList";
-import { useIsMobile } from "@/hooks/use-mobile";
 import SelectedItemView from "@/components/content/SelectedItemView";
 import { toast } from "sonner";
 import { simplifiedExampleContentItems } from "@/lib/example-content";
@@ -175,51 +174,47 @@ const Index = () => {
         onImport={handleImportItems}
       />
 
-      <div className="flex flex-col lg:flex-row">
+      <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
         {/* Left column: Filters and content list */}
         <div
           className={`hidden lg:block ${
             showSelectedItem ? "lg:w-1/3" : "lg:w-full"
-          }`}
+          } overflow-y-auto px-4 my-2`}
         >
-          <div className="flex flex-col">
-            <div className="px-4 my-2">
-              <TypeFilter
-                activeFilter={activeFilter}
-                toggleTypeTag={toggleTypeTag}
-              />
+          <TypeFilter
+            activeFilter={activeFilter}
+            toggleTypeTag={toggleTypeTag}
+          />
 
-              {getAllTags().length > 0 && (
-                <TagsFilter
-                  selectedTags={selectedTags}
-                  toggleTag={toggleTag}
-                  getAllTags={getAllTags}
-                />
-              )}
+          {getAllTags().length > 0 && (
+            <TagsFilter
+              selectedTags={selectedTags}
+              toggleTag={toggleTag}
+              getAllTags={getAllTags}
+            />
+          )}
 
-              {filteredContent.length === 0 ? (
-                <EmptyState
-                  message={
-                    items.length === 0
-                      ? "You don't have any content yet. Create your first item!"
-                      : "No items match your search criteria."
-                  }
-                  onCreateNew={handleCreateContent}
-                />
-              ) : (
-                <ContentList
-                  items={filteredContent}
-                  onUpdate={handleUpdateContent}
-                  allItems={items}
-                />
-              )}
-            </div>
-          </div>
+          {filteredContent.length === 0 ? (
+            <EmptyState
+              message={
+                items.length === 0
+                  ? "You don't have any content yet. Create your first item!"
+                  : "No items match your search criteria."
+              }
+              onCreateNew={handleCreateContent}
+            />
+          ) : (
+            <ContentList
+              items={filteredContent}
+              onUpdate={handleUpdateContent}
+              allItems={items}
+            />
+          )}
         </div>
 
         {/* Right column: Selected item */}
         {showSelectedItem && (
-          <div className="block bg-background lg:w-2/3">
+          <div className="block bg-background lg:w-2/3 overflow-y-auto px-4 py-2">
             <SelectedItemView
               item={selectedItem}
               onUpdate={handleUpdateContent}
