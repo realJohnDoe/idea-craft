@@ -123,7 +123,7 @@ const Index = () => {
 
   const handleImportItems = (importedItems: Item[]) => {
     setItems((prevItems) => [...prevItems, ...importedItems]);
-    toast.success(`Imported ${importedItems.length} items successfully!`);
+    toast.success(`Successfully imported ${importedItems.length} items`);
   };
 
   const filteredContent = items.filter((item) => {

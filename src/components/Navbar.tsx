@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { FileDown, FileUp, Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Item } from "@/lib/content-utils";
+import ImportMarkdown from "./ImportMarkdown";
+import ExportMarkdown from "./ExportMarkdown";
 
 interface NavbarProps {
   onSearch: (query: string) => void;
@@ -40,37 +42,8 @@ const Navbar: React.FC<NavbarProps> = ({
             />
           </div>
 
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              // Create a click event for the export button
-              const exportButton = document.getElementById("export-button");
-              if (exportButton) {
-                exportButton.click();
-              }
-            }}
-            className="w-10 h-10 md:w-auto rounded-full flex items-center"
-          >
-            <FileUp className="size-4" />
-            <span className="ms-1 hidden md:inline">Export</span>
-          </Button>
-
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              // Create a click event for the import button
-              const importButton = document.getElementById("import-button");
-              if (importButton) {
-                importButton.click();
-              }
-            }}
-            className="w-10 h-10 md:w-auto rounded-full flex items-center"
-          >
-            <FileDown className="size-4" />
-            <span className="ms-1 hidden md:inline">Import</span>
-          </Button>
+          <ExportMarkdown items={items} id="export-button" />
+          <ImportMarkdown onImport={onImport} id="import-button" />
 
           <Button
             onClick={onCreateNew}
@@ -81,11 +54,6 @@ const Navbar: React.FC<NavbarProps> = ({
             <span className="ms-1 hidden md:inline">Create</span>
           </Button>
         </div>
-      </div>
-
-      {/* Hidden components to handle export/import functionality */}
-      <div className="hidden">
-        <div id="export-import-container"></div>
       </div>
     </header>
   );

@@ -204,13 +204,18 @@ export function toggleItemAttribute(item: Item, attributeType: ContentAttributeT
 
 // Format the content display string with the YAML
 export function formatContentWithYaml(item: Item): string {
-  const yaml = generateYaml(item);
-  
-  if (yaml) {
-    return `---\n${yaml}---\n\n${item.content}`;
+  const yamlContent = generateYamlFromItem(item);
+  let content = "";
+
+  if (yamlContent) {
+    content += "---\n";
+    content += yamlContent;
+    content += "---\n\n";
   }
-  
-  return item.content;
+
+  content += item.content;
+
+  return content;
 }
 
 // Function to process content text and transform links

@@ -1,10 +1,7 @@
-
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, FileDown } from "lucide-react";
 import { Item, formatContentWithYaml } from "@/lib/content-utils";
-import JSZip from "jszip";
-import { saveAs } from "file-saver";
 import { toast } from "sonner";
 import { createSafeFilename } from "@/lib/id-utils";
 
@@ -25,29 +22,25 @@ const ExportMarkdown: React.FC<ExportMarkdownProps> = ({ items, id }) => {
     setIsExporting(true);
 
     try {
-      // Create a new JSZip instance
-      const zip = new JSZip();
+      // Create a single markdown file with all items
+      let markdownContent = "# IdeaCraft Export\n\n";
 
-      // Create a folder for the markdown files
-      const markdownFolder = zip.folder("ideacraft-export");
-
-      // Add each item as a markdown file
       items.forEach((item) => {
-        // Convert title to valid filename
-        const fileName = createSafeFilename(item.title) + ".md";
-
-        // Format the content with YAML frontmatter
-        const markdownContent = formatContentWithYaml(item);
-
-        // Add the file to the folder
-        markdownFolder.file(fileName, markdownContent);
+        markdownContent += `## ${item.title}\n\n`;
+        markdownContent += formatContentWithYaml(item);
+        markdownContent += "\n\n---\n\n";
       });
 
-      // Generate the zip file
-      const zipBlob = await zip.generateAsync({ type: "blob" });
-
-      // Save the zip file
-      saveAs(zipBlob, "ideacraft-export.zip");
+      // Create a blob and download it
+      const blob = new Blob([markdownContent], { type: "text/markdown" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "ideacraft-export.md";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
 
       toast.success(`Successfully exported ${items.length} items`);
     } catch (error) {
@@ -62,16 +55,17 @@ const ExportMarkdown: React.FC<ExportMarkdownProps> = ({ items, id }) => {
     <Button
       id={id}
       variant="outline"
+      size="sm"
       onClick={exportToMarkdown}
       disabled={isExporting || items.length === 0}
-      className="flex items-center gap-2"
+      className="w-10 h-10 md:w-auto rounded-full flex items-center"
     >
       {isExporting ? (
-        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+        <Loader2 className="size-4 animate-spin" />
       ) : (
-        <FileDown className="mr-2 h-4 w-4" />
+        <FileDown className="size-4" />
       )}
-      {isExporting ? "Exporting..." : "Export as Markdown"}
+      <span className="ms-1 hidden md:inline">Export</span>
     </Button>
   );
 };

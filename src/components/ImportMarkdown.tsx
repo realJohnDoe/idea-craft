@@ -1,11 +1,9 @@
-
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, FileUp } from "lucide-react";
 import { Item } from "@/lib/content-utils";
-import { generateUniqueId, createSafeFilename } from "@/lib/id-utils";
+import { generateUniqueId } from "@/lib/id-utils";
 import { toast } from "sonner";
-import JSZip from "jszip";
 import yaml from "yaml";
 
 interface ImportMarkdownProps {
@@ -26,8 +24,10 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
   const parseContent = (content: string): Item | null => {
     try {
       // Try to extract YAML front matter
-      const frontMatterMatch = content.match(/^---\n([\s\S]*?)\n---\n([\s\S]*)$/);
-      
+      const frontMatterMatch = content.match(
+        /^---\n([\s\S]*?)\n---\n([\s\S]*)$/
+      );
+
       if (!frontMatterMatch) {
         console.error("No front matter found in markdown file");
         return null;
@@ -35,39 +35,47 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
 
       const frontMatter = frontMatterMatch[1];
       const markdownContent = frontMatterMatch[2].trim();
-      
+
       // Parse the front matter as YAML
       const metadata = yaml.parse(frontMatter);
-      
+
       // Create basic item structure
       const item: Item = {
-        id: metadata.id || `note-${createSafeFilename(metadata.title)}-${generateUniqueId().substring(0, 8)}`,
+        id: metadata.id || generateUniqueId(),
         title: metadata.title || "Untitled",
         content: markdownContent,
-        createdAt: metadata.createdAt ? new Date(metadata.createdAt) : new Date(),
-        updatedAt: metadata.updatedAt ? new Date(metadata.updatedAt) : new Date(),
+        createdAt: metadata.createdAt
+          ? new Date(metadata.createdAt)
+          : new Date(),
+        updatedAt: metadata.updatedAt
+          ? new Date(metadata.updatedAt)
+          : new Date(),
         tags: metadata.tags || [],
       };
 
-      // Add optional attributes
-      if (metadata.done !== undefined) {
-        item.done = metadata.done;
+      // Add task attributes
+      if (metadata.task?.done !== undefined) {
+        item.done = metadata.task.done;
       }
 
-      if (metadata.date) {
-        item.date = new Date(metadata.date);
+      // Add event attributes
+      if (metadata.event) {
+        if (metadata.event.date) {
+          item.date = new Date(metadata.event.date);
+        }
+        if (metadata.event.location) {
+          item.location = metadata.event.location;
+        }
       }
 
-      if (metadata.location) {
-        item.location = metadata.location;
-      }
-
-      if (metadata.from) {
-        item.from = metadata.from;
-      }
-
-      if (metadata.to) {
-        item.to = metadata.to;
+      // Add mail attributes
+      if (metadata.mail) {
+        if (metadata.mail.from) {
+          item.from = metadata.mail.from;
+        }
+        if (metadata.mail.to) {
+          item.to = metadata.mail.to;
+        }
       }
 
       return item;
@@ -77,7 +85,9 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
     }
   };
 
-  const handleFileChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const files = event.target.files;
     if (!files || files.length === 0) return;
 
@@ -85,49 +95,39 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
 
     try {
       const importedItems: Item[] = [];
+      const file = files[0];
+      const content = await file.text();
 
-      // Check if it's a zip file
-      if (files[0].name.endsWith('.zip')) {
-        const zip = new JSZip();
-        const zipContent = await zip.loadAsync(files[0]);
-        
-        // Process all markdown files in the zip
-        const promises = Object.keys(zipContent.files)
-          .filter(filename => filename.endsWith('.md') && !zipContent.files[filename].dir)
-          .map(async (filename) => {
-            const fileData = await zipContent.files[filename].async("string");
-            const item = parseContent(fileData);
-            if (item) {
-              importedItems.push(item);
-            }
-          });
-        
-        await Promise.all(promises);
-      } else {
-        // Process individual markdown files
-        for (let i = 0; i < files.length; i++) {
-          if (files[i].name.endsWith('.md')) {
-            const content = await files[i].text();
-            const item = parseContent(content);
-            if (item) {
-              importedItems.push(item);
-            }
-          }
+      // Split content by "---" to separate items
+      const itemsContent = content.split(/\n---\n/);
+
+      // Process each item
+      for (const itemContent of itemsContent) {
+        // Skip the header if it's the first item
+        if (itemContent.startsWith("# IdeaCraft Export")) {
+          continue;
+        }
+
+        const item = parseContent(itemContent);
+        if (item) {
+          importedItems.push(item);
         }
       }
 
       if (importedItems.length > 0) {
         onImport(importedItems);
+        toast.success(`Successfully imported ${importedItems.length} items`);
       } else {
-        toast.error("No valid markdown files found");
+        toast.error("No valid items found in the file");
       }
     } catch (error) {
-      console.error("Error importing files:", error);
-      toast.error("Failed to import files");
+      console.error("Error importing markdown:", error);
+      toast.error("Failed to import items");
     } finally {
       setIsImporting(false);
+      // Reset the file input
       if (fileInputRef.current) {
-        fileInputRef.current.value = '';
+        fileInputRef.current.value = "";
       }
     }
   };
@@ -138,23 +138,23 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
         type="file"
         ref={fileInputRef}
         onChange={handleFileChange}
-        accept=".md,.zip"
-        multiple
+        accept=".md"
         className="hidden"
       />
       <Button
         id={id}
         variant="outline"
+        size="sm"
         onClick={handleImportClick}
         disabled={isImporting}
-        className="flex items-center gap-2"
+        className="w-10 h-10 md:w-auto rounded-full flex items-center"
       >
         {isImporting ? (
-          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+          <Loader2 className="size-4 animate-spin" />
         ) : (
-          <FileUp className="mr-2 h-4 w-4" />
+          <FileUp className="size-4" />
         )}
-        {isImporting ? "Importing..." : "Import Markdown"}
+        <span className="ms-1 hidden md:inline">Import</span>
       </Button>
     </>
   );
