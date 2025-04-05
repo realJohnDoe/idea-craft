@@ -214,7 +214,7 @@ const Index = () => {
 
         {/* Right column: Selected item */}
         {showSelectedItem && (
-          <div className="block bg-background lg:w-2/3 overflow-y-auto px-4 py-2">
+          <div className="block bg-background lg:w-2/3 overflow-y-auto">
             <SelectedItemView
               item={selectedItem}
               onUpdate={handleUpdateContent}
