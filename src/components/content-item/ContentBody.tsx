@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import {
   Item,
@@ -207,8 +206,8 @@ const ContentBody: React.FC<ContentBodyProps> = ({
 
         {/* Content type and tag selection */}
         <div className="px-3 py-1 flex flex-wrap items-center gap-1">
-          <ContentTypeTags 
-            item={item} 
+          <ContentTypeTags
+            item={item}
             editable={true}
             onRemoveTag={handleRemoveTag}
             onToggleType={handleToggleAttribute}
@@ -324,7 +323,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             </div>
 
             {/* Location editor */}
-            {(item.location || isEditingLocation) && (
+            {(item.location !== undefined || isEditingLocation) && (
               <div className="flex items-center text-sm text-event">
                 <MapPin className="mr-1 w-4 h-4" />
                 {!isEditingLocation ? (
@@ -391,7 +390,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   className="flex items-center group cursor-pointer"
                   onClick={() => setIsEditingMailFrom(true)}
                 >
-                  <span>{item.from}</span>
+                  <span>{item.from ?? ""}</span>
                   <Pencil className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
                 </div>
               ) : (
@@ -437,7 +436,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             </div>
 
             {/* To editor */}
-            {item.to && item.to.length > 0 && (
+            {(item.to !== undefined || isEditingMailTo) && (
               <div className="flex items-center">
                 <span className="font-medium mr-1">To:</span>
                 {!isEditingMailTo ? (
@@ -521,8 +520,8 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 </div>
               ) : (
                 <div className="flex justify-center py-4">
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     size="sm"
                     onClick={() => setIsEditingContent(true)}
                   >
