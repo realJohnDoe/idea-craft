@@ -1,5 +1,5 @@
 ---
-id: test123
+id: example-note-with-timestamps
 title: "Example Note with Timestamps"
 desc: "This is an example note using Unix timestamps"
 updated: 1647369185498

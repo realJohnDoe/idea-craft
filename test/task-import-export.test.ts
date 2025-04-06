@@ -55,14 +55,14 @@ const expectedItems: Partial<Item>[] = [
   },
   // Date format test cases
   {
-    id: "ogcux2p1trjjte8spv4l0ut",
+    id: "example-note-with-date-format",
     title: "Example Note with Date Format",
     content: "This is the content of the example note.",
     createdAt: new Date("2025-03-23"),
     updatedAt: new Date("2025-04-05"),
   },
   {
-    id: "test123",
+    id: "example-note-with-timestamps",
     title: "Example Note with Timestamps",
     content: "This is a test file with Unix timestamps.",
     createdAt: new Date(1647369160604),
@@ -181,16 +181,7 @@ test("should export tasks and dates correctly", async () => {
       continue;
     }
 
-    // Map item IDs to their corresponding fixture file names
-    const fixtureFileMap: Record<string, string> = {
-      "shared-task": "shared-task.md",
-      "reading-progress-book-1": "reading-progress-book-1.md",
-      "reading-progress-book-2": "reading-progress-book-2.md",
-      ogcux2p1trjjte8spv4l0ut: "date-format-example.md",
-      test123: "example-note-with-timestamps.md",
-    };
-
-    const fixtureFile = fixtureFileMap[item.id];
+    const fixtureFile = `${item.id}.md`;
     console.log(`Looking for fixture file: ${fixtureFile}`);
     const fixtureContent = fixtureContents.get(fixtureFile);
     console.log(`Found content:`, fixtureContent);
