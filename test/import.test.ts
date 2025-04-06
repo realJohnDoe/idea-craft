@@ -12,7 +12,7 @@ describe('ImportMarkdown', () => {
       const items = await importFromDirectory(testDir);
       
       // Verify the imported item
-      expect(items).toHaveLength(2); // We now have two test files
+      expect(items).toHaveLength(5); // We now have two test files
       
       const item = items.find(i => i.id === 'ogcux2p1trjjte8spv4l0ut');
       expect(item).toBeDefined();
@@ -35,7 +35,7 @@ describe('ImportMarkdown', () => {
       const items = await importFromDirectory(testDir);
       
       // Verify the imported item
-      expect(items).toHaveLength(2); // We now have two test files
+      expect(items).toHaveLength(5); // We now have two test files
       
       const item = items.find(i => i.id === 'test123');
       expect(item).toBeDefined();

@@ -1,9 +1,17 @@
 import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, FileUp } from "lucide-react";
+import { Loader2, FolderDown } from "lucide-react";
 import { Item } from "@/lib/content-utils";
 import { toast } from "sonner";
 import { parseContent } from "@/lib/import-utils";
+
+// Add type declaration for webkitdirectory
+declare module "react" {
+  interface InputHTMLAttributes<T> extends HTMLAttributes<T> {
+    webkitdirectory?: string;
+    directory?: string;
+  }
+}
 
 interface ImportMarkdownProps {
   onImport: (items: Item[]) => void;
@@ -20,6 +28,11 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
     }
   };
 
+  const processFile = async (file: File): Promise<Item | null> => {
+    const content = await file.text();
+    return parseContent(content);
+  };
+
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -30,28 +43,28 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
 
     try {
       const importedItems: Item[] = [];
-      const file = files[0];
-      const content = await file.text();
+      let processedFiles = 0;
+      let successfulImports = 0;
 
-      // Log the content details
-      console.log("Frontend file content:", content);
-      console.log("Frontend file content length:", content.length);
-      console.log(
-        "Frontend file content bytes:",
-        [...content].map((c) => c.charCodeAt(0))
-      );
+      // Process each file
+      for (const file of Array.from(files)) {
+        if (!file.name.endsWith(".md")) continue;
 
-      // Process the content directly without splitting
-      const item = parseContent(content);
-      if (item) {
-        importedItems.push(item);
+        processedFiles++;
+        const item = await processFile(file);
+        if (item) {
+          importedItems.push(item);
+          successfulImports++;
+        }
       }
 
       if (importedItems.length > 0) {
         onImport(importedItems);
-        toast.success(`Successfully imported ${importedItems.length} items`);
+        toast.success(
+          `Successfully imported ${successfulImports} of ${processedFiles} files`
+        );
       } else {
-        toast.error("No valid items found in the file");
+        toast.error("No valid items found in the files");
       }
     } catch (error) {
       console.error("Error importing markdown:", error);
@@ -72,6 +85,9 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
         ref={fileInputRef}
         onChange={handleFileChange}
         accept=".md"
+        multiple
+        webkitdirectory=""
+        directory=""
         className="hidden"
       />
       <Button
@@ -85,7 +101,7 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
         {isImporting ? (
           <Loader2 className="size-4 animate-spin" />
         ) : (
-          <FileUp className="size-4" />
+          <FolderDown className="size-4" />
         )}
         <span className="ms-1 hidden md:inline">Import</span>
       </Button>

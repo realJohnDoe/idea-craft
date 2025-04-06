@@ -19,6 +19,8 @@ export const parseContent = (content: string): Item | null => {
 
     // Parse the front matter as YAML
     const metadata = yaml.parse(frontMatter);
+    console.log('Parsed YAML:', metadata);
+    console.log('Task done:', metadata.task?.done);
 
     // Clean up metadata values
     const cleanMetadata = Object.fromEntries(
@@ -34,7 +36,8 @@ export const parseContent = (content: string): Item | null => {
       updatedAt?: string;
       updated?: string;
       tags?: string[];
-      task?: { done?: boolean };
+      done?: boolean | string;
+      task?: { done?: boolean | string };
       event?: { date?: string; location?: string };
       mail?: { from?: string; to?: string };
     };
@@ -77,8 +80,8 @@ export const parseContent = (content: string): Item | null => {
     };
 
     // Add task attributes
-    if (cleanMetadata.task?.done !== undefined) {
-      item.done = cleanMetadata.task.done;
+    if (cleanMetadata.done !== undefined) {
+      item.done = cleanMetadata.done === true || cleanMetadata.done === 'true';
     }
 
     // Add event attributes

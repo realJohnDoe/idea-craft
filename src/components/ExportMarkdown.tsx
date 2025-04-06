@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Loader2, FileDown } from "lucide-react";
+import { Loader2, FolderUp } from "lucide-react";
 import { Item, formatContentWithYaml } from "@/lib/content-utils";
 import { toast } from "sonner";
 import { createSafeFilename } from "@/lib/id-utils";
@@ -63,7 +63,7 @@ const ExportMarkdown: React.FC<ExportMarkdownProps> = ({ items, id }) => {
       {isExporting ? (
         <Loader2 className="size-4 animate-spin" />
       ) : (
-        <FileDown className="size-4" />
+        <FolderUp className="size-4" />
       )}
       <span className="ms-1 hidden md:inline">Export</span>
     </Button>
