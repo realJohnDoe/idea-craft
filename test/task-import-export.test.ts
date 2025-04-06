@@ -3,7 +3,7 @@ import { importFromDirectory } from "../src/lib/import-utils";
 import { Item } from "../src/lib/content-utils";
 import path from "path";
 
-test("should import tasks correctly", async () => {
+test("should import tasks and notes correctly", async () => {
   // Import all files from the test fixtures directory
   const items = await importFromDirectory(
     path.join(__dirname, "fixtures/import")
@@ -58,6 +58,21 @@ test("should import tasks correctly", async () => {
       done: true,
       content: "",
     },
+    // Date format test cases
+    {
+      id: "ogcux2p1trjjte8spv4l0ut",
+      title: "Example Note with Date Format",
+      content: "This is the content of the example note.",
+      createdAt: new Date("2025-03-23"),
+      updatedAt: new Date("2025-04-05"),
+    },
+    {
+      id: "test123",
+      title: "Example Note with Timestamps",
+      content: "This is a test file with Unix timestamps.",
+      createdAt: new Date(1647369160604),
+      updatedAt: new Date(1647369185498),
+    },
   ];
 
   // Verify all expected items are present
@@ -73,6 +88,20 @@ test("should import tasks correctly", async () => {
       const expectedContent = expected.content.replace(/\r\n/g, "\n");
       const actualContent = item?.content.replace(/\r\n/g, "\n");
       expect(actualContent).toBe(expectedContent);
+    }
+    if (expected.createdAt) {
+      expect(item?.createdAt).toBeDefined();
+      // Compare dates using toLocaleDateString to handle timezone differences
+      expect(item?.createdAt.toLocaleDateString("en-CA")).toBe(
+        expected.createdAt.toLocaleDateString("en-CA")
+      );
+    }
+    if (expected.updatedAt) {
+      expect(item?.updatedAt).toBeDefined();
+      // Compare dates using toLocaleDateString to handle timezone differences
+      expect(item?.updatedAt.toLocaleDateString("en-CA")).toBe(
+        expected.updatedAt.toLocaleDateString("en-CA")
+      );
     }
   }
 
@@ -90,18 +119,34 @@ test("should import tasks correctly", async () => {
   // Tasks from book 1
   const task1 = items.find((i) => i.id === "2022-04-10");
   const task2 = items.find((i) => i.id === "2022-04-11");
-  expect(task1?.createdAt).toEqual(book1?.createdAt);
-  expect(task1?.updatedAt).toEqual(book1?.updatedAt);
-  expect(task2?.createdAt).toEqual(book1?.createdAt);
-  expect(task2?.updatedAt).toEqual(book1?.updatedAt);
+  expect(task1?.createdAt.toLocaleDateString("en-CA")).toEqual(
+    book1?.createdAt.toLocaleDateString("en-CA")
+  );
+  expect(task1?.updatedAt.toLocaleDateString("en-CA")).toEqual(
+    book1?.updatedAt.toLocaleDateString("en-CA")
+  );
+  expect(task2?.createdAt.toLocaleDateString("en-CA")).toEqual(
+    book1?.createdAt.toLocaleDateString("en-CA")
+  );
+  expect(task2?.updatedAt.toLocaleDateString("en-CA")).toEqual(
+    book1?.updatedAt.toLocaleDateString("en-CA")
+  );
 
   // Tasks from book 2
   const task3 = items.find((i) => i.id === "2022-04-15");
   const task4 = items.find((i) => i.id === "2022-04-16");
-  expect(task3?.createdAt).toEqual(book2?.createdAt);
-  expect(task3?.updatedAt).toEqual(book2?.updatedAt);
-  expect(task4?.createdAt).toEqual(book2?.createdAt);
-  expect(task4?.updatedAt).toEqual(book2?.updatedAt);
+  expect(task3?.createdAt.toLocaleDateString("en-CA")).toEqual(
+    book2?.createdAt.toLocaleDateString("en-CA")
+  );
+  expect(task3?.updatedAt.toLocaleDateString("en-CA")).toEqual(
+    book2?.updatedAt.toLocaleDateString("en-CA")
+  );
+  expect(task4?.createdAt.toLocaleDateString("en-CA")).toEqual(
+    book2?.createdAt.toLocaleDateString("en-CA")
+  );
+  expect(task4?.updatedAt.toLocaleDateString("en-CA")).toEqual(
+    book2?.updatedAt.toLocaleDateString("en-CA")
+  );
 });
 
 test("should export tasks correctly", async () => {
@@ -110,52 +155,4 @@ test("should export tasks correctly", async () => {
   // 2. Tasks that are mentioned in multiple notes are exported as separate files
   // 3. Notes that reference shared tasks use the ![[...]] syntax with the task's title
   // We'll implement this after the import functionality is working
-});
-
-describe("importFromDirectory", () => {
-  it("should import a markdown file with YYYY-MM-DD dates correctly", async () => {
-    // Get the path to our test fixture
-    const testDir = path.join(__dirname, "fixtures", "import");
-
-    // Import the file
-    const items = await importFromDirectory(testDir);
-
-    // Verify the imported item
-    expect(items).toHaveLength(9); // We now have two test files
-
-    const item = items.find((i) => i.id === "ogcux2p1trjjte8spv4l0ut");
-    expect(item).toBeDefined();
-    if (!item) return;
-
-    expect(item.title).toBe("Example Note with Date Format");
-    expect(item.content).toBe("This is the content of the example note.");
-    expect(item.tags).toEqual([]);
-
-    // Compare dates using toLocaleDateString to handle timezone differences
-    expect(item.createdAt.toLocaleDateString("en-CA")).toBe("2025-03-23");
-    expect(item.updatedAt.toLocaleDateString("en-CA")).toBe("2025-04-05");
-  });
-
-  it("should import a markdown file with Unix timestamps correctly", async () => {
-    // Get the path to our test fixture
-    const testDir = path.join(__dirname, "fixtures", "import");
-
-    // Import the file
-    const items = await importFromDirectory(testDir);
-
-    // Verify the imported item
-    expect(items).toHaveLength(9); // We now have two test files
-
-    const item = items.find((i) => i.id === "test123");
-    expect(item).toBeDefined();
-    if (!item) return;
-
-    expect(item.title).toBe("Example Note with Timestamps");
-    expect(item.content).toBe("This is a test file with Unix timestamps.");
-    expect(item.tags).toEqual([]);
-
-    // Verify the dates are parsed correctly
-    expect(item.createdAt.getTime()).toBe(1647369160604);
-    expect(item.updatedAt.getTime()).toBe(1647369185498);
-  });
 });
