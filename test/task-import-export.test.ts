@@ -1,38 +1,31 @@
 import { expect, test } from 'vitest';
-import { parseContent } from '../src/lib/import-utils';
-import { Item } from '../src/lib/content-utils';
+import { importFromDirectory } from '../src/lib/import-utils';
 import path from 'path';
-import { promises as fs } from 'fs';
 
 test('should import tasks correctly', async () => {
-  // Read all test files
-  const uniqueTaskContent = await fs.readFile(
-    path.join(__dirname, 'fixtures/import/unique-task-note.md'),
-    'utf-8'
-  );
-  const sharedTaskContent = await fs.readFile(
-    path.join(__dirname, 'fixtures/import/shared-task.md'),
-    'utf-8'
-  );
-  const noteWithSharedTaskContent = await fs.readFile(
-    path.join(__dirname, 'fixtures/import/note-with-shared-task.md'),
-    'utf-8'
+  // Import all files from the test fixtures directory
+  const items = await importFromDirectory(
+    path.join(__dirname, 'fixtures/import')
   );
 
-  // Parse all files
-  const uniqueTaskNote = parseContent(uniqueTaskContent);
-  const sharedTask = parseContent(sharedTaskContent);
-  const noteWithSharedTask = parseContent(noteWithSharedTaskContent);
-
-  // Verify the files were parsed correctly
-  expect(uniqueTaskNote).not.toBeNull();
-  expect(sharedTask).not.toBeNull();
-  expect(noteWithSharedTask).not.toBeNull();
-
-  // Verify the shared task has the correct properties
-  expect(sharedTask?.title).toBe('Finished reading Book 1 on 2022-04-14');
+  // Find the shared task
+  const sharedTask = items.find(
+    item => item.title === 'Finished reading Book 1 on 2022-04-14'
+  );
+  expect(sharedTask).not.toBeUndefined();
   expect(sharedTask?.done).toBe(true);
   expect(sharedTask?.content).toBe('This task is shared between multiple notes because it represents finishing Book 1, which is relevant to both reading progress notes.');
+
+  // Find the notes that reference the shared task
+  const uniqueTaskNote = items.find(
+    item => item.title === 'Reading Progress - Book 1'
+  );
+  const noteWithSharedTask = items.find(
+    item => item.title === 'Reading Progress - Book 2'
+  );
+
+  expect(uniqueTaskNote).not.toBeUndefined();
+  expect(noteWithSharedTask).not.toBeUndefined();
 
   // Verify both notes reference the shared task by its title
   const taskReference = `![[Finished reading Book 1 on 2022-04-14]]`;

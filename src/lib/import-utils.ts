@@ -1,6 +1,8 @@
 import { Item } from "./content-utils";
 import { generateUniqueId } from "./id-utils";
 import yaml from "yaml";
+import fs from "fs/promises";
+import path from "path";
 
 export const parseContent = (content: string): Item | null => {
   try {
@@ -109,4 +111,25 @@ export const parseContent = (content: string): Item | null => {
     console.error("Error parsing markdown content:", error);
     return null;
   }
-}; 
+};
+
+export async function importFromDirectory(directoryPath: string): Promise<Item[]> {
+  const items: Item[] = [];
+  const files = await fs.readdir(directoryPath);
+  
+  for (const file of files) {
+    if (!file.endsWith('.md')) continue;
+    
+    const content = await fs.readFile(
+      path.join(directoryPath, file),
+      'utf-8'
+    );
+    
+    const item = parseContent(content);
+    if (item) {
+      items.push(item);
+    }
+  }
+  
+  return items;
+} 
