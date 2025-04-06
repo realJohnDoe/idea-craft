@@ -51,11 +51,19 @@ const Index = () => {
     return allTags.sort();
   }, [items]);
 
-  // Initialize with example items if no content exists
   useEffect(() => {
-    // Always use example items
-    setItems(simplifiedExampleContentItems);
-    setShowWelcome(true);
+    const storedItems = localStorage.getItem("items");
+    if (storedItems) {
+      setItems(JSON.parse(storedItems));
+    } else {
+      // Initialize with example content if no items exist
+      const exampleItems = simplifiedExampleContentItems.map((item) => ({
+        ...item,
+        id: nanoid(), // Generate new IDs for example items
+      }));
+      setItems(exampleItems);
+      localStorage.setItem("items", JSON.stringify(exampleItems));
+    }
   }, []);
 
   // Handle URL-based item selection
@@ -111,12 +119,13 @@ const Index = () => {
     // Apply content type filter
     let matchesType = true;
     if (activeFilter !== "") {
-      if (activeFilter === "task") matchesType = item.done !== undefined;
-      else if (activeFilter === "event")
+      if (activeFilter === "task") {
+        matchesType = item.done !== undefined;
+      } else if (activeFilter === "event") {
         matchesType = item.date !== undefined || item.location !== undefined;
-      else if (activeFilter === "mail")
+      } else if (activeFilter === "mail") {
         matchesType = item.from !== undefined || item.to !== undefined;
-      else if (activeFilter === "note") {
+      } else if (activeFilter === "note") {
         // Note if no other attributes are present
         matchesType =
           item.done === undefined &&

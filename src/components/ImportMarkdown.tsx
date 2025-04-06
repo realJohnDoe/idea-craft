@@ -2,9 +2,8 @@ import React, { useState, useRef } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, FileUp } from "lucide-react";
 import { Item } from "@/lib/content-utils";
-import { generateUniqueId } from "@/lib/id-utils";
 import { toast } from "sonner";
-import yaml from "yaml";
+import { parseContent } from "@/lib/import-utils";
 
 interface ImportMarkdownProps {
   onImport: (items: Item[]) => void;
@@ -21,70 +20,6 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
     }
   };
 
-  const parseContent = (content: string): Item | null => {
-    try {
-      // Try to extract YAML front matter
-      const frontMatterMatch = content.match(
-        /^---\n([\s\S]*?)\n---\n([\s\S]*)$/
-      );
-
-      if (!frontMatterMatch) {
-        console.error("No front matter found in markdown file");
-        return null;
-      }
-
-      const frontMatter = frontMatterMatch[1];
-      const markdownContent = frontMatterMatch[2].trim();
-
-      // Parse the front matter as YAML
-      const metadata = yaml.parse(frontMatter);
-
-      // Create basic item structure
-      const item: Item = {
-        id: metadata.id || generateUniqueId(),
-        title: metadata.title || "Untitled",
-        content: markdownContent,
-        createdAt: metadata.createdAt
-          ? new Date(metadata.createdAt)
-          : new Date(),
-        updatedAt: metadata.updatedAt
-          ? new Date(metadata.updatedAt)
-          : new Date(),
-        tags: metadata.tags || [],
-      };
-
-      // Add task attributes
-      if (metadata.task?.done !== undefined) {
-        item.done = metadata.task.done;
-      }
-
-      // Add event attributes
-      if (metadata.event) {
-        if (metadata.event.date) {
-          item.date = new Date(metadata.event.date);
-        }
-        if (metadata.event.location) {
-          item.location = metadata.event.location;
-        }
-      }
-
-      // Add mail attributes
-      if (metadata.mail) {
-        if (metadata.mail.from) {
-          item.from = metadata.mail.from;
-        }
-        if (metadata.mail.to) {
-          item.to = metadata.mail.to;
-        }
-      }
-
-      return item;
-    } catch (error) {
-      console.error("Error parsing markdown content:", error);
-      return null;
-    }
-  };
-
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -98,20 +33,18 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
       const file = files[0];
       const content = await file.text();
 
-      // Split content by "---" to separate items
-      const itemsContent = content.split(/\n---\n/);
+      // Log the content details
+      console.log("Frontend file content:", content);
+      console.log("Frontend file content length:", content.length);
+      console.log(
+        "Frontend file content bytes:",
+        [...content].map((c) => c.charCodeAt(0))
+      );
 
-      // Process each item
-      for (const itemContent of itemsContent) {
-        // Skip the header if it's the first item
-        if (itemContent.startsWith("# IdeaCraft Export")) {
-          continue;
-        }
-
-        const item = parseContent(itemContent);
-        if (item) {
-          importedItems.push(item);
-        }
+      // Process the content directly without splitting
+      const item = parseContent(content);
+      if (item) {
+        importedItems.push(item);
       }
 
       if (importedItems.length > 0) {
