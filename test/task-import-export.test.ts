@@ -82,6 +82,26 @@ test("should import tasks correctly", async () => {
     item.content.includes(taskReference)
   );
   expect(referencingNotes).toHaveLength(2);
+
+  // Verify task dates match their parent files
+  const book1 = items.find((i) => i.id === "reading-progress-book-1");
+  const book2 = items.find((i) => i.id === "reading-progress-book-2");
+
+  // Tasks from book 1
+  const task1 = items.find((i) => i.id === "2022-04-10");
+  const task2 = items.find((i) => i.id === "2022-04-11");
+  expect(task1?.createdAt).toEqual(book1?.createdAt);
+  expect(task1?.updatedAt).toEqual(book1?.updatedAt);
+  expect(task2?.createdAt).toEqual(book1?.createdAt);
+  expect(task2?.updatedAt).toEqual(book1?.updatedAt);
+
+  // Tasks from book 2
+  const task3 = items.find((i) => i.id === "2022-04-15");
+  const task4 = items.find((i) => i.id === "2022-04-16");
+  expect(task3?.createdAt).toEqual(book2?.createdAt);
+  expect(task3?.updatedAt).toEqual(book2?.updatedAt);
+  expect(task4?.createdAt).toEqual(book2?.createdAt);
+  expect(task4?.updatedAt).toEqual(book2?.updatedAt);
 });
 
 test("should export tasks correctly", async () => {
