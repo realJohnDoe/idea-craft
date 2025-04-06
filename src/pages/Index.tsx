@@ -53,34 +53,10 @@ const Index = () => {
 
   // Initialize with example items if no content exists
   useEffect(() => {
-    const storedContent = localStorage.getItem("ideaCraft_content");
-
-    if (storedContent) {
-      try {
-        const parsedItems = JSON.parse(storedContent).map((item: any) => ({
-          ...item,
-          createdAt: new Date(item.createdAt),
-          updatedAt: new Date(item.updatedAt),
-          date: item.date ? new Date(item.date) : undefined,
-        }));
-        setItems(parsedItems);
-      } catch (e) {
-        console.error("Error parsing stored content:", e);
-        setItems(simplifiedExampleContentItems);
-      }
-    } else {
-      // Use example items when no content exists
-      setItems(simplifiedExampleContentItems);
-      setShowWelcome(true);
-    }
+    // Always use example items
+    setItems(simplifiedExampleContentItems);
+    setShowWelcome(true);
   }, []);
-
-  // Save content to localStorage when it changes
-  useEffect(() => {
-    if (items.length > 0) {
-      localStorage.setItem("ideaCraft_content", JSON.stringify(items));
-    }
-  }, [items]);
 
   // Handle URL-based item selection
   useEffect(() => {

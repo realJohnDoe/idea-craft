@@ -1,10 +1,5 @@
-
 import React, { useState } from "react";
-import {
-  Item,
-  processContentLinks,
-  hasTaskAttributes,
-} from "@/lib/content-utils";
+import { Item, hasTaskAttributes } from "@/lib/content-utils";
 import { cn } from "@/lib/utils";
 import ContentTypeTags from "./ContentTypeTags";
 import IdeaCraftCheckbox from "../IdeaCraftCheckbox";
@@ -36,7 +31,7 @@ const ContentItem: React.FC<ContentItemProps> = ({
     <div id={`content-item-${item.id}`}>
       <Card
         className={
-          "flex flex-col gap-1 px-3 py-2 my-2 rounded-lg border border-b group"
+          "flex flex-col gap-1 px-2.5 pb-2.5 pt-1.5 my-2 rounded-lg border border-b group"
         }
       >
         <div className="flex items-center">
