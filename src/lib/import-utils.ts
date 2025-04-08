@@ -21,8 +21,6 @@ export const parseContent = (content: string): Item | null => {
 
     // Parse the front matter as YAML
     const metadata = yaml.parse(frontMatter);
-    console.log("Parsed YAML:", metadata);
-    console.log("Task done:", metadata.task?.done);
 
     // Clean up metadata values
     const cleanMetadata = Object.fromEntries(
@@ -48,6 +46,11 @@ export const parseContent = (content: string): Item | null => {
     const parseLocalDate = (dateStr: string | number): Date => {
       // If it's a number (Unix timestamp), convert it directly
       if (typeof dateStr === "number") {
+        return new Date(dateStr);
+      }
+
+      // If it's an ISO string, parse it directly
+      if (dateStr.match(/^\d{4}-\d{2}-\d{2}T/)) {
         return new Date(dateStr);
       }
 
@@ -169,7 +172,6 @@ export async function importFromDirectory(
     let content = item.content;
 
     // Replace all task lines with references
-    console.log("Before replacement:", content);
     content = content.replace(
       /^([ \t]*)- \[(x| )\] (.*)$/gm,
       (match, indent, done, title) => {
@@ -177,7 +179,6 @@ export async function importFromDirectory(
         return taskId ? `${indent}- ![[${title}]]` : match;
       }
     );
-    console.log("After replacement:", content);
 
     item.content = content;
   }
@@ -218,18 +219,10 @@ export async function exportToDirectory(
 
     // Add dates if they exist
     if (item.createdAt) {
-      // Format date as YYYY-MM-DD in local timezone
-      const year = item.createdAt.getFullYear();
-      const month = String(item.createdAt.getMonth() + 1).padStart(2, "0");
-      const day = String(item.createdAt.getDate()).padStart(2, "0");
-      frontMatter.created = `${year}-${month}-${day}`;
+      frontMatter.created = item.createdAt.toISOString();
     }
     if (item.updatedAt) {
-      // Format date as YYYY-MM-DD in local timezone
-      const year = item.updatedAt.getFullYear();
-      const month = String(item.updatedAt.getMonth() + 1).padStart(2, "0");
-      const day = String(item.updatedAt.getDate()).padStart(2, "0");
-      frontMatter.updated = `${year}-${month}-${day}`;
+      frontMatter.updated = item.updatedAt.toISOString();
     }
 
     // Add other metadata
@@ -240,10 +233,7 @@ export async function exportToDirectory(
       frontMatter.done = item.done;
     }
     if (item.date) {
-      const year = item.date.getFullYear();
-      const month = String(item.date.getMonth() + 1).padStart(2, "0");
-      const day = String(item.date.getDate()).padStart(2, "0");
-      frontMatter.event = { date: `${year}-${month}-${day}` };
+      frontMatter.event = { date: item.date.toISOString() };
     }
     if (item.location) {
       frontMatter.event = { ...frontMatter.event, location: item.location };
@@ -261,7 +251,6 @@ export async function exportToDirectory(
     let content = `---\n${yamlContent}---\n\n${item.content}`;
 
     // Replace task references with appropriate format
-    console.log("Before replacement:", content);
     content = content.replace(/!\[\[(.*?)\]\]/g, (match, title) => {
       const count = taskReferenceCount.get(title) || 0;
       if (count > 1) {
@@ -273,7 +262,6 @@ export async function exportToDirectory(
         return `[${task?.done ? "x" : " "}] ${title}`;
       }
     });
-    console.log("After replacement:", content);
 
     // Write the file
     const filePath = path.join(directoryPath, `${item.id}.md`);
