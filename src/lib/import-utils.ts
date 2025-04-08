@@ -208,8 +208,12 @@ export async function exportToDirectory(
 
   // Export each item
   for (const item of items) {
-    // Skip tasks as they will be embedded in their parent files
-    if (item.done !== undefined) continue;
+    // Skip non-shared tasks as they will be embedded in their parent files
+    if (item.done !== undefined) {
+      // Check if this task is shared (referenced by multiple files)
+      const isShared = taskReferenceCount.get(item.title) > 1;
+      if (!isShared) continue;
+    }
 
     // Create YAML front matter
     const frontMatter: Record<string, any> = {

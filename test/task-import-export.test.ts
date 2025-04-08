@@ -171,6 +171,9 @@ test("should import and export unchanged files correctly", async () => {
     // Export items to the temporary directory
     const exportedFiles = await exportToDirectory(items, exportDir);
 
+    // Verify shared task is exported
+    expect(exportedFiles.has("shared-task.md")).toBe(true);
+
     // Read all fixture files for comparison
     const fixtureDir = path.join(__dirname, "fixtures/unchanged");
     const fixtureFiles = await fs.readdir(fixtureDir);
