@@ -1,8 +1,8 @@
 ---
 id: reading-progress-book-1
-title: "Reading Progress - Book 1"
-updated: 1659608565007
-created: 1649402913085
+title: Reading Progress - Book 1
+created: 2022-04-08
+updated: 2022-08-04
 ---
 
 - CW15:

@@ -1,5 +1,8 @@
 import { expect, test } from "vitest";
-import { importFromDirectory } from "../src/lib/import-utils";
+import {
+  importFromDirectory,
+  exportToDirectory,
+} from "../src/lib/import-utils";
 import { Item } from "../src/lib/content-utils";
 import path from "path";
 import fs from "fs/promises";
@@ -17,8 +20,8 @@ const expectedItems: Partial<Item>[] = [
     id: "reading-progress-book-1",
     title: "Reading Progress - Book 1",
     content: `- CW15:
-- ![[2022-04-10]]
-- ![[2022-04-11]]
+  - ![[2022-04-10]]
+  - ![[2022-04-11]]
   - ![[Finished reading Book 1 on 2022-04-14]]`,
   },
   {
@@ -71,10 +74,14 @@ const expectedItems: Partial<Item>[] = [
 ];
 
 test("should import tasks and notes correctly", async () => {
-  // Import all files from the test fixtures directory
-  const items = await importFromDirectory(
-    path.join(__dirname, "fixtures/import")
+  // Import files from both directories
+  const unchangedItems = await importFromDirectory(
+    path.join(__dirname, "fixtures/unchanged")
   );
+  const testItems = await importFromDirectory(
+    path.join(__dirname, "fixtures/test-imports")
+  );
+  const items = [...unchangedItems, ...testItems];
 
   // Verify all expected items are present
   for (const expected of expectedItems) {
@@ -150,53 +157,92 @@ test("should import tasks and notes correctly", async () => {
   );
 });
 
-test("should export tasks and dates correctly", async () => {
-  // Read all fixture files
-  const fixtureDir = path.join(__dirname, "fixtures/import");
-  const fixtureFiles = await fs.readdir(fixtureDir);
-  console.log("Found fixture files:", fixtureFiles);
+test("should import and export unchanged files correctly", async () => {
+  // Create a temporary directory for export
+  const exportDir = path.join(__dirname, "fixtures/export");
+  await fs.mkdir(exportDir, { recursive: true });
 
-  // Read and normalize the content of each fixture file
-  const fixtureContents = new Map<string, string>();
-  for (const file of fixtureFiles) {
-    if (!file.endsWith(".md")) continue;
-    const content = await fs.readFile(path.join(fixtureDir, file), "utf-8");
-    // Normalize line endings and remove any trailing whitespace
-    const normalizedContent = content.replace(/\r\n/g, "\n").trim();
-    fixtureContents.set(file, normalizedContent);
-    console.log(`Content of ${file}:`, normalizedContent);
-  }
+  try {
+    // Import files from the unchanged directory
+    const items = await importFromDirectory(
+      path.join(__dirname, "fixtures/unchanged")
+    );
 
-  // TODO: Call export function when implemented
-  // const exportedFiles = await exportToDirectory(expectedItems, someOutputDir);
+    // Export items to the temporary directory
+    const exportedFiles = await exportToDirectory(items, exportDir);
 
-  // For now, we'll verify that the expected items would produce the correct files
-  for (const item of expectedItems) {
-    if (!item.id) continue;
+    // Read all fixture files for comparison
+    const fixtureDir = path.join(__dirname, "fixtures/unchanged");
+    const fixtureFiles = await fs.readdir(fixtureDir);
 
-    // Skip task items that should be embedded in their parent files
-    if (
-      ["2022-04-10", "2022-04-11", "2022-04-15", "2022-04-16"].includes(item.id)
-    ) {
-      continue;
+    // Read and normalize the content of each fixture file
+    const fixtureContents = new Map<string, string>();
+    for (const file of fixtureFiles) {
+      if (!file.endsWith(".md")) continue;
+      const content = await fs.readFile(path.join(fixtureDir, file), "utf-8");
+      // Normalize line endings and remove any trailing whitespace
+      const normalizedContent = content.replace(/\r\n/g, "\n").trim();
+      fixtureContents.set(file, normalizedContent);
     }
 
-    const fixtureFile = `${item.id}.md`;
-    console.log(`Looking for fixture file: ${fixtureFile}`);
-    const fixtureContent = fixtureContents.get(fixtureFile);
-    console.log(`Found content:`, fixtureContent);
-    expect(fixtureContent).not.toBeUndefined();
+    // Compare exported files with fixture files
+    for (const [file, content] of exportedFiles) {
+      const fixtureContent = fixtureContents.get(file);
+      expect(fixtureContent).not.toBeUndefined();
 
-    // TODO: When export is implemented, compare with actual exported content
-    // const exportedContent = exportedFiles.get(fixtureFile);
-    // expect(exportedContent).toBe(fixtureContent);
+      // Normalize both contents for comparison
+      const normalizedExported = content.replace(/\r\n/g, "\n").trim();
+      const normalizedFixture = fixtureContent?.replace(/\r\n/g, "\n").trim();
+
+      expect(normalizedExported).toBe(normalizedFixture);
+    }
+  } finally {
+    // Clean up: remove the temporary export directory
+    await fs.rm(exportDir, { recursive: true, force: true });
   }
+});
 
-  // Verify that task references are correctly formatted in the exported files
-  const taskReference = `![[Finished reading Book 1 on 2022-04-14]]`;
-  const referencingFiles = Array.from(fixtureContents.entries())
-    .filter(([_, content]) => content.includes(taskReference))
-    .map(([file]) => file);
-  console.log("Files referencing shared task:", referencingFiles);
-  expect(referencingFiles).toHaveLength(2);
+test("should transform and export files correctly", async () => {
+  // Create a temporary directory for export
+  const exportDir = path.join(__dirname, "fixtures/export");
+  await fs.mkdir(exportDir, { recursive: true });
+
+  try {
+    // Import files from the test-imports directory
+    const items = await importFromDirectory(
+      path.join(__dirname, "fixtures/test-imports")
+    );
+
+    // Export items to the temporary directory
+    const exportedFiles = await exportToDirectory(items, exportDir);
+
+    // Read all expected export files for comparison
+    const expectedDir = path.join(__dirname, "fixtures/expected-exports");
+    const expectedFiles = await fs.readdir(expectedDir);
+
+    // Read and normalize the content of each expected file
+    const expectedContents = new Map<string, string>();
+    for (const file of expectedFiles) {
+      if (!file.endsWith(".md")) continue;
+      const content = await fs.readFile(path.join(expectedDir, file), "utf-8");
+      // Normalize line endings and remove any trailing whitespace
+      const normalizedContent = content.replace(/\r\n/g, "\n").trim();
+      expectedContents.set(file, normalizedContent);
+    }
+
+    // Compare exported files with expected files
+    for (const [file, content] of exportedFiles) {
+      const expectedContent = expectedContents.get(file);
+      expect(expectedContent).not.toBeUndefined();
+
+      // Normalize both contents for comparison
+      const normalizedExported = content.replace(/\r\n/g, "\n").trim();
+      const normalizedExpected = expectedContent?.replace(/\r\n/g, "\n").trim();
+
+      expect(normalizedExported).toBe(normalizedExpected);
+    }
+  } finally {
+    // Clean up: remove the temporary export directory
+    await fs.rm(exportDir, { recursive: true, force: true });
+  }
 });

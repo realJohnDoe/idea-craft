@@ -164,22 +164,122 @@ export async function importFromDirectory(
     }
   }
 
-  // Third pass: replace task references in content
+  // Third pass: replace task lines with references
   for (const item of items) {
     let content = item.content;
 
-    // Replace task lines with references
+    // Replace all task lines with references
+    console.log("Before replacement:", content);
     content = content.replace(
-      /^[ \t]*- \[(x| )\] (.*)$/gm,
-      (match, done, title) => {
+      /^([ \t]*)- \[(x| )\] (.*)$/gm,
+      (match, indent, done, title) => {
         const taskId = taskReferences.get(title);
-        return taskId ? `- ![[${title}]]` : match;
+        return taskId ? `${indent}- ![[${title}]]` : match;
       }
     );
+    console.log("After replacement:", content);
 
     item.content = content;
   }
 
   // Return all items including tasks
   return [...items, ...taskItems];
+}
+
+export async function exportToDirectory(
+  items: Item[],
+  directoryPath: string
+): Promise<Map<string, string>> {
+  const exportedFiles = new Map<string, string>();
+
+  // Create directory if it doesn't exist
+  await fs.mkdir(directoryPath, { recursive: true });
+
+  // First pass: count task references
+  const taskReferenceCount = new Map<string, number>();
+  for (const item of items) {
+    const taskReferences = item.content.match(/!\[\[(.*?)\]\]/g) || [];
+    for (const ref of taskReferences) {
+      const title = ref.slice(3, -2); // Remove ![[ and ]]
+      taskReferenceCount.set(title, (taskReferenceCount.get(title) || 0) + 1);
+    }
+  }
+
+  // Export each item
+  for (const item of items) {
+    // Skip tasks as they will be embedded in their parent files
+    if (item.done !== undefined) continue;
+
+    // Create YAML front matter
+    const frontMatter: Record<string, any> = {
+      id: item.id,
+      title: item.title,
+    };
+
+    // Add dates if they exist
+    if (item.createdAt) {
+      // Format date as YYYY-MM-DD in local timezone
+      const year = item.createdAt.getFullYear();
+      const month = String(item.createdAt.getMonth() + 1).padStart(2, "0");
+      const day = String(item.createdAt.getDate()).padStart(2, "0");
+      frontMatter.created = `${year}-${month}-${day}`;
+    }
+    if (item.updatedAt) {
+      // Format date as YYYY-MM-DD in local timezone
+      const year = item.updatedAt.getFullYear();
+      const month = String(item.updatedAt.getMonth() + 1).padStart(2, "0");
+      const day = String(item.updatedAt.getDate()).padStart(2, "0");
+      frontMatter.updated = `${year}-${month}-${day}`;
+    }
+
+    // Add other metadata
+    if (item.tags?.length) {
+      frontMatter.tags = item.tags;
+    }
+    if (item.done !== undefined) {
+      frontMatter.done = item.done;
+    }
+    if (item.date) {
+      const year = item.date.getFullYear();
+      const month = String(item.date.getMonth() + 1).padStart(2, "0");
+      const day = String(item.date.getDate()).padStart(2, "0");
+      frontMatter.event = { date: `${year}-${month}-${day}` };
+    }
+    if (item.location) {
+      frontMatter.event = { ...frontMatter.event, location: item.location };
+    }
+    if (item.from || item.to) {
+      frontMatter.mail = {};
+      if (item.from) frontMatter.mail.from = item.from;
+      if (item.to) frontMatter.mail.to = item.to;
+    }
+
+    // Convert front matter to YAML
+    const yamlContent = yaml.stringify(frontMatter);
+
+    // Build the content
+    let content = `---\n${yamlContent}---\n\n${item.content}`;
+
+    // Replace task references with appropriate format
+    console.log("Before replacement:", content);
+    content = content.replace(/!\[\[(.*?)\]\]/g, (match, title) => {
+      const count = taskReferenceCount.get(title) || 0;
+      if (count > 1) {
+        // Keep as reference if shared
+        return match;
+      } else {
+        // Convert to task format if not shared
+        const task = items.find((i) => i.title === title);
+        return `[${task?.done ? "x" : " "}] ${title}`;
+      }
+    });
+    console.log("After replacement:", content);
+
+    // Write the file
+    const filePath = path.join(directoryPath, `${item.id}.md`);
+    await fs.writeFile(filePath, content, "utf-8");
+    exportedFiles.set(`${item.id}.md`, content);
+  }
+
+  return exportedFiles;
 }
