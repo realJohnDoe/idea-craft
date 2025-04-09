@@ -275,3 +275,23 @@ export async function exportToDirectory(
 
   return exportedFiles;
 }
+
+export async function importFromFiles(files: File[]): Promise<Item[]> {
+  const items: Item[] = [];
+  const fileContents = new Map<string, string>();
+
+  for (const file of files) {
+    if (!file.name.endsWith(".md")) continue;
+    const content = await file.text();
+    fileContents.set(file.name, content);
+  }
+
+  for (const [fileName, content] of fileContents) {
+    const item = parseContent(content);
+    if (item) {
+      items.push(item);
+    }
+  }
+
+  return items;
+}

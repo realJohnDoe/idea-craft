@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Loader2, FolderDown } from "lucide-react";
 import { Item } from "@/lib/content-utils";
 import { toast } from "sonner";
-import { parseContent } from "@/lib/import-utils";
+import { importFromFiles } from "@/lib/import-utils";
 
 // Add type declaration for webkitdirectory
 declare module "react" {
@@ -28,11 +28,6 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
     }
   };
 
-  const processFile = async (file: File): Promise<Item | null> => {
-    const content = await file.text();
-    return parseContent(content);
-  };
-
   const handleFileChange = async (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -42,27 +37,11 @@ const ImportMarkdown: React.FC<ImportMarkdownProps> = ({ onImport, id }) => {
     setIsImporting(true);
 
     try {
-      const importedItems: Item[] = [];
-      let processedFiles = 0;
-      let successfulImports = 0;
+      const items = await importFromFiles(Array.from(files));
 
-      // Process each file
-      for (const file of Array.from(files)) {
-        if (!file.name.endsWith(".md")) continue;
-
-        processedFiles++;
-        const item = await processFile(file);
-        if (item) {
-          importedItems.push(item);
-          successfulImports++;
-        }
-      }
-
-      if (importedItems.length > 0) {
-        onImport(importedItems);
-        toast.success(
-          `Successfully imported ${successfulImports} of ${processedFiles} files`
-        );
+      if (items.length > 0) {
+        onImport(items);
+        toast.success(`Successfully imported ${items.length} items`);
       } else {
         toast.error("No valid items found in the files");
       }
