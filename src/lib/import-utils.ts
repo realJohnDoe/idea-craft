@@ -118,25 +118,7 @@ export const parseContent = (content: string): Item | null => {
   }
 };
 
-export async function importFromDirectory(
-  directoryPath: string
-): Promise<Item[]> {
-  const items: Item[] = [];
-  const files = await fs.readdir(directoryPath);
-
-  // First pass: import all files
-  for (const file of files) {
-    if (!file.endsWith(".md")) continue;
-
-    const content = await fs.readFile(path.join(directoryPath, file), "utf-8");
-
-    const item = parseContent(content);
-    if (item) {
-      items.push(item);
-    }
-  }
-
-  // Second pass: convert tasks and create references
+const handleTasks = (items: Item[]): Item[] => {
   const taskItems: Item[] = [];
   const taskReferences = new Map<string, string>(); // task title -> item id
 
@@ -167,7 +149,7 @@ export async function importFromDirectory(
     }
   }
 
-  // Third pass: replace task lines with references
+  // Replace task lines with references
   for (const item of items) {
     let content = item.content;
 
@@ -183,8 +165,29 @@ export async function importFromDirectory(
     item.content = content;
   }
 
-  // Return all items including tasks
   return [...items, ...taskItems];
+};
+
+export async function importFromDirectory(
+  directoryPath: string
+): Promise<Item[]> {
+  const items: Item[] = [];
+  const files = await fs.readdir(directoryPath);
+
+  // First pass: import all files
+  for (const file of files) {
+    if (!file.endsWith(".md")) continue;
+
+    const content = await fs.readFile(path.join(directoryPath, file), "utf-8");
+
+    const item = parseContent(content);
+    if (item) {
+      items.push(item);
+    }
+  }
+
+  // Handle tasks
+  return handleTasks(items);
 }
 
 export async function exportToDirectory(
@@ -293,5 +296,6 @@ export async function importFromFiles(files: File[]): Promise<Item[]> {
     }
   }
 
-  return items;
+  // Handle tasks
+  return handleTasks(items);
 }
