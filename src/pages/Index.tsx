@@ -162,9 +162,9 @@ const Index = () => {
       <div className="flex flex-col lg:flex-row h-[calc(100vh-4rem)]">
         {/* Left column: Filters and content list */}
         <div
-          className={`hidden lg:block ${
-            showSelectedItem ? "lg:w-1/3" : "lg:w-full"
-          } overflow-y-auto px-4 my-2`}
+          className={`lg:block overflow-y-auto px-4 my-2 ${
+            showSelectedItem ? "hidden lg:w-1/3" : "w-full"
+          }`}
         >
           <TypeFilter
             activeFilter={activeFilter}
@@ -198,8 +198,12 @@ const Index = () => {
         </div>
 
         {/* Right column: Selected item */}
-        {showSelectedItem && (
-          <div className="block bg-background lg:w-2/3 overflow-y-auto">
+        <div
+          className={`block bg-background ${
+            showSelectedItem ? "lg:w-2/3" : "hidden"
+          } overflow-y-auto`}
+        >
+          {showSelectedItem && (
             <SelectedItemView
               item={selectedItem}
               onUpdate={handleUpdateContent}
@@ -207,8 +211,8 @@ const Index = () => {
               onClose={() => navigate("/")}
               allItems={items}
             />
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
