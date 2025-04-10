@@ -151,7 +151,7 @@ const Index = () => {
   const showSelectedItem = selectedItem;
 
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none'] h-screen overflow-hidden">
       <Navbar
         onSearch={setSearchQuery}
         onCreateNew={handleCreateContent}
