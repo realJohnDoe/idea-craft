@@ -1,4 +1,3 @@
-
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import ReactMarkdown from "react-markdown";
@@ -117,12 +116,12 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
           p: ({ children }) => <div className="my-1">{children}</div>,
           a: CustomLink,
           ol: ({ children, ...props }) => (
-            <ol className="list-decimal list-inside ml-4 my-2" {...props}>
+            <ol className="list-decimal list-inside ml-4 my-0" {...props}>
               {children}
             </ol>
           ),
           ul: ({ children, ...props }) => (
-            <ul className="list-disc list-inside ml-4 my-2" {...props}>
+            <ul className="list-disc list-inside ml-4 my-0" {...props}>
               {children}
             </ul>
           ),
