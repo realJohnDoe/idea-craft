@@ -43,8 +43,12 @@ jobs:
       - name: Build Project
         run: npm run build # or yarn build
 
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: github-pages
+          path: ./dist # Ensure this matches the output directory
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-        with:
-          publish_dir: ./dist # Specify the output directory for your build
