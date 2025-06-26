@@ -12,9 +12,12 @@
 
 ## What's Left to Build
 
+- Add a quick preview for wikilinks when typing `[[`
 - Implement a more robust frontmatter parsing system.
 - Implement a very convenient markdown editor with similar UX as Notion or Obsidian.
 - Implement a calendar view for events.
+- Make it more obvious that the different frontmatter attributes are editable.
+  Currently, only on mouseover, an edit button appears.
 
 ## Current Status
 
