@@ -66,13 +66,13 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
       // Render as checkable task
       if (hasTaskAttributes(linkedItem)) {
         return (
-          <div className="flex border items-center bg-card w-full rounded-lg py-1 my-1 px-2">
+          <span className="flex border items-center bg-card rounded-lg py-0.5 px-1 inline-flex">
             <IdeaCraftCheckbox
               checked={linkedItem.done !== undefined ? linkedItem.done : false}
               onToggle={(checked) => onTaskToggle?.(linkedItem, checked)}
             />
             <label
-              className="cursor-pointer hover:underline inline-flex items-center"
+              className="cursor-pointer hover:underline inline-flex items-center text-sm"
               onClick={() => {
                 navigate(`/item/${linkedItem.id}`);
                 handleWikiLinkClick(linkedItem.id);
@@ -80,7 +80,7 @@ const ContentRenderer: React.FC<ContentRendererProps> = ({
             >
               {linkedItem.title}
             </label>
-          </div>
+          </span>
         );
       }
 

@@ -63,6 +63,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
   const [tagInput, setTagInput] = useState(
     item.tags ? item.tags.join(", ") : ""
   );
+  const [wikilinkPreview, setWikilinkPreview] = useState<string[]>([]);
 
   const handleTitleChanged = (title: string) => {
     if (!title.trim()) {
@@ -151,6 +152,49 @@ const ContentBody: React.FC<ContentBodyProps> = ({
     };
     onUpdate(updatedItem);
     setIsEditingTags(false);
+  };
+
+  const handleContentInputChange = (
+    e: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    const newContent = e.target.value;
+    setContent(newContent);
+
+    // Check for wikilink pattern [[
+    const cursorPosition = e.target.selectionStart;
+    const textBeforeCursor = newContent.slice(0, cursorPosition);
+    if (textBeforeCursor.endsWith("[[")) {
+      // Show preview of possible items
+      const previewItems = allItems
+        .filter((i) => i.id !== item.id)
+        .map((i) => i.title)
+        .slice(0, 5);
+      setWikilinkPreview(previewItems);
+    } else {
+      setWikilinkPreview([]);
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (wikilinkPreview.length > 0) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+        e.preventDefault();
+        // TODO: Implement navigation through preview items with arrow keys
+        // This is a placeholder for future implementation
+      } else if (e.key === "Enter" && wikilinkPreview.length > 0) {
+        e.preventDefault();
+        // Select the first item in the preview list
+        const selectedTitle = wikilinkPreview[0];
+        const cursorPosition = content.lastIndexOf("[[") + 2;
+        const newContent =
+          content.slice(0, cursorPosition) +
+          selectedTitle +
+          "]]" +
+          content.slice(cursorPosition);
+        setContent(newContent);
+        setWikilinkPreview([]);
+      }
+    }
   };
 
   const handleToggleAttribute = (type: ContentAttributeType) => {
@@ -294,7 +338,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   <span>
                     {item.date && format(new Date(item.date), "PPPP")}
                   </span>
-                  <Pencil className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
+                  <Pencil className="w-3 h-3 ml-1 opacity-50 transition-opacity hover:opacity-70" />
                 </div>
               ) : (
                 <Popover open={isEditingDate} onOpenChange={setIsEditingDate}>
@@ -332,7 +376,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                     onClick={() => setIsEditingLocation(true)}
                   >
                     <span>{item.location}</span>
-                    <Pencil className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
+                    <Pencil className="w-3 h-3 ml-1 opacity-50 transition-opacity hover:opacity-70" />
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2 w-full">
@@ -391,7 +435,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   onClick={() => setIsEditingMailFrom(true)}
                 >
                   <span>{item.from ?? ""}</span>
-                  <Pencil className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
+                  <Pencil className="w-3 h-3 ml-1 opacity-70 transition-opacity" />
                 </div>
               ) : (
                 <div className="flex items-center space-x-2 flex-1">
@@ -445,7 +489,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                     onClick={() => setIsEditingMailTo(true)}
                   >
                     <span>{item.to.join(", ")}</span>
-                    <Pencil className="w-3 h-3 ml-1 opacity-0 group-hover:opacity-70 transition-opacity" />
+                    <Pencil className="w-3 h-3 ml-1 opacity-70 transition-opacity" />
                   </div>
                 ) : (
                   <div className="flex items-center space-x-2 flex-1">
@@ -497,7 +541,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
       <div className="border-b relative group">
         {!isEditingContent ? (
           <>
-            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+            <div className="absolute top-2 right-2 opacity-70 transition-opacity hover:opacity-100 z-10">
               <Button
                 variant="ghost"
                 size="sm"
@@ -536,9 +580,36 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             <div className="mb-2">
               <textarea
                 value={content}
-                onChange={(e) => setContent(e.target.value)}
+                onChange={handleContentInputChange}
+                onKeyDown={handleKeyDown}
                 className="w-full p-2 min-h-[200px] bg-background border rounded-md"
               />
+              {wikilinkPreview.length > 0 && (
+                <div
+                  className="absolute z-10 bg-white border rounded shadow-md mt-1 max-h-60 overflow-auto"
+                  style={{ top: "calc(100% + 5px)", left: 0 }}
+                >
+                  {wikilinkPreview.map((title, index) => (
+                    <div
+                      key={index}
+                      className="p-2 hover:bg-gray-100 cursor-pointer"
+                      onClick={() => {
+                        // Insert the selected title into the content
+                        const cursorPosition = content.lastIndexOf("[[") + 2;
+                        const newContent =
+                          content.slice(0, cursorPosition) +
+                          title +
+                          "]]" +
+                          content.slice(cursorPosition);
+                        setContent(newContent);
+                        setWikilinkPreview([]);
+                      }}
+                    >
+                      {title}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             <div className="flex justify-end space-x-2">
               <Button
