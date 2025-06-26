@@ -15,7 +15,10 @@
 
 ## What's Left to Build
 
+- Bug: When adding the second wikilink in the same editing session, the new characters are still
+  added at the location of the first wikilink.
 - The wikilink preview positioning needs improvement to appear near the cursor, browsing the suggestions with arrow keys does not work yet.
+- Also, browsing adapting the suggestions after more characters using some fuzzy search does not work yet.
 - Implement a very convenient markdown editor with similar UX as Notion or Obsidian.
 - Implement a calendar view for events.
 
