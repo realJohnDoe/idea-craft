@@ -15,6 +15,7 @@
 
 ## What's Left to Build
 
+- Refactor: ContentBody.tsx is getting pretty long. Let us split it into multiple files. Maybe we can also factor out a reusable component for all the `isEditing` blocks.
 - Bug: When adding the second wikilink in the same editing session, the new characters are still
   added at the location of the first wikilink.
 - The wikilink preview positioning needs improvement to appear near the cursor, browsing the suggestions with arrow keys does not work yet.
