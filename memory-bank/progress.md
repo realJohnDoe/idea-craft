@@ -13,16 +13,19 @@
 - Frontmatter attributes are now more obviously editable with always-visible edit icons, adjusted for subtlety.
 - Inline tasks are now displayed inline within content.
 - Implementation of the `AttributeEditor` component and its corresponding tests are complete, with all tests passing.
+- Adapted a test to use @ imports instead of relative paths (AttributeEditor.test.tsx).
 
 ## What's Left to Build
 
+- Fix the warning about the value prop form field
+- Address the `lucide-react` import issue permanently, possibly by ensuring correct installation or using an alternative icon library.
+- Resolve the inconsistent resolution of @ imports in test files, ensuring all tests can use @ aliases without errors.
 - Refactor: ContentBody.tsx is getting pretty long. Let us split it into multiple files. Maybe we can also factor out a reusable component for all the `isEditing` blocks.
 - Bug: When adding the second wikilink in the same editing session, the new characters are still added at the location of the first wikilink.
 - The wikilink preview positioning needs improvement to appear near the cursor, browsing the suggestions with arrow keys does not work yet.
 - Also, browsing adapting the suggestions after more characters using some fuzzy search does not work yet.
 - Implement a very convenient markdown editor with similar UX as Notion or Obsidian.
 - Implement a calendar view for events.
-- Address the `lucide-react` import issue permanently, possibly by ensuring correct installation or using an alternative icon library.
 
 ## Current Status
 
@@ -34,6 +37,7 @@ The project is in the development phase. Phase 1 of the planned improvements is 
 
 - The `lucide-react` library import causes resolution errors during test runs, currently commented out as a temporary workaround.
 - A warning in tests about providing a `value` prop to a form field without an `onChange` handler in `AttributeEditor.test.tsx`.
+- Inconsistent resolution of @ imports in test files; works in some files (e.g., AttributeEditor.test.tsx) but fails in others (e.g., task-import-export.test.ts), requiring further investigation into Vitest alias configuration.
 
 ## Evolution of Project Decisions
 

@@ -17,4 +17,4 @@ export default defineConfig({
       'sonner': path.resolve(__dirname, './test/mocks/sonner.ts'),
     },
   },
-}); 
+});
