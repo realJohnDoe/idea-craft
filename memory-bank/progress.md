@@ -17,7 +17,7 @@
 
 ## What's Left to Build
 
-- Resolve the inconsistent resolution of @ imports in test files, ensuring all tests can use @ aliases without errors.
+- Resolved the inconsistent resolution of @ imports in test files; tests pass with @ aliases, though editor shows TypeScript errors which may require further configuration or editor restart.
 - Fix the warning about the value prop form field
 - Address the `lucide-react` import issue permanently, possibly by ensuring correct installation or using an alternative icon library.
 - Refactor: ContentBody.tsx is getting pretty long. Let us split it into multiple files. Maybe we can also factor out a reusable component for all the `isEditing` blocks.

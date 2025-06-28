@@ -2,8 +2,8 @@ import { expect, test } from "vitest";
 import {
   importFromDirectory,
   exportToDirectory,
-} from "../src/lib/import-utils";
-import { Item } from "../src/lib/content-utils";
+} from "@/lib/import-utils";
+import { Item } from "@/lib/content-utils";
 import path from "path";
 import fs from "fs/promises";
 
