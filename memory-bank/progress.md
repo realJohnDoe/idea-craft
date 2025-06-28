@@ -17,9 +17,9 @@
 
 ## What's Left to Build
 
+- Resolve the inconsistent resolution of @ imports in test files, ensuring all tests can use @ aliases without errors.
 - Fix the warning about the value prop form field
 - Address the `lucide-react` import issue permanently, possibly by ensuring correct installation or using an alternative icon library.
-- Resolve the inconsistent resolution of @ imports in test files, ensuring all tests can use @ aliases without errors.
 - Refactor: ContentBody.tsx is getting pretty long. Let us split it into multiple files. Maybe we can also factor out a reusable component for all the `isEditing` blocks.
 - Bug: When adding the second wikilink in the same editing session, the new characters are still added at the location of the first wikilink.
 - The wikilink preview positioning needs improvement to appear near the cursor, browsing the suggestions with arrow keys does not work yet.
