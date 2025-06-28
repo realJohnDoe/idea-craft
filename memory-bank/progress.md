@@ -13,7 +13,7 @@
 - Frontmatter attributes are now more obviously editable with always-visible edit icons, adjusted for subtlety.
 - Inline tasks are now displayed inline within content.
 - Implementation of the `AttributeEditor` component and its corresponding tests are complete, with all tests passing.
-- Adapted a test to use @ imports instead of relative paths (AttributeEditor.test.tsx).
+- Adapted all tests to use @ imports instead of relative paths.
 
 ## What's Left to Build
 
