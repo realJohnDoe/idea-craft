@@ -547,6 +547,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 size="sm"
                 className="h-6 w-6 p-0"
                 onClick={() => setIsEditingContent(true)}
+                title="Edit Content"
               >
                 <Pencil className="h-3 w-3" />
               </Button>
@@ -583,6 +584,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 onChange={handleContentInputChange}
                 onKeyDown={handleKeyDown}
                 className="w-full p-2 min-h-[200px] bg-background border rounded-md"
+                title="Content Editor"
               />
               {wikilinkPreview.length > 0 && (
                 <div

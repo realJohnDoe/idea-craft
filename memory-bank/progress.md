@@ -13,6 +13,8 @@
 - The `AttributeEditor` component and its tests are complete, with all tests passing.
 - Test files have been adapted to use `@` imports instead of relative paths for consistency.
 - Resolved IDE import recognition issue by adding the `test` directory to `tsconfig.app.json`, ensuring proper alias resolution in the development environment.
+- Fixed failing tests in `ContentBody.test.tsx` by using `title` attributes to improve element selection for content editing.
+- All tests are passing with correct element selection in `ContentBody.tsx` and resolved `lucide-react` import issues.
 
 ## What's Left to Build
 
@@ -24,11 +26,10 @@
 - Develop a markdown editor with a user experience similar to Notion or Obsidian for intuitive content creation and linking.
 - Implement a calendar view for events to provide a visual representation of scheduled items.
 
-
 ## Current Status
 
 The project is in an active development phase. Significant progress has been made on user interface enhancements and technical setup:
-- Recent update: Fixed IDE import recognition by including the `test` directory in `tsconfig.app.json`, resolving alias resolution errors for test files.
+- Recent update: Fixed failing tests in `ContentBody.test.tsx` by using `title="Edit Content"` for the edit button and `title="Content Editor"` for the textarea, ensuring robust element selection.
 - Phase 1 improvements, such as wikilink previews, enhanced frontmatter editing visibility, and inline task display, are largely complete.
 
 ## Known Issues
@@ -40,4 +41,5 @@ The project is in an active development phase. Significant progress has been mad
 - The project has evolved to prioritize a unified experience for managing different types of items, with flexible type inference from frontmatter.
 - Recent updates have focused on user interface improvements for better content interaction, such as wikilink previews and editable attributes.
 - Decided to use `@` aliases in test imports for consistency with the rest of the codebase, resolving IDE issues through configuration adjustments.
-- Temporarily disabled `lucide-react` imports to make tests pass, with a plan to revisit the dependency resolution issue for a permanent fix.
+- Resolved `lucide-react` import issues by removing the mock alias and using the actual library, with all tests now passing.
+- Used `title` attributes for UI elements to enhance test reliability and maintain accessibility.
