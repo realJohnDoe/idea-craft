@@ -1,6 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { X, CheckCircle } from "lucide-react";
+import { X, CheckCircle, Check } from "lucide-react";
 
 interface EditActionsProps {
   onCancel: () => void;
@@ -23,13 +23,18 @@ const EditActions: React.FC<EditActionsProps> = ({
         variant="outline"
         size="sm"
         onClick={onCancel}
-        className="text-red-600"
+        className="text-red"
       >
-        <X className="h-4 w-4 mr-1" />
+        <X/>
         {cancelText}
       </Button>
-      <Button variant="default" size="sm" onClick={onSave}>
-        <CheckCircle className="h-4 w-4 mr-1" />
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={onSave}
+        className="text-one-dark-green"
+      >
+        <Check/>
         {saveText}
       </Button>
     </div>

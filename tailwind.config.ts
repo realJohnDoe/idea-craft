@@ -91,7 +91,7 @@ export default {
 				'note-foreground': 'black', // or any other color you want
 				task: '#C678DD',
 				'task-foreground': 'black', // or any other color you want
-				event: '#61AFEF',
+				event: '#56B6C2',
 				'event-foreground': 'black', // or any other color you want
 				mail: '#E5C07B',
 				'mail-foreground': 'black',
