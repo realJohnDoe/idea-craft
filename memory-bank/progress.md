@@ -16,10 +16,11 @@
 - Fixed failing tests in `ContentBody.test.tsx` by using `title` attributes to improve element selection for content editing.
 - All tests are passing with correct element selection in `ContentBody.tsx` and resolved `lucide-react` import issues.
 - Successfully integrated `AttributeEditor` into `ContentBody.tsx` to factor out duplicate code for editing attributes like location, mail from, and mail to, with all tests passing.
+- Factored out `EditActions.tsx` from `ContentBody.tsx` as a reusable component for edit actions, furthering the refactoring effort to make `ContentBody.tsx` more manageable.
 
 ## What's Left to Build
 
-- Refactor `ContentBody.tsx` into smaller, more manageable files, potentially creating reusable components for `isEditing` blocks.
+- Continue refactoring `ContentBody.tsx` into smaller, more manageable files, potentially creating additional reusable components for `isEditing` blocks.
 - Fix the bug where adding a second wikilink in the same editing session inserts characters at the location of the first wikilink.
 - Enhance wikilink preview positioning to appear near the cursor, enable browsing suggestions with arrow keys, and implement fuzzy search for adapting suggestions after more characters are typed.
 - Develop a markdown editor with a user experience similar to Notion or Obsidian for intuitive content creation and linking.
@@ -28,7 +29,7 @@
 ## Current Status
 
 The project is in an active development phase. Significant progress has been made on user interface enhancements and technical setup:
-- Recent update: Integrated `AttributeEditor` into `ContentBody.tsx` to remove duplicate code for attribute editing, with all tests passing.
+- Recent update: Factored out `EditActions.tsx` from `ContentBody.tsx` to create a reusable component for edit actions, contributing to the refactoring of `ContentBody.tsx`.
 - Phase 1 improvements, such as wikilink previews, enhanced frontmatter editing visibility, and inline task display, are largely complete.
 
 ## Known Issues
@@ -42,4 +43,4 @@ The project is in an active development phase. Significant progress has been mad
 - Decided to use `@` aliases in test imports for consistency with the rest of the codebase, resolving IDE issues through configuration adjustments.
 - Resolved `lucide-react` import issues by removing the mock alias and using the actual library, with all tests now passing.
 - Used `title` attributes for UI elements to enhance test reliability and maintain accessibility.
-- Integrated reusable components like `AttributeEditor` to reduce code duplication and improve maintainability.
+- Integrated reusable components like `AttributeEditor` and `EditActions.tsx` to reduce code duplication and improve maintainability.
