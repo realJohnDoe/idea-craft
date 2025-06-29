@@ -1,25 +1,25 @@
 # Active Context for Idea Craft Project
 
 ## Current Work Focus
-- Resolved the styling issue with the cancel icon color in `EditActions.tsx` by aligning with the custom `red` color defined in `tailwind.config.ts` as `#E06C75`. The custom color definition was overriding standard Tailwind `text-red-*` classes, causing the icon to appear white until `text-red` was used.
-- Investigated button styling for `AttributeEditor.test.tsx`, focusing on size and color adjustments to match adjacent components. The user has confirmed that the current state of `EditActions.tsx` is acceptable.
+- Refactoring memory bank files to remove redundancy and ensure each file serves a distinct purpose, focusing on clear documentation of Idea Craft's direction and status.
+- Per user request, concentrating solely on updating memory bank documentation without making code changes at this time.
 
 ## Recent Changes
-- Updated `EditActions.tsx` to use `text-red` for the cancel icon, resolving the color override issue caused by custom Tailwind color definitions.
-- Removed context-specific color classes (`text-event`, `text-mail`) from `ContentBody.tsx` during debugging to prevent color inheritance from parent elements.
+- Updated `projectbrief.md` to provide a high-level overview of goals and scope, avoiding detailed functionality overlap.
+- Refined `productContext.md` to focus on user needs, problems solved, and UX goals like mobile accessibility and data syncing.
+- Adjusted `systemPatterns.md` to emphasize architecture, component relationships, and design decisions, excluding specific technology details.
+- Streamlined `techContext.md` to cover technologies, setup, constraints, and challenges, complementing architectural focus elsewhere.
 
 ## Next Steps
-- No immediate changes are required for `EditActions.tsx` as the user has confirmed the file is fine.
-- Ready to address any additional styling or functional requirements for the project if requested by the user.
+- Update `progress.md` if necessary to ensure it remains the comprehensive status tracker with historical context and tasks.
+- Ready to address any additional documentation needs or revisit implementation plans for mobile accessibility and directory syncing when requested by the user.
 
 ## Active Decisions and Considerations
-- Custom Tailwind color definitions in `tailwind.config.ts` must be used (e.g., `text-red` instead of `text-red-600`) to ensure consistency with the project's theme.
-- Color inheritance from parent components can affect child element styling, requiring careful management of Tailwind classes in parent components like `ContentBody.tsx`.
+- Current user directive is to focus on memory bank updates only, without proceeding to code implementation.
+- Decision to pivot to a non-PWA web app with home screen shortcut support and plan for local directory syncing are documented in relevant files, referenced here for context.
 
 ## Important Patterns and Preferences
-- Adhere to Tailwind CSS conventions for styling, avoiding non-Tailwind solutions unless absolutely necessary.
-- Use custom color names defined in `tailwind.config.ts` (e.g., `text-red`, `text-one-dark-green`) to align with the project's Atom One Dark theme.
+- Maintain thorough documentation in the memory bank to ensure continuity and clarity of project direction after memory resets.
+- Adhere to distinct roles for each memory bank file to minimize redundancy and improve information accessibility.
 
-## Learnings and Project Insights
-- Custom color definitions in Tailwind configuration can override standard palette values, necessitating the use of exact custom color names to achieve the desired styling.
-- Debugging style overrides requires tracing inheritance from parent components and reviewing configuration files like `tailwind.config.ts` for customizations that impact rendering.
+This file provides a concise snapshot of the current work focus and immediate context for Idea Craft. For detailed history, technical architecture, or user experience goals, refer to other memory bank files.

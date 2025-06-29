@@ -1,18 +1,23 @@
-# Project Brief
+# Project Brief for Idea Craft
 
-## Project Goal
+## Project Overview
+Idea Craft is a productivity tool designed to help users capture, organize, and manage diverse types of content—tasks, events, messages, and notes—in a unified, intuitive platform. The app aims to streamline personal and professional workflows by consolidating fragmented productivity tools into a single, accessible solution.
 
-To create a tool named Idea Craft that helps users manage and organize tasks, events, messages, and notes effectively within a single, intuitive application.
-
-## Core Requirements
-
-- Support items of types tasks, events, messages, and notes with a unified data model.
-- Allow users to create, edit, and delete such items seamlessly through an accessible UI.
-- Provide a calendar view for visualizing events and deadlines.
-- Support loading and saving items as markdown files with frontmatter for data portability.
-- Infer types from frontmatter attributes, enabling flexible categorization without rigid constraints.
-- Implement features like wikilink previews and inline task rendering to enhance content interaction.
+## Core Goals
+- **Unified Content Management:** Provide a single interface for creating, editing, and organizing various content types, reducing the need for multiple apps.
+- **Data Portability:** Use markdown as the core format to ensure content is easily exportable and importable, preventing lock-in and supporting integration with other systems.
+- **Cross-Device Accessibility:** Enable users to access and manage their content seamlessly across different devices, with a focus on mobile usability.
+- **Simplicity and Usability:** Deliver a clean, user-friendly experience that prioritizes ease of use and efficiency in content interaction.
 
 ## Scope
+- **Initial Phase:** Focus on a client-side web application with local storage for data persistence, supporting offline access without a backend.
+- **Content Types:** Support tasks, events, messages, and notes with flexible categorization through frontmatter metadata.
+- **Key Features:** Include content creation/editing, type and tag filtering, markdown support with wikilinks, and data import/export capabilities.
+- **Future Considerations:** Enhance data management with local directory syncing and explore advanced features like calendar views or markdown editors akin to Notion or Obsidian.
 
-The project focuses on core productivity features, delivering a robust foundation for managing diverse content types. It is designed to be extensible for future enhancements, such as advanced markdown editing capabilities and integration with other tools.
+## Target Audience
+- Individuals seeking a consolidated productivity tool for personal organization.
+- Professionals managing diverse content types in small teams or solo projects.
+- Users valuing data portability and markdown for compatibility with other tools.
+
+This brief serves as the foundational overview of Idea Craft's purpose and scope. For detailed user experience goals, technical architecture, and current status, refer to other memory bank files.
