@@ -32,6 +32,7 @@ import {
 import BaseIdeaCraftChip from "../BaseIdeaCraftChip";
 import ContentTypeTags from "./ContentTypeTags";
 import AttributeEditor from "../ui/AttributeEditor";
+import EditActions from "../ui/EditActions";
 
 interface ContentBodyProps {
   item: Item;
@@ -273,35 +274,13 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   placeholder="Enter tags (comma-separated)"
                   autoFocus
                 />
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0"
-                  onClick={() => setIsEditingTags(false)}
-                >
-                  <X className="h-4 w-4" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  className="h-7 w-7 p-0 text-green-600"
-                  onClick={handleTagsChange}
-                >
-                  <span className="sr-only">Save</span>
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <polyline points="20 6 9 17 4 12"></polyline>
-                  </svg>
-                </Button>
+                <EditActions
+                  onCancel={() => setIsEditingTags(false)}
+                  onSave={handleTagsChange}
+                  cancelText=""
+                  saveText=""
+                  className="flex space-x-2"
+                />
               </div>
             </div>
           </div>
@@ -385,35 +364,13 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                       placeholder="Enter location"
                       autoFocus
                     />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      onClick={() => setIsEditingLocation(false)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0 text-green-600"
-                      onClick={handleLocationChange}
-                    >
-                      <span className="sr-only">Save</span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                    </Button>
+                    <EditActions
+                      onCancel={() => setIsEditingLocation(false)}
+                      onSave={handleLocationChange}
+                      cancelText=""
+                      saveText=""
+                      className="flex space-x-2"
+                    />
                   </div>
                 </AttributeEditor>
               </div>
@@ -441,35 +398,13 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                     placeholder="Enter email"
                     autoFocus
                   />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 w-7 p-0"
-                    onClick={() => setIsEditingMailFrom(false)}
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-7 w-7 p-0 text-green-600"
-                    onClick={handleMailFromChange}
-                  >
-                    <span className="sr-only">Save</span>
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    >
-                      <polyline points="20 6 9 17 4 12"></polyline>
-                    </svg>
-                  </Button>
+                  <EditActions
+                    onCancel={() => setIsEditingMailFrom(false)}
+                    onSave={handleMailFromChange}
+                    cancelText=""
+                    saveText=""
+                    className="flex space-x-2"
+                  />
                 </div>
               </AttributeEditor>
             </div>
@@ -492,35 +427,13 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                       placeholder="Enter emails (comma-separated)"
                       autoFocus
                     />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0"
-                      onClick={() => setIsEditingMailTo(false)}
-                    >
-                      <X className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-7 w-7 p-0 text-green-600"
-                      onClick={handleMailToChange}
-                    >
-                      <span className="sr-only">Save</span>
-                      <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        width="16"
-                        height="16"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="20 6 9 17 4 12"></polyline>
-                      </svg>
-                    </Button>
+                    <EditActions
+                      onCancel={() => setIsEditingMailTo(false)}
+                      onSave={handleMailToChange}
+                      cancelText=""
+                      saveText=""
+                      className="flex space-x-2"
+                    />
                   </div>
                 </AttributeEditor>
               </div>
@@ -605,21 +518,13 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 </div>
               )}
             </div>
-            <div className="flex justify-end space-x-2">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => {
-                  setContent(item.content);
-                  setIsEditingContent(false);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button variant="default" size="sm" onClick={handleContentChange}>
-                Save
-              </Button>
-            </div>
+            <EditActions
+              onCancel={() => {
+                setContent(item.content);
+                setIsEditingContent(false);
+              }}
+              onSave={handleContentChange}
+            />
           </div>
         )}
       </div>
