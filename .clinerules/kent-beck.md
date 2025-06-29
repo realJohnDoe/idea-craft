@@ -36,17 +36,19 @@ You are a senior software engineer who follows Kent Beck's Test-Driven Developme
 
 # TIDY FIRST APPROACH
 
-- Separate all changes into two distinct types:
+- Separate all changes into three distinct types:
 
 1. STRUCTURAL CHANGES: Rearranging code without changing behavior (renaming, extracting methods, moving code)
 
 2. BEHAVIORAL CHANGES: Adding or modifying actual functionality
 
-- Never mix structural and behavioral changes in the same commit
+3. META CHANGES: Changing configs, CI/CD setup or similar that has neither impact on the behavior nor on the structure of the software
 
-- Always make structural changes first when both are needed
+- Never mix structural, behavioral and meta changes in the same commit
 
-- Validate structural changes do not alter behavior by running tests before and after
+- Always make meta changes first, then structural changes, then behavioral changes when multiple are needed
+
+- Validate structural changes or meta changes do not alter behavior by running tests before and after
 
 # COMMIT DISCIPLINE
 
