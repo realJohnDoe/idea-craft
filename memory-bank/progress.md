@@ -2,46 +2,45 @@
 
 ## What Works
 
-- The memory bank structure is set up.
-- The core files have been created.
+- The memory bank structure is fully set up with core files documenting the project's context and status.
 - The application allows users to create, edit, and delete items (tasks, events, messages, and notes).
-- Items are stored in local storage.
-- The application has a basic UI with a Navbar, TypeFilter, TagsFilter, ContentList, and SelectedItemView.
-- The application supports importing items.
-- The application infers types from the frontmatter.
-- A quick preview for wikilinks is implemented when typing `[[`, with automatic closing braces.
+- Items are stored in local storage, with support for importing and exporting as markdown files.
+- The application features a basic UI with components like Navbar, TypeFilter, TagsFilter, ContentList, and SelectedItemView.
+- Type inference from frontmatter is implemented, allowing flexible categorization of items.
+- Quick preview for wikilinks is functional when typing `[[`, with automatic closing braces.
 - Frontmatter attributes are now more obviously editable with always-visible edit icons, adjusted for subtlety.
-- Inline tasks are now displayed inline within content.
-- Implementation of the `AttributeEditor` component and its corresponding tests are complete, with all tests passing.
-- Adapted all tests to use @ imports instead of relative paths.
+- Inline tasks are displayed within content for better integration.
+- The `AttributeEditor` component and its tests are complete, with all tests passing.
+- Test files have been adapted to use `@` imports instead of relative paths for consistency.
+- Resolved IDE import recognition issue by adding the `test` directory to `tsconfig.app.json`, ensuring proper alias resolution in the development environment.
 
 ## What's Left to Build
 
-- Resolved the inconsistent resolution of @ imports in test files; tests pass with @ aliases, though editor shows TypeScript errors which may require further configuration or editor restart.
-- Fix the warning about the value prop form field
-- Address the `lucide-react` import issue permanently, possibly by ensuring correct installation or using an alternative icon library.
-- Refactor: ContentBody.tsx is getting pretty long. Let us split it into multiple files. Maybe we can also factor out a reusable component for all the `isEditing` blocks.
-- Bug: When adding the second wikilink in the same editing session, the new characters are still added at the location of the first wikilink.
-- The wikilink preview positioning needs improvement to appear near the cursor, browsing the suggestions with arrow keys does not work yet.
-- Also, browsing adapting the suggestions after more characters using some fuzzy search does not work yet.
-- Implement a very convenient markdown editor with similar UX as Notion or Obsidian.
-- Implement a calendar view for events.
+- Address the warning about providing a `value` prop to form fields without an `onChange` handler in `AttributeEditor.test.tsx`.
+- Find a permanent solution for the `lucide-react` import issue, possibly by ensuring correct installation or exploring alternative icon libraries.
+- Use the newly created AttributeEditor to factor out duplicate code in ContentBody.tsx.
+
+- Refactor `ContentBody.tsx` into smaller, more manageable files, potentially creating reusable components for `isEditing` blocks.
+- Fix the bug where adding a second wikilink in the same editing session inserts characters at the location of the first wikilink.
+- Enhance wikilink preview positioning to appear near the cursor, enable browsing suggestions with arrow keys, and implement fuzzy search for adapting suggestions after more characters are typed.
+- Develop a markdown editor with a user experience similar to Notion or Obsidian for intuitive content creation and linking.
+- Implement a calendar view for events to provide a visual representation of scheduled items.
+
 
 ## Current Status
 
-The project is in the development phase. Phase 1 of the planned improvements is largely complete with the implementation of wikilink previews, enhanced frontmatter editing visibility, and inline task display.
-
-- Recent update: The `AttributeEditor` component has been implemented and tested successfully, with a temporary workaround for the `lucide-react` import issue.
+The project is in an active development phase. Significant progress has been made on user interface enhancements and technical setup:
+- Recent update: Fixed IDE import recognition by including the `test` directory in `tsconfig.app.json`, resolving alias resolution errors for test files.
+- Phase 1 improvements, such as wikilink previews, enhanced frontmatter editing visibility, and inline task display, are largely complete.
 
 ## Known Issues
 
-- The `lucide-react` library import causes resolution errors during test runs, currently commented out as a temporary workaround.
-- A warning in tests about providing a `value` prop to a form field without an `onChange` handler in `AttributeEditor.test.tsx`.
-- Inconsistent resolution of @ imports in test files; works in some files (e.g., AttributeEditor.test.tsx) but fails in others (e.g., task-import-export.test.ts), requiring further investigation into Vitest alias configuration.
+- The `lucide-react` library import causes resolution errors during test runs, currently commented out as a temporary workaround in components like `AttributeEditor.tsx`.
+- A warning in tests about providing a `value` prop to a form field without an `onChange` handler in `AttributeEditor.test.tsx` needs to be addressed.
 
 ## Evolution of Project Decisions
 
-- The project has evolved to focus on providing a unified experience for managing different types of items.
-- Recent updates have prioritized user interface improvements for better interaction with content.
-- Decided to use relative paths in test imports to align with existing test file structures.
-- Temporarily disabled `lucide-react` to make tests pass, with a plan to revisit the dependency resolution issue.
+- The project has evolved to prioritize a unified experience for managing different types of items, with flexible type inference from frontmatter.
+- Recent updates have focused on user interface improvements for better content interaction, such as wikilink previews and editable attributes.
+- Decided to use `@` aliases in test imports for consistency with the rest of the codebase, resolving IDE issues through configuration adjustments.
+- Temporarily disabled `lucide-react` imports to make tests pass, with a plan to revisit the dependency resolution issue for a permanent fix.
