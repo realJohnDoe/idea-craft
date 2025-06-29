@@ -27,7 +27,7 @@ const ContentFooter: React.FC<ContentFooterProps> = ({
           onClick={() => onDelete(item.id)}
           aria-label="Delete item"
         >
-          <Trash2 className="size-3 text-red" />
+          <Trash2 className="h-4 w-4 text-red" />
         </button>
       </div>
     </div>
