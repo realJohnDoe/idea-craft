@@ -15,10 +15,9 @@
 - Resolved IDE import recognition issue by adding the `test` directory to `tsconfig.app.json`, ensuring proper alias resolution in the development environment.
 - Fixed failing tests in `ContentBody.test.tsx` by using `title` attributes to improve element selection for content editing.
 - All tests are passing with correct element selection in `ContentBody.tsx` and resolved `lucide-react` import issues.
+- Successfully integrated `AttributeEditor` into `ContentBody.tsx` to factor out duplicate code for editing attributes like location, mail from, and mail to, with all tests passing.
 
 ## What's Left to Build
-
-- Use the newly created AttributeEditor to factor out duplicate code in ContentBody.tsx.
 
 - Refactor `ContentBody.tsx` into smaller, more manageable files, potentially creating reusable components for `isEditing` blocks.
 - Fix the bug where adding a second wikilink in the same editing session inserts characters at the location of the first wikilink.
@@ -29,7 +28,7 @@
 ## Current Status
 
 The project is in an active development phase. Significant progress has been made on user interface enhancements and technical setup:
-- Recent update: Fixed failing tests in `ContentBody.test.tsx` by using `title="Edit Content"` for the edit button and `title="Content Editor"` for the textarea, ensuring robust element selection.
+- Recent update: Integrated `AttributeEditor` into `ContentBody.tsx` to remove duplicate code for attribute editing, with all tests passing.
 - Phase 1 improvements, such as wikilink previews, enhanced frontmatter editing visibility, and inline task display, are largely complete.
 
 ## Known Issues
@@ -43,3 +42,4 @@ The project is in an active development phase. Significant progress has been mad
 - Decided to use `@` aliases in test imports for consistency with the rest of the codebase, resolving IDE issues through configuration adjustments.
 - Resolved `lucide-react` import issues by removing the mock alias and using the actual library, with all tests now passing.
 - Used `title` attributes for UI elements to enhance test reliability and maintain accessibility.
+- Integrated reusable components like `AttributeEditor` to reduce code duplication and improve maintainability.

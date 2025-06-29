@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/popover";
 import BaseIdeaCraftChip from "../BaseIdeaCraftChip";
 import ContentTypeTags from "./ContentTypeTags";
+import AttributeEditor from "../ui/AttributeEditor";
 
 interface ContentBodyProps {
   item: Item;
@@ -370,15 +371,12 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             {(item.location !== undefined || isEditingLocation) && (
               <div className="flex items-center text-sm text-event">
                 <MapPin className="mr-1 w-4 h-4" />
-                {!isEditingLocation ? (
-                  <div
-                    className="flex items-center group cursor-pointer"
-                    onClick={() => setIsEditingLocation(true)}
-                  >
-                    <span>{item.location}</span>
-                    <Pencil className="w-3 h-3 ml-1 opacity-50 transition-opacity hover:opacity-70" />
-                  </div>
-                ) : (
+                <AttributeEditor
+                  label="Location"
+                  value={item.location || ""}
+                  isEditing={isEditingLocation}
+                  onEdit={() => setIsEditingLocation(true)}
+                >
                   <div className="flex items-center space-x-2 w-full">
                     <Input
                       value={location}
@@ -417,7 +415,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                       </svg>
                     </Button>
                   </div>
-                )}
+                </AttributeEditor>
               </div>
             )}
           </div>
@@ -429,15 +427,12 @@ const ContentBody: React.FC<ContentBodyProps> = ({
             {/* From editor */}
             <div className="flex items-center">
               <span className="font-medium mr-1">From:</span>
-              {!isEditingMailFrom ? (
-                <div
-                  className="flex items-center group cursor-pointer"
-                  onClick={() => setIsEditingMailFrom(true)}
-                >
-                  <span>{item.from ?? ""}</span>
-                  <Pencil className="w-3 h-3 ml-1 opacity-70 transition-opacity" />
-                </div>
-              ) : (
+              <AttributeEditor
+                label="From"
+                value={item.from ?? ""}
+                isEditing={isEditingMailFrom}
+                onEdit={() => setIsEditingMailFrom(true)}
+              >
                 <div className="flex items-center space-x-2 flex-1">
                   <Input
                     value={mailFrom}
@@ -476,22 +471,19 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                     </svg>
                   </Button>
                 </div>
-              )}
+              </AttributeEditor>
             </div>
 
             {/* To editor */}
             {(item.to !== undefined || isEditingMailTo) && (
               <div className="flex items-center">
                 <span className="font-medium mr-1">To:</span>
-                {!isEditingMailTo ? (
-                  <div
-                    className="flex items-center group cursor-pointer"
-                    onClick={() => setIsEditingMailTo(true)}
-                  >
-                    <span>{item.to.join(", ")}</span>
-                    <Pencil className="w-3 h-3 ml-1 opacity-70 transition-opacity" />
-                  </div>
-                ) : (
+                <AttributeEditor
+                  label="To"
+                  value={item.to ? item.to.join(", ") : ""}
+                  isEditing={isEditingMailTo}
+                  onEdit={() => setIsEditingMailTo(true)}
+                >
                   <div className="flex items-center space-x-2 flex-1">
                     <Input
                       value={mailTo}
@@ -530,7 +522,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                       </svg>
                     </Button>
                   </div>
-                )}
+                </AttributeEditor>
               </div>
             )}
           </div>
