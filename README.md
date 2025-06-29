@@ -27,7 +27,7 @@ Follow these steps to set up and run Idea Craft locally:
 
 ```sh
 # Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+git clone https://github.com/realJohnDoe/idea-craft.git
 
 # Step 2: Navigate to the project directory.
 cd idea-craft
