@@ -10,10 +10,10 @@ Working on refining the user interface and resolving technical issues related to
 - Implemented the `AttributeEditor` component for better frontmatter attribute editing, with corresponding tests passing.
 - Adapted test files to use `@` aliases instead of relative paths for consistency.
 - Temporarily commented out `lucide-react` imports in components like `AttributeEditor.tsx` to bypass dependency resolution issues during testing.
+- Added a dummy `onChange` handler to the `input` element in `AttributeEditor.test.tsx` to resolve the warning about providing a `value` prop without an `onChange` handler.
 
 ## Next Steps
 
-- Address the warning about providing a `value` prop to form fields without an `onChange` handler in `AttributeEditor.test.tsx`.
 - Refactor `ContentBody.tsx` to split it into smaller, more manageable files and potentially create reusable components for `isEditing` blocks.
 - Fix the bug where adding a second wikilink in the same editing session inserts characters at the location of the first wikilink.
 - Improve wikilink preview positioning to appear near the cursor and enable browsing suggestions with arrow keys, including fuzzy search for adapting suggestions.

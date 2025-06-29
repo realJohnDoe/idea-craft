@@ -16,7 +16,6 @@
 
 ## What's Left to Build
 
-- Address the warning about providing a `value` prop to form fields without an `onChange` handler in `AttributeEditor.test.tsx`.
 - Find a permanent solution for the `lucide-react` import issue, possibly by ensuring correct installation or exploring alternative icon libraries.
 - Use the newly created AttributeEditor to factor out duplicate code in ContentBody.tsx.
 
@@ -36,7 +35,6 @@ The project is in an active development phase. Significant progress has been mad
 ## Known Issues
 
 - The `lucide-react` library import causes resolution errors during test runs, currently commented out as a temporary workaround in components like `AttributeEditor.tsx`.
-- A warning in tests about providing a `value` prop to a form field without an `onChange` handler in `AttributeEditor.test.tsx` needs to be addressed.
 
 ## Evolution of Project Decisions
 

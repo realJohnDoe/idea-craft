@@ -54,7 +54,7 @@ describe("AttributeEditor", () => {
         isEditing={true}
         onEdit={() => {}}
       >
-        <input type="text" value="Test Value" />
+        <input type="text" value="Test Value" onChange={() => {}} />
       </AttributeEditor>
     );
     const inputElement = screen.getByRole("textbox");
