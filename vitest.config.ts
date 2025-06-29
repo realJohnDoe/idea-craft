@@ -13,7 +13,6 @@ export default defineConfig({
     alias: {
       '@': path.resolve(__dirname, './src'),
       '@/components/ui/button': path.resolve(__dirname, './test/mocks/components/ui/button.tsx'),
-      'lucide-react': path.resolve(__dirname, './test/mocks/lucide-react.tsx'),
       'sonner': path.resolve(__dirname, './test/mocks/sonner.ts'),
     },
   },

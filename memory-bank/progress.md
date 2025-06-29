@@ -16,7 +16,6 @@
 
 ## What's Left to Build
 
-- Find a permanent solution for the `lucide-react` import issue, possibly by ensuring correct installation or exploring alternative icon libraries.
 - Use the newly created AttributeEditor to factor out duplicate code in ContentBody.tsx.
 
 - Refactor `ContentBody.tsx` into smaller, more manageable files, potentially creating reusable components for `isEditing` blocks.
@@ -34,7 +33,7 @@ The project is in an active development phase. Significant progress has been mad
 
 ## Known Issues
 
-- The `lucide-react` library import causes resolution errors during test runs, currently commented out as a temporary workaround in components like `AttributeEditor.tsx`.
+- None at this time related to `lucide-react`; the import issue has been resolved.
 
 ## Evolution of Project Decisions
 

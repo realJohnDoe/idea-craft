@@ -1,38 +1,28 @@
 # Active Context
 
 ## Current Work Focus
-
-Working on refining the user interface and resolving technical issues related to import resolution in the IDE for test files. The focus is on ensuring a seamless development environment and enhancing user interaction with features like wikilink previews and editable frontmatter attributes.
+- The `lucide-react` import issue has been resolved by removing the alias to a non-existent mock file in `vitest.config.ts`.
+- The `AttributeEditor.tsx` component now correctly imports and uses the `Pencil` icon from `lucide-react`.
+- Tests in `AttributeEditor.test.tsx` have been updated to query the edit button by the correct accessible name "Edit".
 
 ## Recent Changes
-
-- Resolved IDE import recognition issue by adding the `test` directory to `tsconfig.app.json`, ensuring that test files are processed by TypeScript and aliases are correctly resolved.
-- Implemented the `AttributeEditor` component for better frontmatter attribute editing, with corresponding tests passing.
-- Adapted test files to use `@` aliases instead of relative paths for consistency.
-- Temporarily commented out `lucide-react` imports in components like `AttributeEditor.tsx` to bypass dependency resolution issues during testing.
-- Added a dummy `onChange` handler to the `input` element in `AttributeEditor.test.tsx` to resolve the warning about providing a `value` prop without an `onChange` handler.
+- Removed the alias for `lucide-react` in `vitest.config.ts` to resolve import resolution errors during test runs.
+- Uncommented the `Pencil` icon import in `AttributeEditor.tsx`.
+- Updated failing tests in `AttributeEditor.test.tsx` to use the correct accessible name for the edit button.
+- All tests are now passing with the actual `lucide-react` library in use.
 
 ## Next Steps
-
-- Refactor `ContentBody.tsx` to split it into smaller, more manageable files and potentially create reusable components for `isEditing` blocks.
-- Fix the bug where adding a second wikilink in the same editing session inserts characters at the location of the first wikilink.
-- Improve wikilink preview positioning to appear near the cursor and enable browsing suggestions with arrow keys, including fuzzy search for adapting suggestions.
-- Investigate a permanent solution for the `lucide-react` import issue, possibly by ensuring correct installation or exploring alternative icon libraries.
+- Continue with the next task from `progress.md`, which is to use the `AttributeEditor` component to factor out duplicate code in `ContentBody.tsx`.
+- Ensure that any further changes related to `lucide-react` are tested thoroughly to prevent regression of import issues.
 
 ## Active Decisions and Considerations
-
-- How to best structure the markdown editor to provide a UX similar to Notion or Obsidian for intuitive content creation and linking.
-- Whether to continue using `@` aliases in test files or revert to relative paths if IDE issues persist, balancing consistency with practicality.
-- How to manage dependencies like `lucide-react` to avoid recurring resolution errors during test runs.
+- The decision to remove the mock alias and use the actual `lucide-react` library has proven effective in resolving the import issue.
+- Future updates to icon usage should consider potential test environment compatibility to avoid similar issues.
 
 ## Important Patterns and Preferences
-
-- Using markdown files with frontmatter for data storage, allowing for flexible type inference based on attributes.
-- Prioritizing small, focused components (e.g., `AttributeEditor`) to enhance maintainability and testability.
-- Ensuring test coverage for new UI components to maintain code quality.
+- Maintain consistency in accessible names for UI elements to ensure test reliability.
+- Follow TDD and Tidy First principles by separating structural and behavioral changes, and validating with tests after each change.
 
 ## Learnings and Project Insights
-
-- Ensuring that TypeScript configuration includes all relevant directories (like `test`) is crucial for IDE support and avoiding import resolution errors.
-- Temporary workarounds for dependency issues (e.g., commenting out imports) can unblock development but need documented plans for permanent resolution.
-- User interface improvements like inline task display and wikilink previews significantly enhance the user experience, aligning with the goal of a seamless productivity tool.
+- Import resolution issues in test environments can often be caused by incorrect aliases or mocks; verifying the existence and correctness of such configurations is crucial.
+- Updating test assertions to match the implemented UI structure is essential for maintaining a passing test suite.

@@ -27,7 +27,7 @@ describe("AttributeEditor", () => {
         onEdit={() => {}}
       />
     );
-    const editIconElement = screen.getByRole("button", { name: "Edit Edit" });
+    const editIconElement = screen.getByRole("button", { name: "Edit" });
     expect(editIconElement).toBeInTheDocument();
   });
 
@@ -41,7 +41,7 @@ describe("AttributeEditor", () => {
         onEdit={onEdit}
       />
     );
-    const editIconElement = screen.getByRole("button", { name: "Edit Edit" });
+    const editIconElement = screen.getByRole("button", { name: "Edit" });
     fireEvent.click(editIconElement);
     expect(onEdit).toHaveBeenCalled();
   });
