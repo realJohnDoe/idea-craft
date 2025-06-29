@@ -22,6 +22,9 @@
   - Added `service-worker.js` for caching and offline functionality.
   - Updated `index.html` to reference the manifest file.
   - Modified `main.tsx` to register the service worker, with conditional logic to skip registration in local development environments (localhost/127.0.0.1) to avoid HTTPS-related installation errors.
+- Standardized icon sizes across components like `EditActions.tsx`, `ContentBody.tsx`, `ContentTypeTags.tsx`, and `AttributeEditor.tsx` to `h-4 w-4` for visual consistency.
+- Adjusted hover color styling for edit icons in `ContentBody.tsx` to match contextual attribute colors (e.g., `text-event`, `text-mail`).
+
 
 ## What's Left to Build
 
@@ -33,11 +36,12 @@
 - Implement web app with home screen shortcut support (non-PWA) to make Idea Craft accessible from mobile devices without the complexities of service worker and HTTPS setup in local development.
 - Implement local directory syncing functionality using the File System Access API to allow users to select a static folder for bidirectional markdown file syncing, with the sync target reference stored in cookies.
 - Replace the existing import/export buttons with a static sync directory feature to streamline markdown file management.
+- Address user feedback on hover effects (`group-hover` vs. `hover`) for icon styling if adjustments are requested.
 
 ## Current Status
 
 The project is in an active development phase. Significant progress has been made on user interface enhancements, technical setup, and initial PWA conversion:
-- Recent update: Decided to pivot from a full PWA setup to a web app with home screen shortcut (non-PWA) to make Idea Craft installable on mobile devices, avoiding service worker and HTTPS issues in local development. Planned to implement local directory syncing using the File System Access API, with sync target reference stored in cookies, acknowledging browser support limitations and the need for user re-approval across sessions.
+- Recent update: Standardized icon sizes and hover color styling across key components for visual consistency. 
 - Phase 1 improvements, such as wikilink previews, enhanced frontmatter editing visibility, and inline task display, are largely complete.
 
 ## Known Issues
@@ -55,3 +59,4 @@ The project is in an active development phase. Significant progress has been mad
 - Integrated reusable components like `AttributeEditor` and `EditActions.tsx` to reduce code duplication and improve maintainability.
 - Identified and resolved a styling issue with the cancel icon in `EditActions.tsx` by using `text-red` to align with the custom color definition in `tailwind.config.ts`, after standard Tailwind color classes were overridden. The user declined further styling changes, confirming the current state is acceptable.
 - Progressed with PWA conversion by implementing necessary structural files and configurations to make Idea Craft installable and offline-capable, with a recent adjustment to service worker registration to handle local development constraints. However, due to challenges with local testing, decided to shift focus to a non-PWA web app with home screen shortcut for mobile accessibility, combined with local directory syncing using the File System Access API and cookie storage for sync target reference.
+- Recent focus on UI consistency by standardizing icon sizes and hover effects.

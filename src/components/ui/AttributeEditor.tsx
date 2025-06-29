@@ -8,6 +8,7 @@ interface AttributeEditorProps {
   isEditing: boolean;
   onEdit: () => void;
   children?: React.ReactNode;
+  editIconClass?: string;
 }
 
 const AttributeEditor: React.FC<AttributeEditorProps> = ({
@@ -16,6 +17,7 @@ const AttributeEditor: React.FC<AttributeEditorProps> = ({
   isEditing,
   onEdit,
   children,
+  editIconClass,
 }) => {
   return (
     <div className="flex items-center text-sm">
@@ -30,7 +32,7 @@ const AttributeEditor: React.FC<AttributeEditorProps> = ({
             size="sm"
             className="h-6 w-6 p-0 ml-1 opacity-50 transition-opacity hover:opacity-70"
           >
-            <Pencil className="h-3 w-3" />
+            <Pencil className={`h-4 w-4 ${editIconClass || ''}`} />
             <span className="sr-only">Edit</span>
           </Button>
         </div>

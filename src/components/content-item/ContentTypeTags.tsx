@@ -154,7 +154,7 @@ const ContentTypeTags: React.FC<ContentTypeTagsProps> = ({
           className="cursor-pointer ml-1 flex items-center text-muted-foreground hover:text-foreground transition-colors"
           onClick={onEditTags}
         >
-          <Pencil className="h-3 w-3" />
+          <Pencil className="h-4 w-4" />
         </div>
       )}
     </div>

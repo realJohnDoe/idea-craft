@@ -318,7 +318,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   <span>
                     {item.date && format(new Date(item.date), "PPPP")}
                   </span>
-                  <Pencil className="w-3 h-3 ml-1 opacity-50 transition-opacity hover:opacity-70" />
+                  <Pencil className="h-4 w-4 ml-1 opacity-50 transition-opacity hover:opacity-70" />
                 </div>
               ) : (
                 <Popover open={isEditingDate} onOpenChange={setIsEditingDate}>
@@ -355,6 +355,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   value={item.location || ""}
                   isEditing={isEditingLocation}
                   onEdit={() => setIsEditingLocation(true)}
+                  editIconClass="group-hover:text-event"
                 >
                   <div className="flex items-center space-x-2 w-full">
                     <Input
@@ -389,6 +390,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 value={item.from ?? ""}
                 isEditing={isEditingMailFrom}
                 onEdit={() => setIsEditingMailFrom(true)}
+                editIconClass="group-hover:text-mail"
               >
                 <div className="flex items-center space-x-2 flex-1">
                   <Input
@@ -418,6 +420,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                   value={item.to ? item.to.join(", ") : ""}
                   isEditing={isEditingMailTo}
                   onEdit={() => setIsEditingMailTo(true)}
+                  editIconClass="group-hover:text-mail"
                 >
                   <div className="flex items-center space-x-2 flex-1">
                     <Input
@@ -454,7 +457,7 @@ const ContentBody: React.FC<ContentBodyProps> = ({
                 onClick={() => setIsEditingContent(true)}
                 title="Edit Content"
               >
-                <Pencil className="h-3 w-3" />
+                <Pencil className="h-4 w-4" />
               </Button>
             </div>
 
